@@ -104,7 +104,7 @@ class RedGymEnv(Env):
                 config['gb_path'],
                 debugging=False,
                 disable_input=False,
-                window_type=head,
+                window=head,
                 hide_window='--quiet' in sys.argv,
             )
 
