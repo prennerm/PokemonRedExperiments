@@ -32,6 +32,7 @@ class RedGymEnv(Env):
         self.save_video = config["save_video"]
         self.fast_video = config["fast_video"]
         self.frame_stacks = 1
+        """
         self.explore_weight = (
             1 if "explore_weight" not in config else config["explore_weight"]
         )
@@ -47,7 +48,7 @@ class RedGymEnv(Env):
         self.explore_weight = config.get("explore_weight", 1)
         self.reward_scale = config.get("reward_scale", 1)
         self.instance_id = config.get("instance_id", str(uuid.uuid4())[:8])
-        """
+        
         self.s_path.mkdir(exist_ok=True)
         self.full_frame_writer = None
         self.model_frame_writer = None
@@ -123,13 +124,14 @@ class RedGymEnv(Env):
 
         #self.screen = self.pyboy.botsupport_manager().screen()
 
+        """
         if not config["headless"]:
             self.pyboy.set_emulation_speed(6)
 
         """
         if not self.headless:
             self.pyboy.set_emulation_speed(6)
-        """
+        
 
     def reset(self, seed=None, options={}):
         self.seed = seed
@@ -286,6 +288,7 @@ class RedGymEnv(Env):
             }
         )
 
+    """
     def start_video(self):
 
         if self.full_frame_writer is not None:
@@ -353,7 +356,7 @@ class RedGymEnv(Env):
         self.map_frame_writer = media.VideoWriter(map_video_path, (self.coords_pad * 4, self.coords_pad * 4), fps=60, input_format="gray")
         self.map_frame_writer.__enter__()
 
-    """
+    
 
     def add_video_frame(self):
         self.full_frame_writer.add_image(
@@ -378,7 +381,7 @@ class RedGymEnv(Env):
                 self.seen_coords[coord_string] += 1
             else:
                 self.seen_coords[coord_string] = 1
-            #self.seen_coords[coord_string] = self.step_count
+            #self.seen_coords[coord_string] = self.step_count # nichtmehr sicher wozu das hier steht
 
     def get_current_coord_count_reward(self):
         x_pos, y_pos, map_n = self.get_game_coords()
@@ -418,10 +421,10 @@ class RedGymEnv(Env):
     def update_reward(self):
         # compute reward
         self.progress_reward = self.get_game_state_reward()
-        new_total = sum(
+        """new_total = sum(
             [val for _, val in self.progress_reward.items()]
-        )
-        #new_total = sum(self.progress_reward.values())
+        )"""
+        new_total = sum(self.progress_reward.values())
         new_step = new_total - self.total_reward
 
         self.total_reward = new_total
