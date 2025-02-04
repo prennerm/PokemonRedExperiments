@@ -2,7 +2,7 @@ import sys
 import uuid
 from os.path import exists
 from pathlib import Path
-from red_gym_env_v2 import RedGymEnv
+from red_gym_env_v2_adapted import RedGymEnv
 from stream_agent_wrapper import StreamWrapper
 from stable_baselines3 import PPO
 from stable_baselines3.common import env_checker
