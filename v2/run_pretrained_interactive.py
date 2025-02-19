@@ -4,7 +4,7 @@ from pathlib import Path
 import uuid
 import time
 import glob
-from red_gym_env_v2 import RedGymEnv
+from red_gym_env_v2_adapted import RedGymEnv
 from stable_baselines3 import A2C, PPO
 from stable_baselines3.common import env_checker
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
@@ -59,7 +59,9 @@ if __name__ == '__main__':
     env = make_env(0, env_config)() #SubprocVecEnv([make_env(i, env_config) for i in range(num_cpu)])
     
     #env_checker.check_env(env)
-    most_recent_checkpoint, time_since = get_most_recent_zip_with_age("runs")
+    checkpoint_folder = r"C:/Users/marwi/Documents/fhstp/masterarbeit/PokemonRedExperiments/v2/test_sessions/session_v2"
+    most_recent_checkpoint, time_since = get_most_recent_zip_with_age(checkpoint_folder)
+
     if most_recent_checkpoint is not None:
         file_name = most_recent_checkpoint
         print(f"using checkpoint: {file_name}, which is {time_since} hours old")

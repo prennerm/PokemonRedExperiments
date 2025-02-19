@@ -34,7 +34,7 @@ def make_env(rank, env_conf, seed=0):
 if __name__ == "__main__":
 
     use_wandb_logging = False
-    ep_length = 2048 * 8 #von 80 auf 8 geändert
+    ep_length = 2048 * 80 #von 80 auf 8 geändert
     sess_id = "test_sessions/session_v2"
     sess_path = Path(sess_id)
     sess_path.mkdir(parents=True, exist_ok=True)
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     
     print(env_config)
     
-    num_cpu = 8 # Also sets the number of episodes per training iteration
+    num_cpu = 32 # Also sets the number of episodes per training iteration, default 64
     print("Erstelle Umgebungen...")
     envs = [make_env(i, env_config) for i in range(num_cpu)]
     print("Umgebungen erstellt.")
@@ -96,7 +96,9 @@ if __name__ == "__main__":
     
     print(model.policy)
 
-    model.learn(total_timesteps=(ep_length)*num_cpu*10000, callback=CallbackList(callbacks), tb_log_name="poke_ppo")
+    #model.learn(total_timesteps=(ep_length)*num_cpu*1000, callback=CallbackList(callbacks), tb_log_name="poke_ppo")
+    model.learn(total_timesteps=100_000_000, callback=CallbackList(callbacks), tb_log_name="poke_ppo")
+
 
     if use_wandb_logging:
         run.finish()
