@@ -15,20 +15,6 @@ from pyboy.utils import WindowEvent
 
 from global_map import local_to_global, GLOBAL_MAP_SHAPE
 
-import pyboy.api.sound as sound_mod
-
-class DummySound:
-    def __init__(self, *args, **kwargs):
-        pass
-    def tick(self, *args, **kwargs):
-        pass
-    def stop(self):
-        pass
-    def set_volume(self, volume):
-        pass
-
-sound_mod.Sound = DummySound
-
 #event tracking addresses
 event_flags_start = 0xD747
 event_flags_end = 0xD87E # expand for SS Anne # old - 0xD7F6 
@@ -134,10 +120,8 @@ class RedGymEnv(Env):
             #debugging=False,
             #disable_input=False,
             window=head,
-            sound=False,
+            #sound=False,
         )
-        #object.__setattr__(self.pyboy, 'sound', DummySound())
-        
 
         #self.screen = self.pyboy.botsupport_manager().screen()
 
