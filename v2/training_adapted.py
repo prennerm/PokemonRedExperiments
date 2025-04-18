@@ -1,5 +1,6 @@
 import sys
 import uuid
+from datetime import datetime
 from os.path import exists
 from pathlib import Path
 from red_gym_env_v2_adapted import RedGymEnv
@@ -42,8 +43,14 @@ if __name__ == "__main__":
 
     #anpassen damit die einzelnen trainings und die jeweiligen json logs sauber getrennt werden
 
-    stats_dir = sess_path / "json_logs"
-    stats_dir.mkdir(parents=True, exist_ok=True)
+    run_name = datetime.now().strftime("run_%Y%m%d_%H%M%S")
+    run_path = sess_path / run_name
+    json_dir = run_path / "json_logs"
+    zip_dir  = run_path / "checkpoints"
+    tb_dir   = run_path / "tensorboard"
+    # erstelle: run_path selbst und alle drei Sub‑Ordner
+    for d in (run_path, json_dir, zip_dir, tb_dir):
+        d.mkdir(parents=True, exist_ok=True)
 
     env_config = {
                 'headless': True, 'save_final_state': False, 'early_stop': False,
@@ -62,10 +69,17 @@ if __name__ == "__main__":
     print("SubprocVecEnv erfolgreich initialisiert.")
 
     
-    checkpoint_callback = CheckpointCallback(save_freq=ep_length, save_path=sess_path,
-                                     name_prefix="poke")
-    tensorboard_callback = TensorboardCallback(str(sess_path))
-    stats_callback = StatsCallback(save_freq=100, save_path=str(stats_dir), verbose=1)
+    checkpoint_callback = CheckpointCallback(
+        save_freq=ep_length,
+        save_path=str(zip_dir),
+        name_prefix="poke"
+    )
+    tensorboard_callback = TensorboardCallback(str(tb_dir))
+    stats_callback = StatsCallback(
+        save_freq=100,
+        save_path=str(json_dir),
+        verbose=1
+    )
     
     callbacks = [checkpoint_callback, tensorboard_callback, stats_callback]
 
