@@ -1,14 +1,28 @@
-name: poke-pipeline
+name: poke_env
+channels:
+  - defaults
+  - conda-forge
+
 dependencies:
   - python=3.10
   - pip
+  - numpy
+  - matplotlib
+  - scikit-image
+  - scipy
+  - imageio
+  - pandas
+  - protobuf
+  - websockets
+  #- pytorch
+  #- cudatoolkit=11.3
+
   - pip:
-      - stable-baselines3
-      - gymnasium
-      - sb3-contrib
-      - numpy
-      - matplotlib
-      - scikit-image
-      - einops
-      - pyboy==2.5.1
-      - mediapy
+    - stable-baselines3
+    - sb3-contrib            # für die RecurrentPPO/LD-Variante
+    - pyboy
+    - networks
+    - einops
+    - tensorboard
+    - gymnasium              # statt „gym“, da du Gymnasium nutzt
+    - mediapy
