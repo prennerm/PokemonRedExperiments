@@ -26,3 +26,4 @@ dependencies:
     - tensorboard
     - gymnasium              # statt „gym“, da du Gymnasium nutzt
     - mediapy
+    - pyyaml
