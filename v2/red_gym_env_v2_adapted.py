@@ -27,7 +27,7 @@ class DummySound:
     def set_volume(self, volume):
         pass
 
-sound_mod.Sound = DummySound
+#sound_mod.Sound = DummySound
 
 #event tracking addresses
 event_flags_start = 0xD747
@@ -134,7 +134,7 @@ class RedGymEnv(Env):
             #debugging=False,
             #disable_input=False,
             window=head,
-            sound=False,
+            sound_emulated=False,
         )
         #object.__setattr__(self.pyboy, 'sound', DummySound())
         
