@@ -1,0 +1,14 @@
+name: poke-pipeline
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - stable-baselines3
+      - gymnasium
+      - sb3-contrib
+      - numpy
+      - matplotlib
+      - scikit-image
+      - einops
+      - pyboy==2.5.1
+      - mediapy
