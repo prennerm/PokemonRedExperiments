@@ -1,6 +1,7 @@
 import uuid
 import json
 from pathlib import Path
+import pkg_resources
 
 import numpy as np
 from skimage.transform import downscale_local_mean
@@ -13,7 +14,7 @@ from einops import repeat
 from gymnasium import Env, spaces
 from pyboy.utils import WindowEvent
 
-from global_map import local_to_global, GLOBAL_MAP_SHAPE
+from poke_pipeline.global_map import local_to_global, GLOBAL_MAP_SHAPE
 
 #event tracking addresses
 event_flags_start = 0xD747
@@ -88,9 +89,11 @@ class RedGymEnvLSTM(Env):
         ]
 
         # load event names (parsed from https://github.com/pret/pokered/blob/91dc3c9f9c8fd529bb6e8307b58b96efa0bec67e/constants/event_constants.asm)
-        with open("events.json") as f:
-            event_names = json.load(f)
-        self.event_names = event_names
+        # neue Version in __init__
+        data_dir = Path(pkg_resources.resource_filename(__name__, "data"))
+        with open(data_dir / "events.json") as f:
+            self.event_names = json.load(f)
+
 
         self.output_shape = (72, 80, self.frame_stacks)
         self.coords_pad = 12

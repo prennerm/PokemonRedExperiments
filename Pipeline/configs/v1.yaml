@@ -1,0 +1,46 @@
+# configs/v1.yaml
+
+# 1) Allgemeine Settings
+seed: 42
+num_cpu: 32
+
+# 2) Pfade (werden in train.py ergänzt)
+paths:
+  session_root: "experiments/v1"
+  checkpoints:   "${paths.session_root}/checkpoints"
+  tensorboard:   "${paths.session_root}/tensorboard"
+  json_logs:     "${paths.session_root}/json_logs"
+
+# 3) Environment-Konfiguration (wie in baseline_fast_v2.py)
+env:
+  module: "red_gym_env_v2"
+  class: "RedGymEnv"
+  headless:         true
+  save_final_state: false
+  early_stop:       false
+  action_freq:      24
+  init_state:       "../has_pokedex_nballs.state"
+  max_steps:        163840
+  print_rewards:    true
+  save_video:       false
+  fast_video:       true
+  gb_path:          "../PokemonRed.gb"
+  debug:            false
+  reward_scale:     0.5
+  explore_weight:   0.25
+
+# 4) Modell‑Hyperparameter
+model:
+  type:           "PPO"
+  policy:         "MultiInputPolicy"
+  n_steps:        2048        # rollout length
+  batch_size:     512
+  n_epochs:       1
+  gamma:          0.997
+  ent_coef:       0.01
+  tensorboard_log: "${paths.tensorboard}"
+
+# 5) Trainingslauf
+total_timesteps:    1e8
+save_freq:          163840      # ep_length Schritte / 2? ggf  ep_length//2
+save_freq_stats:    100

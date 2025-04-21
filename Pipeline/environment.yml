@@ -19,11 +19,11 @@ dependencies:
 
   - pip:
     - stable-baselines3
-    - sb3-contrib            # für die RecurrentPPO/LD-Variante
+    - sb3-contrib            
     - pyboy
     - networks
     - einops
     - tensorboard
-    - gymnasium              # statt „gym“, da du Gymnasium nutzt
+    - gymnasium             
     - mediapy
     - pyyaml

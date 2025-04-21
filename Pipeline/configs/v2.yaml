@@ -10,7 +10,7 @@ num_cpu: 32 # eventuell 8 oder 16 nötig
 # 2) Pfade (werden in train.py relativ zum Projekt‑Root aufgelöst)
 # -------------------------------------------------------------------
 paths:
-  session_root: "experiments/v2_$(date +%Y%m%d_%H%M%S)"  # wird automatisch auf einen Zeitstempel ersetzt
+  session_root: "experiments/v2"
   checkpoints:   "${paths.session_root}/checkpoints"
   tb_log:        "${paths.session_root}/tensorboard"
   json_logs:     "${paths.session_root}/json_logs"

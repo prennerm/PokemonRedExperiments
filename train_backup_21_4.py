@@ -11,17 +11,18 @@ from stable_baselines3 import PPO
 from sb3_contrib import RecurrentPPO
 from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv
 from stable_baselines3.common.callbacks import CheckpointCallback, CallbackList
-from tensorboard_callback import TensorboardCallback
-from callbacks import StatsCallback
-from sb3_contrib.ppo_recurrent.ppo_recurrent import RecurrentPPOLD
+from poke_pipeline.tensorboard_callback import TensorboardCallback
+from poke_pipeline.callbacks import StatsCallback
+from poke_pipeline.ppo_lambda_discrepancy import RecurrentPPOLD, MultiInputLstmPolicyLD
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--variant",
-        choices=["v2", "v3", "v4"],
+        choices=["v1", "v2", "v3", "v4"],
         required=True,
-        help="Welche Variante: v2/v3 uses RedGymEnv, v4 uses RedGymEnvLSTM",
+        help="v1: Baseline (RedGymEnv + StreamWrapper),\n"
+        "v2/v3: RedGymEnv (frame-stacks / LSTM), v4: RedGymEnvLSTM",
     )
     parser.add_argument(
         "--config",
@@ -54,15 +55,25 @@ def make_run_dirs(base: Path) -> dict:
         d.mkdir(parents=True, exist_ok=True)
     return dirs
 
-def make_env_fn(env_mod_name: str, env_class_name: str, env_conf: dict, rank: int, seed: int):
+def make_env_fn(variant: str, env_mod_name: str, env_class_name: str, env_conf: dict, rank: int, seed: int):
     """
     Factory für SubprocVecEnv – lädt Modul und Klasse dynamisch.
     """
     def _init():
-        # Modul aus src/ laden
-        mod = importlib.import_module(f"src.{env_mod_name}")
-        EnvCls = getattr(mod, env_class_name)
+        # Dynamically import the environment class
+        module = importlib.import_module(f"poke_pipeline.{env_mod_name}")
+        EnvCls = getattr(module, env_class_name)
+
         env = EnvCls(env_conf)
+        # wrap the v1 baseline in the StreamWrapper
+        if variant == "v1":
+            from poke_pipeline.stream_agent_wrapper import StreamWrapper
+            env = StreamWrapper(env, stream_metadata={
+                "user": "v1-default",
+                "env_id": rank,
+                "color": "#447799",
+                "extra": "",
+            })
         env.reset(seed=seed + rank)
         return env
     return _init
@@ -73,7 +84,6 @@ def main():
 
     # --- 1) Run‑Ordner anlegen ---
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
-    # falls in YAML ein Datum drinsteht, könntet ihr das stattdessen nehmen:
     session_root = Path(cfg["paths"]["session_root"]) / now
     dirs = make_run_dirs(session_root)
 
@@ -87,7 +97,14 @@ def main():
     env_mod   = cfg["env"]["module"]
     env_cls   = cfg["env"]["class"]
     env_fns = [
-        make_env_fn(env_mod, env_cls, env_conf, rank=i, seed=cfg.get("seed", 0))
+        make_env_fn(
+            args.variant,
+            cfg["env"]["module"],
+            cfg["env"]["class"],
+            env_conf,
+            rank=i,
+            seed=cfg.get("seed", 0),
+        )
         for i in range(num_cpu)
     ]
     if num_cpu > 1:
@@ -108,14 +125,18 @@ def main():
         raise ValueError(f"Unbekannter model.type: {model_cfg['type']}")
 
     # Extrahiere alle Hyperparameter außer type und policy
-    hyperparams = {k: v for k, v in model_cfg.items()
-                   if k not in ("type", "policy")}
+    hyperparams = {
+        k: v
+        for k, v in model_cfg.items()
+        if k not in ("type", "policy", "tensorboard_log", "hyperparams")
+    }
 
     model = ModelClass(
         policy=model_cfg["policy"],
         env=vec_env,
         tensorboard_log=str(dirs["tensorboard"]),
-        **hyperparams
+        hyperparams = {k: v for k, v in model_cfg.items()
+                       if k not in ("type", "policy", "tensorboard_log")}
     )
 
     # --- 5) Callbacks vorbereiten ---
@@ -147,7 +168,7 @@ def main():
             tb_log_name=args.variant
         )
     except KeyboardInterrupt:
-        print("🏁 Training interrupted – letzter JSON‑Flush …")
+        print("Training interrupted – letzter JSON‑Flush …")
         for cb in cb_list:
             if hasattr(cb, "_on_training_end"):
                 cb._on_training_end()

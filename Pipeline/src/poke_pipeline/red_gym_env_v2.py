@@ -1,6 +1,7 @@
 import uuid
 import json
 from pathlib import Path
+import pkg_resources
 
 import numpy as np
 from skimage.transform import downscale_local_mean
@@ -13,23 +14,8 @@ from einops import repeat
 from gymnasium import Env, spaces
 from pyboy.utils import WindowEvent
 
-from global_map import local_to_global, GLOBAL_MAP_SHAPE
+from poke_pipeline.global_map import local_to_global, GLOBAL_MAP_SHAPE
 
-import pyboy.api.sound as sound_mod
-
-class DummySound:
-    def __init__(self, *args, **kwargs):
-        pass
-    def tick(self, *args, **kwargs):
-        pass
-    def stop(self):
-        pass
-    def set_volume(self, volume):
-        pass
-
-#sound_mod.Sound = DummySound
-
-#event tracking addresses
 event_flags_start = 0xD747
 event_flags_end = 0xD87E # expand for SS Anne # old - 0xD7F6 
 museum_ticket = (0xD754, 0)
@@ -45,8 +31,7 @@ class RedGymEnv(Env):
         self.max_steps = config["max_steps"]
         self.save_video = config["save_video"]
         self.fast_video = config["fast_video"]
-        self.frame_stacks = 1
-        """
+        self.frame_stacks = 3
         self.explore_weight = (
             1 if "explore_weight" not in config else config["explore_weight"]
         )
@@ -58,11 +43,6 @@ class RedGymEnv(Env):
             if "instance_id" not in config
             else config["instance_id"]
         )
-        """
-        self.explore_weight = config.get("explore_weight", 1)
-        self.reward_scale = config.get("reward_scale", 1)
-        self.instance_id = config.get("instance_id", str(uuid.uuid4())[:8])
-        
         self.s_path.mkdir(exist_ok=True)
         self.full_frame_writer = None
         self.model_frame_writer = None
@@ -101,7 +81,8 @@ class RedGymEnv(Env):
         ]
 
         # load event names (parsed from https://github.com/pret/pokered/blob/91dc3c9f9c8fd529bb6e8307b58b96efa0bec67e/constants/event_constants.asm)
-        with open("events.json") as f:
+        data_dir = Path(pkg_resources.resource_filename(__name__, "data"))
+        with open(data_dir / "events.json") as f:
             event_names = json.load(f)
         self.event_names = event_names
 
@@ -122,7 +103,7 @@ class RedGymEnv(Env):
                 "events": spaces.MultiBinary((event_flags_end - event_flags_start) * 8),
                 "map": spaces.Box(low=0, high=255, shape=(
                     self.coords_pad*4,self.coords_pad*4, 1), dtype=np.uint8),
-                "recent_action": spaces.Discrete(len(self.valid_actions))
+                "recent_actions": spaces.MultiDiscrete([len(self.valid_actions)] * self.frame_stacks)
             }
         )
 
@@ -134,21 +115,12 @@ class RedGymEnv(Env):
             #debugging=False,
             #disable_input=False,
             window=head,
-            sound_emulated=False,
         )
-        #object.__setattr__(self.pyboy, 'sound', DummySound())
-        
 
         #self.screen = self.pyboy.botsupport_manager().screen()
 
-        """
         if not config["headless"]:
             self.pyboy.set_emulation_speed(6)
-
-        """
-        if not self.headless:
-            self.pyboy.set_emulation_speed(6)
-        
 
     def reset(self, seed=None, options={}):
         self.seed = seed
@@ -163,9 +135,9 @@ class RedGymEnv(Env):
         self.explore_map_dim = GLOBAL_MAP_SHAPE
         self.explore_map = np.zeros(self.explore_map_dim, dtype=np.uint8)
 
-        self.current_screen = np.zeros( self.output_shape, dtype=np.uint8)
+        self.recent_screens = np.zeros( self.output_shape, dtype=np.uint8)
         
-        self.last_action = 0
+        self.recent_actions = np.zeros((self.frame_stacks,), dtype=np.uint8)
 
         self.levels_satisfied = False
         self.base_explore = 0
@@ -209,7 +181,7 @@ class RedGymEnv(Env):
         
         screen = self.render()
 
-        self.current_screen = screen
+        self.update_recent_screens(screen)
         
         # normalize to approx 0-1
         level_sum = 0.02 * sum([
@@ -217,13 +189,13 @@ class RedGymEnv(Env):
         ])
 
         observation = {
-            "screens": self.current_screen,
+            "screens": self.recent_screens,
             "health": np.array([self.read_hp_fraction()]),
             "level": self.fourier_encode(level_sum),
             "badges": np.array([int(bit) for bit in f"{self.read_m(0xD356):08b}"], dtype=np.int8),
             "events": np.array(self.read_event_bits(), dtype=np.int8),
             "map": self.get_explore_map()[:, :, None],
-            "recent_action": self.last_action
+            "recent_actions": self.recent_actions
         }
 
         return observation
@@ -235,15 +207,25 @@ class RedGymEnv(Env):
 
         self.run_action_on_emulator(action)
         self.append_agent_stats(action)
-        self.last_action = action
+
+        self.update_recent_actions(action)
+
         self.update_seen_coords()
+
         self.update_explore_map()
+
         self.update_heal_reward()
+
         self.party_size = self.read_m(0xD163)
+
         new_reward = self.update_reward()
+
         self.last_health = self.read_hp_fraction()
+
         self.update_map_progress()
+
         step_limit_reached = self.check_if_done()
+
         obs = self._get_obs()
 
         # self.save_and_print_info(step_limit_reached, obs)
@@ -305,7 +287,6 @@ class RedGymEnv(Env):
             }
         )
 
-    """
     def start_video(self):
 
         if self.full_frame_writer is not None:
@@ -317,7 +298,6 @@ class RedGymEnv(Env):
 
         base_dir = self.s_path / Path("rollouts")
         base_dir.mkdir(exist_ok=True)
-        
         full_name = Path(
             f"full_reset_{self.reset_count}_id{self.instance_id}"
         ).with_suffix(".mp4")
@@ -342,39 +322,6 @@ class RedGymEnv(Env):
         )
         self.map_frame_writer.__enter__()
 
-    """
-    def start_video(self):
-    #Initialisiert die Videoaufzeichnung und schließt ggf. alte Video-Writer.
-
-        # Falls vorherige Video-Writer existieren, schließen
-        if self.full_frame_writer:
-            self.full_frame_writer.close()
-        if self.model_frame_writer:
-            self.model_frame_writer.close()
-        if self.map_frame_writer:
-            self.map_frame_writer.close()
-
-        # Verzeichnis für Rollout-Videos erstellen (falls nicht vorhanden)
-        base_dir = self.s_path / Path("rollouts")
-        base_dir.mkdir(exist_ok=True)
-
-        # Video-Writer für das vollständige Gameplay-Fenster
-        full_video_path = base_dir / f"full_reset_{self.reset_count}_id{self.instance_id}.mp4"
-        self.full_frame_writer = media.VideoWriter(full_video_path, (144, 160), fps=60, input_format="gray")
-        self.full_frame_writer.__enter__()
-
-        # Video-Writer für das reduzierte Model-Input-Fenster
-        model_video_path = base_dir / f"model_reset_{self.reset_count}_id{self.instance_id}.mp4"
-        self.model_frame_writer = media.VideoWriter(model_video_path, self.output_shape[:2], fps=60, input_format="gray")
-        self.model_frame_writer.__enter__()
-
-        # Video-Writer für die Kartenansicht (Map-Exploration)
-        map_video_path = base_dir / f"map_reset_{self.reset_count}_id{self.instance_id}.mp4"
-        self.map_frame_writer = media.VideoWriter(map_video_path, (self.coords_pad * 4, self.coords_pad * 4), fps=60, input_format="gray")
-        self.map_frame_writer.__enter__()
-
-    
-
     def add_video_frame(self):
         self.full_frame_writer.add_image(
             self.render(reduce_res=False)[:,:,0]
@@ -398,7 +345,7 @@ class RedGymEnv(Env):
                 self.seen_coords[coord_string] += 1
             else:
                 self.seen_coords[coord_string] = 1
-            #self.seen_coords[coord_string] = self.step_count # nichtmehr sicher wozu das hier steht
+            #self.seen_coords[coord_string] = self.step_count
 
     def get_current_coord_count_reward(self):
         x_pos, y_pos, map_n = self.get_game_coords()
@@ -433,15 +380,19 @@ class RedGymEnv(Env):
         return repeat(out, 'h w -> (h h2) (w w2)', h2=2, w2=2)
     
     def update_recent_screens(self, cur_screen):
-        self.recent_screens = cur_screen[:, :, np.newaxis]  # Kein Stack mehr, nur 1 Frame
+        self.recent_screens = np.roll(self.recent_screens, 1, axis=2)
+        self.recent_screens[:, :, 0] = cur_screen[:,:, 0]
+
+    def update_recent_actions(self, action):
+        self.recent_actions = np.roll(self.recent_actions, 1)
+        self.recent_actions[0] = action
 
     def update_reward(self):
         # compute reward
         self.progress_reward = self.get_game_state_reward()
-        """new_total = sum(
+        new_total = sum(
             [val for _, val in self.progress_reward.items()]
-        )"""
-        new_total = sum(self.progress_reward.values())
+        )
         new_step = new_total - self.total_reward
 
         self.total_reward = new_total

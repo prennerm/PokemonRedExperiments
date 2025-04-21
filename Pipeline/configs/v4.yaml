@@ -10,7 +10,7 @@ num_cpu: 32 # eventuell 8 oder 16 nötig
 # 2) Pfade (werden in train.py relativ zum Projekt‑Root aufgelöst)
 # -------------------------------------------------------------------
 paths:
-  session_root: "experiments/v2_$(date +%Y%m%d_%H%M%S)"  # wird automatisch auf einen Zeitstempel ersetzt
+  session_root: "experiments/v4"
   checkpoints:   "${paths.session_root}/checkpoints"
   tb_log:        "${paths.session_root}/tensorboard"
   json_logs:     "${paths.session_root}/json_logs"
@@ -39,13 +39,15 @@ env:
 # 4) Modell‑Hyperparameter
 # -------------------------------------------------------------------
 model:
-  type:            "RecurrentPPO"
-  policy:          "MultiInputLstmPolicy"
+  type:            "RecurrentPPOLD"
+  policy:          "MultiInputLstmPolicyLD"
   n_steps:         2048        # rollout-Länge
   batch_size:      512
   n_epochs:        1
   gamma:           0.997
   ent_coef:        0.01
+  vf_coef:          0.5 # noch prüfen
+  ld_coef:          0.1 # auch noch prüfen, gewichtung lambda discrepancy
   tensorboard_log: "${paths.tb_log}"
 
 # -------------------------------------------------------------------

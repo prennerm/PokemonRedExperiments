@@ -1,0 +1,14 @@
+stable-baselines3
+sb3-contrib
+pyboy
+gymnasium
+numpy
+einops
+scikit-image
+mediapy
+websockets
+imageio
+pandas
+scipy
+tensorboard
+pyyaml
