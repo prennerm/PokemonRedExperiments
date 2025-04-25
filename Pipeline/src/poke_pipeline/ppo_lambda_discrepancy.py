@@ -39,11 +39,50 @@ class MultiInputLstmPolicyLD(MultiInputLstmPolicy):
                 nn.init.constant_(m.bias, 0)
 
     def evaluate_actions(self, obs, actions, lstm_states, episode_starts):
-        values, _, log_prob, entropy = super().evaluate_actions(obs, actions, lstm_states, episode_starts)
-        # compute the auxiliary value head
-        features = self.extract_features(obs)[0] if self.share_features_extractor else self.extract_features(obs)[1]
-        value_ld = self.value_net_ld(features.flatten(start_dim=1))
+        # 1) run exactly the same forward that super().evaluate_actions does under the hood,
+        #    but capture the *critic* latent *before* the final value head:
+        features = self.extract_features(obs)
+        if self.share_features_extractor:
+            pi_feat, vf_feat = features, features
+        else:
+            pi_feat, vf_feat = features
+
+        # 2) Actor sequence (we only need critic, but actor must also advance LSTM states)
+        latent_pi, lstm_states_pi = self._process_sequence(
+            pi_feat, lstm_states.pi, episode_starts, self.lstm_actor
+        )
+
+        # 3) Critic sequence
+        if self.lstm_critic is not None:
+            latent_vf, lstm_states_vf = self._process_sequence(
+                vf_feat, lstm_states.vf, episode_starts, self.lstm_critic
+            )
+        elif self.shared_lstm:
+            latent_vf = latent_pi.detach()
+            lstm_states_vf = (lstm_states_pi[0].detach(),
+                              lstm_states_pi[1].detach())
+        else:
+            # feed-forward critic LSTM fallback
+            latent_vf = self.critic(vf_feat)
+            lstm_states_vf = lstm_states_pi
+
+        # 4) MLP heads
+        latent_pi = self.mlp_extractor.forward_actor(latent_pi)
+        latent_vf = self.mlp_extractor.forward_critic(latent_vf)
+
+        # 5) main value + policy
+        values = self.value_net(latent_vf)
+        dist   = self._get_action_dist_from_latent(latent_pi)
+        log_prob = dist.log_prob(actions)
+        entropy  = dist.entropy()
+
+        # 6) λ-discrepancy head
+        value_ld = self.value_net_ld(latent_vf)
+
+        # 7) return exactly what RecurrentPPOLD.train() expects:
+        #    (main_value, ld_value, log_prob, entropy)
         return values, value_ld, log_prob, entropy
+
 
 class RecurrentPPOLD(RecurrentPPO):
     """

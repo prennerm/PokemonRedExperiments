@@ -8,10 +8,12 @@ import yaml
 from datetime import datetime
 from pathlib import Path
 import importlib
+import shutil
 
 import numpy as np
 from stable_baselines3 import PPO
 from sb3_contrib import RecurrentPPO
+from sb3_contrib.ppo_recurrent.policies import MultiInputLstmPolicy
 from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv
 from stable_baselines3.common.callbacks import CheckpointCallback, CallbackList
 
@@ -81,6 +83,10 @@ def main():
     session_root = Path(cfg["paths"]["session_root"]) / now
     dirs = make_run_dirs(session_root)
 
+    # config speichern
+    dest = dirs["root"] / args.config.name
+    shutil.copyfile(args.config, dest)
+
     # 2) Environment config
     env_conf = cfg["env"].copy()
     env_conf["session_path"] = dirs["root"]
@@ -101,20 +107,24 @@ def main():
     # 4) Modell instanziieren
     model_cfg = cfg["model"]
     model_type = model_cfg["type"]
-    policy_name = model_cfg["policy"]
+    policy_key = model_cfg["policy"]
 
     if model_type == "PPO":
         ModelClass = PPO
     elif model_type == "RecurrentPPO":
         ModelClass = RecurrentPPO
+        # für RecurrentPPO immer die sb3_contrib‐Policy‐Klasse
+        policy_key = MultiInputLstmPolicy  # :contentReference[oaicite:0]{index=0}
     elif model_type == "RecurrentPPOLD":
         ModelClass = RecurrentPPOLD
+        # für unsere LD‐Variante die selbstdefinierte Policy‐Klasse
+        policy_key = MultiInputLstmPolicyLD  # :contentReference[oaicite:1]{index=1}
     else:
         raise ValueError(f"Unbekannter model.type: {model_type}")
 
     # Grundlegende kwargs
     base_kwargs = {
-        "policy": policy_name,
+        "policy": policy_key,
         "env": vec_env,
         "tensorboard_log": str(dirs["tensorboard"]),
         # seed und verbose können auch hier aufgenommen werden

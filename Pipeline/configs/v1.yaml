@@ -19,12 +19,12 @@ env:
   save_final_state: false
   early_stop:       false
   action_freq:      24
-  init_state:       "../has_pokedex_nballs.state"
+  init_state:       "data/init.state"
   max_steps:        163840
   print_rewards:    true
   save_video:       false
   fast_video:       true
-  gb_path:          "../PokemonRed.gb"
+  gb_path:          "data/PokemonRed.gb"
   debug:            false
   reward_scale:     0.5
   explore_weight:   0.25
@@ -39,6 +39,7 @@ model:
   gamma:          0.997
   ent_coef:       0.01
   tensorboard_log: "${paths.tensorboard}"
+  verbose:        1
 
 # 5) Trainingslauf
 total_timesteps:    1e8
