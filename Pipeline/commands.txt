@@ -1,0 +1,30 @@
+# 1) Pipeline „neu laden“  
+# im Projekt-Root einfach:
+pip install -e .
+
+# Alternativ (falls das Repo remote liegt):
+git pull && pip install -e .
+
+
+# 2) Training starten
+
+# Variante v1 (Baseline mit RedGymEnv_v2)
+python -m poke_pipeline.train --variant v1 --config configs/v1.yaml
+
+# Variante v2 (erstes eigenes Env-Adaptation)
+python -m poke_pipeline.train --variant v2 --config configs/v2.yaml
+
+# Variante v3 (mit eigenem LSTM-Env)
+python -m poke_pipeline.train --variant v3 --config configs/v3.yaml
+
+# Variante v4 (λ-Discrepancy PPO)
+python -m poke_pipeline.train --variant v4 --config configs/v4.yaml
+
+
+# 3) Trainierten Agenten interaktiv ausführen  
+# (run_pretrained_interactive.py wurde in Pipeline/src/poke_pipeline/run.py umbenannt)
+# Standard: sucht automatisch den neuesten Checkpoint und startet das Spielfenster
+python -m poke_pipeline.run
+
+# Bestimmten checkpoint laden:
+python -m poke_pipeline.run --checkpoint Pfad/zum/checkpoint.zip

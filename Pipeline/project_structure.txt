@@ -1,0 +1,263 @@
+Auflistung der Ordnerpfade
+Volumeseriennummer : DA63-8041
+C:.
+|   commands.txt
+|   environment.yml
+|   project_structure.txt
+|   setup.py
+|   
++---configs
+|       v1.yaml
+|       v2.yaml
+|       v3.yaml
+|       v4.yaml
+|       
++---data
+|       fast_text_start.state
+|       has_pokedex.state
+|       has_pokedex_nballs.state
+|       init.state
+|       PokemonRed.gb
+|       
++---experiments
+|   +---v1
+|   |   +---20250421_143548
+|   |   |   +---checkpoints
+|   |   |   +---json_logs
+|   |   |   \---tensorboard
+|   |   +---20250421_154222
+|   |   |   +---checkpoints
+|   |   |   +---json_logs
+|   |   |   \---tensorboard
+|   |   +---20250421_154833
+|   |   |   +---checkpoints
+|   |   |   +---json_logs
+|   |   |   \---tensorboard
+|   |   +---20250421_155236
+|   |   |   +---checkpoints
+|   |   |   +---json_logs
+|   |   |   \---tensorboard
+|   |   +---20250421_155848
+|   |   |   +---checkpoints
+|   |   |   +---json_logs
+|   |   |   \---tensorboard
+|   |   +---20250421_160104
+|   |   |   +---checkpoints
+|   |   |   +---json_logs
+|   |   |   |       stats_1745244117.json
+|   |   |   |       
+|   |   |   \---tensorboard
+|   |   |       +---histogram
+|   |   |       |       events.out.tfevents.1745244083.marwinsPC.53796.1
+|   |   |       |       
+|   |   |       \---v1_1
+|   |   |               events.out.tfevents.1745244083.marwinsPC.53796.0
+|   |   |               
+|   |   +---20250426_104858
+|   |   |   |   v1.yaml
+|   |   |   |   
+|   |   |   +---checkpoints
+|   |   |   +---json_logs
+|   |   |   |       stats_1745657391.json
+|   |   |   |       
+|   |   |   \---tensorboard
+|   |   |       +---histogram
+|   |   |       |       events.out.tfevents.1745657357.marwinsPC.42996.1
+|   |   |       |       
+|   |   |       \---v1_1
+|   |   |               events.out.tfevents.1745657357.marwinsPC.42996.0
+|   |   |               
+|   |   +---20250426_134732
+|   |   |   |   v1.yaml
+|   |   |   |   
+|   |   |   +---checkpoints
+|   |   |   +---json_logs
+|   |   |   \---tensorboard
+|   |   +---20250426_134813
+|   |   |   |   v1.yaml
+|   |   |   |   
+|   |   |   +---checkpoints
+|   |   |   +---json_logs
+|   |   |   \---tensorboard
+|   |   \---20250426_135252
+|   |       |   v1.yaml
+|   |       |   
+|   |       +---checkpoints
+|   |       |       v1_5242880_steps.zip
+|   |       |       
+|   |       +---json_logs
+|   |       |       stats_1745668425.json
+|   |       |       
+|   |       \---tensorboard
+|   |           +---histogram
+|   |           |       events.out.tfevents.1745668392.marwinsPC.39052.1
+|   |           |       
+|   |           \---v1_1
+|   |                   events.out.tfevents.1745668392.marwinsPC.39052.0
+|   |                   
+|   +---v2
+|   |   +---20250421_160952
+|   |   |   +---checkpoints
+|   |   |   +---json_logs
+|   |   |   \---tensorboard
+|   |   +---20250424_113058
+|   |   |   +---checkpoints
+|   |   |   +---json_logs
+|   |   |   \---tensorboard
+|   |   +---20250424_115106
+|   |   |   +---checkpoints
+|   |   |   +---json_logs
+|   |   |   \---tensorboard
+|   |   \---20250424_115802
+|   |       +---checkpoints
+|   |       +---json_logs
+|   |       |       stats_1745488728.json
+|   |       |       
+|   |       \---tensorboard
+|   |           +---histogram
+|   |           |       events.out.tfevents.1745488700.marwinsPC.20264.1
+|   |           |       
+|   |           \---v2_1
+|   |                   events.out.tfevents.1745488700.marwinsPC.20264.0
+|   |                   
+|   +---v3
+|   |   \---20250424_115953
+|   |       +---checkpoints
+|   |       +---json_logs
+|   |       |       stats_1745488848.json
+|   |       |       
+|   |       \---tensorboard
+|   |           +---histogram
+|   |           |       events.out.tfevents.1745488812.marwinsPC.4044.1
+|   |           |       
+|   |           \---v3_1
+|   |                   events.out.tfevents.1745488812.marwinsPC.4044.0
+|   |                   
+|   \---v4
+|       +---20250424_120248
+|       |   +---checkpoints
+|       |   +---json_logs
+|       |   \---tensorboard
+|       +---20250424_122216
+|       |   +---checkpoints
+|       |   +---json_logs
+|       |   |       stats_1745490191.json
+|       |   |       
+|       |   \---tensorboard
+|       |       +---histogram
+|       |       |       events.out.tfevents.1745490154.marwinsPC.24028.1
+|       |       |       
+|       |       \---v4_1
+|       |               events.out.tfevents.1745490154.marwinsPC.24028.0
+|       |               
+|       +---20250424_122811
+|       |   +---checkpoints
+|       |   +---json_logs
+|       |   |       stats_1745490546.json
+|       |   |       
+|       |   \---tensorboard
+|       |       +---histogram
+|       |       |       events.out.tfevents.1745490510.marwinsPC.30660.1
+|       |       |       
+|       |       \---v4_1
+|       |               events.out.tfevents.1745490510.marwinsPC.30660.0
+|       |               
+|       +---20250424_123415
+|       |   +---checkpoints
+|       |   +---json_logs
+|       |   |       stats_1745490910.json
+|       |   |       
+|       |   \---tensorboard
+|       |       +---histogram
+|       |       |       events.out.tfevents.1745490874.marwinsPC.40816.1
+|       |       |       
+|       |       \---v4_1
+|       |               events.out.tfevents.1745490874.marwinsPC.40816.0
+|       |               
+|       +---20250424_124826
+|       |   +---checkpoints
+|       |   +---json_logs
+|       |   |       stats_1745491760.json
+|       |   |       
+|       |   \---tensorboard
+|       |       +---histogram
+|       |       |       events.out.tfevents.1745491724.marwinsPC.13804.1
+|       |       |       
+|       |       \---v4_1
+|       |               events.out.tfevents.1745491724.marwinsPC.13804.0
+|       |               
+|       +---20250425_084600
+|       |   +---checkpoints
+|       |   +---json_logs
+|       |   |       stats_1745563616.json
+|       |   |       
+|       |   \---tensorboard
+|       |       +---histogram
+|       |       |       events.out.tfevents.1745563579.marwinsPC.34948.1
+|       |       |       
+|       |       \---v4_1
+|       |               events.out.tfevents.1745563579.marwinsPC.34948.0
+|       |               
+|       \---20250425_093002
+|           +---checkpoints
+|           +---json_logs
+|           |       stats_1745566258.json
+|           |       stats_1745566520.json
+|           |       stats_1745566618.json
+|           |       stats_1745566710.json
+|           |       stats_1745566810.json
+|           |       stats_1745566909.json
+|           |       
+|           \---tensorboard
+|               +---histogram
+|               |       events.out.tfevents.1745566220.marwinsPC.43324.1
+|               |       
+|               \---v4_1
+|                       events.out.tfevents.1745566220.marwinsPC.43324.0
+|                       
++---notebooks
+|       analysis.ipynb
+|       
+\---src
+    +---poke_pipeline
+    |   |   callbacks.py
+    |   |   global_map.py
+    |   |   helper.py
+    |   |   ppo_lambda_discrepancy.py
+    |   |   red_gym_env_lstm.py
+    |   |   red_gym_env_v2.py
+    |   |   red_gym_env_v2_adapted.py
+    |   |   run.py
+    |   |   stream_agent_wrapper.py
+    |   |   tensorboard_callback.py
+    |   |   train.py
+    |   |   __init__.py
+    |   |   
+    |   +---data
+    |   |       events.json
+    |   |       map_data.json
+    |   |       
+    |   \---__pycache__
+    |           callbacks.cpython-310.pyc
+    |           global_map.cpython-310.pyc
+    |           ppo_lambda_discrepancy.cpython-310.pyc
+    |           red_gym_env_lstm.cpython-310.pyc
+    |           red_gym_env_v2.cpython-310.pyc
+    |           red_gym_env_v2_adapted.cpython-310.pyc
+    |           stream_agent_wrapper.cpython-310.pyc
+    |           tensorboard_callback.cpython-310.pyc
+    |           train.cpython-310.pyc
+    |           __init__.cpython-310.pyc
+    |           
+    +---poke_pipeline.egg-info
+    |       dependency_links.txt
+    |       PKG-INFO
+    |       requires.txt
+    |       SOURCES.txt
+    |       top_level.txt
+    |       
+    \---__pycache__
+            callbacks.cpython-310.pyc
+            tensorboard_callback.cpython-310.pyc
+            train.cpython-310.pyc
+            

@@ -9,6 +9,9 @@ from datetime import datetime
 from pathlib import Path
 import importlib
 import shutil
+import logging
+logging.getLogger("pyboy.core.sound").setLevel(logging.ERROR)
+
 
 import numpy as np
 from stable_baselines3 import PPO

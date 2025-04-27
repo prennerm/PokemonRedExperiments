@@ -115,6 +115,7 @@ class RedGymEnv(Env):
             #debugging=False,
             #disable_input=False,
             window=head,
+            sound_emulated=False,
         )
 
         #self.screen = self.pyboy.botsupport_manager().screen()

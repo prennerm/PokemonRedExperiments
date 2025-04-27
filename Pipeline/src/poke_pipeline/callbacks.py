@@ -21,15 +21,25 @@ class StatsCallback(BaseCallback):
         return True
 
     def _on_rollout_end(self) -> None:
+        # 1) Alle agent_stats der Sub-Envs einsammeln
         stats_lists = self.training_env.get_attr("agent_stats")
-        for env_stats in stats_lists:
-            if env_stats:
+
+        for env_stats in stats_lists:          # ← alle Env-Listen durchgehen
+            if env_stats:                      #   nur wenn nicht leer
                 self.current_stats.extend(env_stats)
-                self.training_env.set_attr("agent_stats", [])
+
+        # 2) Jetzt einmal global zurücksetzen  (bisher stand das im Loop)
+        self.training_env.set_attr("agent_stats", [])
+
+        # 3) Flush-Schwelle prüfen
         if len(self.current_stats) >= self.save_freq:
             file_name = self.save_path / f"stats_{int(time.time())}.json"
             with open(file_name, "w") as f:
-                json.dump(self.current_stats, f, default=lambda o: int(o) if isinstance(o, np.int64) else o)
+                json.dump(
+                    self.current_stats,
+                    f,
+                    default=lambda o: int(o) if isinstance(o, np.integer) else o,
+                )
             if self.verbose:
                 print(f"Saved {len(self.current_stats)} stats to {file_name}")
             self.current_stats = []

@@ -38,10 +38,15 @@ class TensorboardCallback(BaseCallback):
             self.writer = SummaryWriter(log_dir=os.path.join(self.log_dir, 'histogram'))
 
     def _on_step(self) -> bool:
-        
+         
+        # Nur auswerten, wenn die Episode im ersten Env zu Ende ist
         if self.training_env.env_method("check_if_done", indices=[0])[0]:
             all_infos = self.training_env.get_attr("agent_stats")
-            all_final_infos = [stats[-1] for stats in all_infos]
+            # Leere Stat-Listen herausfiltern
+            all_final_infos = [stats[-1] for stats in all_infos if len(stats) > 0]
+            if len(all_final_infos) == 0:
+                # noch keine Daten vorhanden → nichts zu tun
+                return True
             mean_infos, distributions = merge_dicts(all_final_infos)
             # TODO log distributions, and total return
             for key, val in mean_infos.items():
