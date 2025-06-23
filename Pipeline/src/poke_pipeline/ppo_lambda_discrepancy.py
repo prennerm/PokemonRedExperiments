@@ -93,13 +93,17 @@ class RecurrentPPOLD(RecurrentPPO):
         self.ld_coef = ld_coef
 
     def train(self) -> None:
+        # Set training mode and update learning rate
         self.policy.set_training_mode(True)
         self._update_learning_rate(self.policy.optimizer)
         clip_range = self.clip_range(self._current_progress_remaining)
+
+        # Containers for logging
         entropy_losses, pg_losses, value_losses, ld_losses = [], [], [], []
 
         for epoch in range(self.n_epochs):
             for rollout_data in self.rollout_buffer.get(self.batch_size):
+                # --- Aktuelle Policy-Evaluation ---
                 actions = rollout_data.actions.long().flatten()
                 values, value_ld, log_prob, entropy = self.policy.evaluate_actions(
                     rollout_data.observations,
@@ -108,39 +112,96 @@ class RecurrentPPOLD(RecurrentPPO):
                     rollout_data.episode_starts,
                 )
                 values = values.flatten()
-                advantages = rollout_data.advantages
-                ratio = th.exp(log_prob - rollout_data.old_log_prob)
-                policy_loss = -th.mean(th.min(advantages * ratio,
-                                              advantages * th.clamp(ratio, 1 - clip_range, 1 + clip_range))
-                                       )
-                value_pred = rollout_data.returns if self.clip_range_vf is None else (
-                    rollout_data.old_values + th.clamp(values - rollout_data.old_values,
-                                                       -self.clip_range_vf(self._current_progress_remaining),
-                                                       self.clip_range_vf(self._current_progress_remaining)))
-                vf_loss = F.mse_loss(values, rollout_data.returns)
-                ld_loss = F.mse_loss(values, value_ld.squeeze(-1))
-                ent_loss = -th.mean(entropy)
-                loss = policy_loss + self.ent_coef * ent_loss + self.vf_coef * vf_loss + self.ld_coef * ld_loss
+                value_ld = value_ld.flatten()
 
+                # --- λ-Diskrepanz Targets berechnen ---
+                old_values = rollout_data.old_values.flatten()      # V(s_t)
+                returns    = rollout_data.returns.flatten()         # Monte Carlo Returns G_t
+                eps        = rollout_data.episode_starts.float().flatten()  # 1.0 am Episodenstart
+
+                # Maske für Nicht-Episodenstart und Shift für nächsten Schritt
+                not_start      = 1.0 - eps
+                next_not_start = th.cat([
+                    not_start[1:],
+                    th.zeros(1, device=not_start.device)
+                ], dim=0)
+
+                # G_{t+1} mit Null am Episode-Ende
+                next_returns = th.cat([
+                    returns[1:],
+                    th.zeros(1, device=returns.device)
+                ], dim=0)
+
+                # Sofortiger Reward r_t
+                rewards = returns - self.gamma * next_returns * next_not_start
+
+                # V(s_{t+1}) mit Null am Episode-Ende
+                next_values = th.cat([
+                    old_values[1:],
+                    th.zeros(1, device=old_values.device)
+                ], dim=0)
+
+                # TD(0)-Target: r_t + γ·V(s_{t+1})
+                td0_targets = rewards + self.gamma * next_values * next_not_start
+
+                # λ-Diskrepanz-Ziel: D_t = TD(0)_t - V(s_t)
+                ld_targets = (td0_targets - old_values).detach()
+
+                # --- Standard PPO Policy Loss ---
+                advantages = rollout_data.advantages.flatten()
+                ratio = th.exp(log_prob - rollout_data.old_log_prob.flatten())
+                policy_loss = -th.mean(th.min(
+                    advantages * ratio,
+                    advantages * th.clamp(ratio, 1 - clip_range, 1 + clip_range)
+                ))
+
+                # --- Value- und λ-Diskrepanz-Loss & Entropie ---
+                vf_loss  = F.mse_loss(values, returns)
+                ld_loss  = F.mse_loss(value_ld, ld_targets)
+                ent_loss = -th.mean(entropy)
+
+                # Gesamter Loss
+                loss = (
+                    policy_loss
+                    + self.ent_coef * ent_loss
+                    + self.vf_coef    * vf_loss
+                    + self.ld_coef    * ld_loss
+                )
+
+                # --- Optimierungsschritt ---
                 self.policy.optimizer.zero_grad()
                 loss.backward()
                 nn.utils.clip_grad_norm_(self.policy.parameters(), self.max_grad_norm)
                 self.policy.optimizer.step()
 
+                # --- Logging pro Batch ---
                 pg_losses.append(policy_loss.item())
                 value_losses.append(vf_loss.item())
                 ld_losses.append(ld_loss.item())
                 entropy_losses.append(ent_loss.item())
 
-        # logging
+        # --- Finale Logging-Metriken ---
         self.logger.record("train/policy_loss", np.mean(pg_losses))
         self.logger.record("train/value_loss", np.mean(value_losses))
         self.logger.record("train/ld_loss", np.mean(ld_losses))
         self.logger.record("train/entropy_loss", np.mean(entropy_losses))
 
+        if len(ld_losses) > 0:
+            with th.no_grad():
+                # Durchschnittliche absolute λ-Diskrepanz
+                avg_ld = th.abs(ld_targets).mean().item()
+                self.logger.record("train/ld_target_abs_mean", avg_ld)
+                # Vergleich TD(0) vs MC Returns
+                td0_mean = td0_targets.mean().item()
+                mc_mean  = returns.mean().item()
+                self.logger.record("train/td0_mean", td0_mean)
+                self.logger.record("train/mc_mean", mc_mean)
+                self.logger.record("train/td0_vs_mc_ratio", td0_mean / (mc_mean + 1e-8))
+
+        # Update der Update-Zählung
         self._n_updates += self.n_epochs
 
-        return
+
 
 # Helper to create the VecEnv
 

@@ -64,14 +64,14 @@ def make_env_fn(variant: str, module_name: str, class_name: str, env_conf: dict,
         module = importlib.import_module(f"poke_pipeline.{module_name}")
         EnvCls = getattr(module, class_name)
         env = EnvCls(env_conf)
-        if variant == "v1":
+        """if variant == "v1":
             from poke_pipeline.stream_agent_wrapper import StreamWrapper
             env = StreamWrapper(env, stream_metadata={
                 "user": "v1-default",
                 "env_id": rank,
                 "color": "#447799",
                 "extra": "",
-            })
+            })"""
         env.reset(seed=seed + rank)
         return env
     return _init
