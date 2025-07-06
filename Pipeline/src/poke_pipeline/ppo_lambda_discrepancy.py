@@ -71,17 +71,17 @@ class MultiInputLstmPolicyLD(MultiInputLstmPolicy):
         latent_vf = self.mlp_extractor.forward_critic(latent_vf)
 
         # 5) main value + policy
-        values = self.value_net(latent_vf)
+        mc_values = self.value_net(latent_vf)
         dist   = self._get_action_dist_from_latent(latent_pi)
         log_prob = dist.log_prob(actions)
         entropy  = dist.entropy()
 
         # 6) λ-discrepancy head
-        value_ld = self.value_net_ld(latent_vf)
+        ld_values = self.value_net_ld(latent_vf)
 
         # 7) return exactly what RecurrentPPOLD.train() expects:
         #    (main_value, ld_value, log_prob, entropy)
-        return values, value_ld, log_prob, entropy
+        return mc_values, ld_values, log_prob, entropy
 
 
 class RecurrentPPOLD(RecurrentPPO):
@@ -99,20 +99,20 @@ class RecurrentPPOLD(RecurrentPPO):
         clip_range = self.clip_range(self._current_progress_remaining)
 
         # Containers for logging
-        entropy_losses, pg_losses, value_losses, ld_losses = [], [], [], []
+        entropy_losses, pg_losses, mc_losses, ld_losses = [], [], [], []
 
         for epoch in range(self.n_epochs):
             for rollout_data in self.rollout_buffer.get(self.batch_size):
                 # --- Aktuelle Policy-Evaluation ---
                 actions = rollout_data.actions.long().flatten()
-                values, value_ld, log_prob, entropy = self.policy.evaluate_actions(
+                mc_values, ld_values, log_prob, entropy = self.policy.evaluate_actions(
                     rollout_data.observations,
                     actions,
                     rollout_data.lstm_states,
                     rollout_data.episode_starts,
                 )
-                values = values.flatten()
-                value_ld = value_ld.flatten()
+                mc_values = mc_values.flatten()
+                ld_values = ld_values.flatten()
 
                 # --- λ-Diskrepanz Targets berechnen ---
                 old_values = rollout_data.old_values.flatten()      # V(s_t)
@@ -155,16 +155,16 @@ class RecurrentPPOLD(RecurrentPPO):
                     advantages * th.clamp(ratio, 1 - clip_range, 1 + clip_range)
                 ))
 
-                # --- Value- und λ-Diskrepanz-Loss & Entropie ---
-                vf_loss  = F.mse_loss(values, returns)
-                ld_loss  = F.mse_loss(value_ld, ld_targets)
+                # --- MC- und λ-Diskrepanz-Loss & Entropie ---
+                mc_loss  = F.mse_loss(mc_values, returns)
+                ld_loss  = F.l1_loss(ld_values, ld_targets)
                 ent_loss = -th.mean(entropy)
 
                 # Gesamter Loss
                 loss = (
                     policy_loss
                     + self.ent_coef * ent_loss
-                    + self.vf_coef    * vf_loss
+                    + self.vf_coef    * mc_loss
                     + self.ld_coef    * ld_loss
                 )
 
@@ -176,13 +176,13 @@ class RecurrentPPOLD(RecurrentPPO):
 
                 # --- Logging pro Batch ---
                 pg_losses.append(policy_loss.item())
-                value_losses.append(vf_loss.item())
+                mc_losses.append(mc_loss.item())
                 ld_losses.append(ld_loss.item())
                 entropy_losses.append(ent_loss.item())
 
         # --- Finale Logging-Metriken ---
         self.logger.record("train/policy_loss", np.mean(pg_losses))
-        self.logger.record("train/value_loss", np.mean(value_losses))
+        self.logger.record("train/mc_loss", np.mean(mc_losses))
         self.logger.record("train/ld_loss", np.mean(ld_losses))
         self.logger.record("train/entropy_loss", np.mean(entropy_losses))
 
@@ -191,12 +191,12 @@ class RecurrentPPOLD(RecurrentPPO):
                 # Durchschnittliche absolute λ-Diskrepanz
                 avg_ld = th.abs(ld_targets).mean().item()
                 self.logger.record("train/ld_target_abs_mean", avg_ld)
-                # Vergleich TD(0) vs MC Returns
+                # Vergleich Bootstrap vs MC Returns
                 td0_mean = td0_targets.mean().item()
                 mc_mean  = returns.mean().item()
-                self.logger.record("train/td0_mean", td0_mean)
-                self.logger.record("train/mc_mean", mc_mean)
-                self.logger.record("train/td0_vs_mc_ratio", td0_mean / (mc_mean + 1e-8))
+                self.logger.record("train/bootstrap_value_mean", td0_mean)
+                self.logger.record("train/mc_value_mean", mc_mean)
+                self.logger.record("train/bootstrap_vs_mc_ratio", td0_mean / (mc_mean + 1e-8))
 
         # Update der Update-Zählung
         self._n_updates += self.n_epochs
