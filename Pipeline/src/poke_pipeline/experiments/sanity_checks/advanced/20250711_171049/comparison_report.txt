@@ -1,0 +1,15 @@
+PPO vs PPO+LSTM+λD Comparison Report
+==================================================
+
+Timestamp: 20250711_171049
+
+
+MountainCar-v0:
+  Description: Tests sparse rewards + exploration + momentum
+  Random baseline: -145.32
+  Standard PPO: -16.73 ± 244.26
+  PPO+LSTM+λD: -137.52 ± 3.26
+  Improvement: -120.79
+  Baseline passed: True
+  Advanced passed: False
+  Success improvement: -30.0%
