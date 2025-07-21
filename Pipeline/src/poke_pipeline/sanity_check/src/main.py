@@ -166,9 +166,8 @@ def list_available_options() -> None:
     """List available agents and environments."""
     print("🤖 Available Agents:")
     agents = list_available_agents()
-    for agent in sorted(set(agents)):  # Remove duplicates from aliases
-        if agent in ['standard_ppo', 'lstm', 'ld']:  # Show only main names
-            print(f"  - {agent}")
+    for agent in sorted(agents):  # Use all agents from registry
+        print(f"  - {agent}")
     
     print("\n🏋️ Available Environments:")
     try:
@@ -206,12 +205,23 @@ def main() -> int:
             output_dir = Path(args.output)
             output_dir.mkdir(parents=True, exist_ok=True)
         else:
-            output_dir = create_session_directory()
+            # Don't create session directory yet - let SanityCheckRunner do it with proper naming
+            output_dir = Path("results")  # Just set base directory
         
         logger.info(f"📁 Output directory: {output_dir}")
         
-        # Initialize runner (no config needed anymore)
-        runner = SanityCheckRunner(base_dir=output_dir)
+        # Determine session name based on CLI arguments
+        if args.agent:
+            session_name = f"single_{args.agent}_{args.env}"
+        elif args.compare:
+            session_name = f"compare_{args.env}"
+        elif args.comprehensive:
+            session_name = "comprehensive"
+        else:
+            session_name = "unknown"
+        
+        # Initialize runner with session name
+        runner = SanityCheckRunner(base_dir=output_dir, session_name=session_name)
         
         # Show configuration in dry-run mode
         if args.dry_run:
@@ -259,10 +269,13 @@ def main() -> int:
             
         elif args.compare:
             logger.info(f"🏆 Comparing all agents on: {args.env}")
-            results = runner.run_comparison(
+            comparison_result = runner.run_comparison(
                 env_name=args.env,
+                agent_names=runner.available_agents,  # Use all available agents
                 seed=args.seed
             )
+            # Wrap in proper structure for plots/reports
+            results = {args.env: comparison_result}
             
         elif args.comprehensive:
             logger.info(f"🎯 Running comprehensive benchmark")

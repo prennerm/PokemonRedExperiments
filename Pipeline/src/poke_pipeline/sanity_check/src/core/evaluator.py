@@ -47,16 +47,8 @@ class PolicyEvaluator:
             episode_rewards.append(episode_reward)
             episode_lengths.append(episode_length)
             
-            # Check success (environment-dependent)
-            if env_name == 'MountainCar-v0':
-                # Success if car reaches the goal
-                successes.append(episode_reward > -200)
-            elif env_name == 'LunarLander-v3':
-                # Success if positive reward
-                successes.append(episode_reward > 0)
-            else:
-                # Generic success based on threshold
-                successes.append(episode_reward >= success_threshold)
+            # Check success based on environment threshold
+            successes.append(episode_reward >= success_threshold)
         
         env.close()
         
@@ -95,15 +87,8 @@ class PolicyEvaluator:
         successes = []
         
         for reward in episode_rewards:
-            if env_name == 'MountainCar-v0':
-                # Success if car reaches the goal
-                successes.append(reward > -200)
-            elif env_name == 'LunarLander-v3':
-                # Success if positive reward
-                successes.append(reward > 0)
-            else:
-                # Generic success based on threshold
-                successes.append(reward >= success_threshold)
+            # Use consistent success logic based on environment thresholds
+            successes.append(reward >= success_threshold)
         
         env.close()
         

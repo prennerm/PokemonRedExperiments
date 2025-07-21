@@ -21,12 +21,19 @@ from utils.paths import create_session_directory
 class SanityCheckRunner:
     """Main runner for multi-agent benchmarks."""
     
-    def __init__(self, base_dir: Path = Path("results")):
+    def __init__(self, base_dir: Path = Path("results"), session_name: str = None):
         self.base_dir = Path(base_dir)
         
         # Create session directory with proper parameters
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.session_root = create_session_directory(None, self.timestamp)
+        
+        # Use provided session name or default to timestamp
+        if session_name:
+            session_dir_name = f"{self.timestamp}_{session_name}"
+        else:
+            session_dir_name = self.timestamp
+            
+        self.session_root = create_session_directory(None, session_dir_name)
         
         # Initialize components (no config_dir needed anymore)
         self.env_factory = EnvironmentFactory()
@@ -69,8 +76,12 @@ class SanityCheckRunner:
         print(f"  Training for {env_config['timesteps']} timesteps...")
         start_time = time.time()
         
+        # Create agent-specific tensorboard directory
+        agent_tb_dir = self.session_root / "tensorboard" / f"{env_name}_{agent_name}"
+        agent_tb_dir.mkdir(parents=True, exist_ok=True)
+        
         model = agent.create_model(vec_env, {}, 
-                                  tensorboard_log=str(self.session_root / "tensorboard"))
+                                  tensorboard_log=str(agent_tb_dir))
         trained_model = agent.train(model, env_config['timesteps'])
         
         training_time = time.time() - start_time
@@ -90,22 +101,30 @@ class SanityCheckRunner:
         results['training_time'] = training_time
         
         # Extract TensorBoard data
-        # Try different naming patterns for tensorboard logs
-        tb_log_patterns = [
-            f"{env_name}_{agent_name}_{self.timestamp}_1",
-            f"{agent_name}_1", 
-            "PPO_1",
-            f"{env_name}_{agent_name}_1"
-        ]
+        # Look for tensorboard data in the agent-specific directory
+        agent_tb_dir = self.session_root / "tensorboard" / f"{env_name}_{agent_name}"
         
-        tb_log_dir = None
-        for pattern in tb_log_patterns:
-            candidate_dir = self.session_root / "tensorboard" / pattern
-            if candidate_dir.exists():
-                tb_log_dir = candidate_dir
-                break
-        
-        if tb_log_dir and tb_log_dir.exists():
+        if agent_tb_dir.exists():
+            # Look for the actual log files inside the agent directory
+            tb_log_patterns = [
+                "PPO_1",  # For ppo
+                "RecurrentPPO_1",  # For lstm  
+                "RecurrentPPOLD_1",  # For ld
+                f"{agent_name}_1",
+                "events.out.tfevents.*"  # Fallback pattern
+            ]
+            
+            tb_log_dir = None
+            for pattern in tb_log_patterns:
+                candidate_dir = agent_tb_dir / pattern
+                if candidate_dir.exists():
+                    tb_log_dir = candidate_dir
+                    break
+            
+            # If no subdirectory found, try to extract directly from agent_tb_dir
+            if not tb_log_dir:
+                tb_log_dir = agent_tb_dir
+            
             try:
                 rewards, timesteps = extract_tensorboard_data(tb_log_dir)
                 self.tensorboard_data[f"{env_name}_{agent_name}"] = {
@@ -345,7 +364,8 @@ class SanityCheckRunner:
             # Generate overall comparison if multiple environments
             env_names = [k for k in results.keys() if k != 'summary']
             if len(env_names) > 1:
-                comparison_plotter.create_publication_plots(results)
+                from visualization.plotter import create_publication_plots
+                create_publication_plots(results, self.tensorboard_data, plots_dir)
                 
             print(f"✅ Plots generated successfully")
             

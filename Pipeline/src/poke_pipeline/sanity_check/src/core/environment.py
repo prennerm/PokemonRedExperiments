@@ -9,7 +9,7 @@ from typing import Dict, Any, Tuple, Optional
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 from stable_baselines3.common.monitor import Monitor
 
-from utils.wrappers import DictObsWrapper
+from utils.wrappers import DictObsWrapper, MountainCarRewardShapingWrapper
 
 
 class EnvironmentFactory:
@@ -28,15 +28,16 @@ class EnvironmentFactory:
                 'wrapper_type': 'continuous_dict',
                 'description': 'Classic control task - balancing pole on cart',
                 'timesteps': 100000,
-                'success_threshold': 450.0
+                'success_threshold': 195.0  # Gymnasium's solve threshold for CartPole-v1
             },
             'MountainCar-v0': {
                 'env_id': 'MountainCar-v0', 
                 'env_kwargs': {},
                 'wrapper_type': 'continuous_dict',
-                'description': 'Sparse reward environment - car climbing mountain',
-                'timesteps': 200000,
-                'success_threshold': -110.0
+                'description': 'Sparse reward environment - car climbing mountain (with potential-based reward shaping)',
+                'timesteps': 300000,  
+                'success_threshold': -110.0,
+                'reward_shaping': True  # Uses MountainCarRewardShapingWrapper by default
             },
             'LunarLander-v3': {
                 'env_id': 'LunarLander-v3',
@@ -56,7 +57,8 @@ class EnvironmentFactory:
             }
         }
     
-    def make_env(self, env_name: str, seed: Optional[int] = None, monitor_path: Optional[Path] = None) -> gym.Env:
+    def make_env(self, env_name: str, seed: Optional[int] = None, monitor_path: Optional[Path] = None, 
+                 enable_reward_shaping: bool = True) -> gym.Env:
         """Create a single environment with appropriate wrappers."""
         if env_name not in self.env_configs:
             raise ValueError(f"Environment '{env_name}' not found in config. Available: {list(self.env_configs.keys())}")
@@ -70,6 +72,10 @@ class EnvironmentFactory:
         if seed is not None:
             env.action_space.seed(seed)
             env.observation_space.seed(seed)
+        
+        # Apply environment-specific reward shaping if enabled
+        if enable_reward_shaping and env_name == 'MountainCar-v0':
+            env = MountainCarRewardShapingWrapper(env, shaping_weight=1.0)
         
         # Add Monitor wrapper if path provided
         if monitor_path is not None:
@@ -87,13 +93,14 @@ class EnvironmentFactory:
         return env
     
     def make_vec_env(self, env_name: str, n_envs: int = 1, seed: Optional[int] = None, 
-                     monitor_dir: Optional[Path] = None) -> DummyVecEnv:
+                     monitor_dir: Optional[Path] = None, enable_reward_shaping: bool = True) -> DummyVecEnv:
         """Create vectorized environment."""
         def _make_env(rank: int):
             def _init():
                 monitor_path = monitor_dir / f"env_{rank}" if monitor_dir else None
                 env_seed = seed + rank if seed is not None else None
-                return self.make_env(env_name, seed=env_seed, monitor_path=monitor_path)
+                return self.make_env(env_name, seed=env_seed, monitor_path=monitor_path, 
+                                   enable_reward_shaping=enable_reward_shaping)
             return _init
         
         vec_env = DummyVecEnv([_make_env(i) for i in range(n_envs)])
@@ -148,7 +155,8 @@ def load_env_configs() -> Dict[str, Any]:
 
 
 def make_env(env_name: str, seed: Optional[int] = None, 
-             monitor_path: Optional[Path] = None) -> gym.Env:
+             monitor_path: Optional[Path] = None, enable_reward_shaping: bool = True) -> gym.Env:
     """Create a single environment with appropriate wrappers."""
     factory = EnvironmentFactory()
-    return factory.make_env(env_name, seed=seed, monitor_path=monitor_path)
+    return factory.make_env(env_name, seed=seed, monitor_path=monitor_path, 
+                           enable_reward_shaping=enable_reward_shaping)

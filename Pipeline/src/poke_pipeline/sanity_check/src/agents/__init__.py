@@ -27,15 +27,9 @@ __all__ = [
 
 # Agent registry for dynamic loading
 AGENT_REGISTRY = {
-    'standard_ppo': StandardPPOAgent,
-    'ppo': StandardPPOAgent,  # Alias
-    'baseline': StandardPPOAgent,  # Alias
+    'ppo': StandardPPOAgent,
     'lstm': LSTMAgent,
-    'recurrent': LSTMAgent,  # Alias
-    'memory': LSTMAgent,  # Alias
     'ld': LDAgent,
-    'lambda_discrepancy': LDAgent,  # Alias
-    'partial_obs': LDAgent,  # Alias
 }
 
 def get_agent_class(agent_name: str):
@@ -81,18 +75,17 @@ def get_agent_info():
     info = {}
     
     for name, agent_class in AGENT_REGISTRY.items():
-        # Skip aliases for main info
-        if name in ['standard_ppo', 'lstm', 'ld']:
-            try:
-                # Create dummy config to get agent info
-                dummy_config = {'name': name}
-                agent = agent_class(dummy_config)
-                info[name] = agent.get_model_info()
-            except Exception:
-                # Fallback if agent creation fails
-                info[name] = {
-                    'algorithm': 'Unknown',
-                    'description': f'Agent class: {agent_class.__name__}'
-                }
+        # Get info for all agents in registry
+        try:
+            # Create dummy config to get agent info
+            dummy_config = {'name': name}
+            agent = agent_class(dummy_config)
+            info[name] = agent.get_model_info()
+        except Exception:
+            # Fallback if agent creation fails
+            info[name] = {
+                'algorithm': 'Unknown',
+                'description': f'Agent class: {agent_class.__name__}'
+            }
     
     return info

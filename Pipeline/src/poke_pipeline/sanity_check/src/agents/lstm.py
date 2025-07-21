@@ -93,8 +93,15 @@ class LSTMAgent(BaseAgent):
         
         # Create model
         try:
+            # Determine the correct policy based on observation space
+            obs_space = env.observation_space
+            if hasattr(obs_space, 'spaces'):  # Dict observation space
+                policy_name = "MultiInputLstmPolicy"
+            else:  # Box observation space
+                policy_name = "MlpLstmPolicy"
+            
             model = self.model_class(
-                policy="MlpLstmPolicy",
+                policy=policy_name,
                 env=env,
                 policy_kwargs={
                     'lstm_hidden_size': lstm_hidden_size,
@@ -106,7 +113,7 @@ class LSTMAgent(BaseAgent):
                 **model_params
             )
             
-            logger.info(f"✅ Created LSTM-enhanced PPO model with policy: MlpLstmPolicy")
+            logger.info(f"✅ Created LSTM-enhanced PPO model with policy: {policy_name}")
             logger.info(f"🧠 LSTM config: hidden_size={lstm_hidden_size}, layers={n_lstm_layers}")
             logger.info(f"📊 Key hyperparameters: lr={model_params['learning_rate']}, "
                        f"n_steps={model_params['n_steps']}, batch_size={model_params['batch_size']}")
