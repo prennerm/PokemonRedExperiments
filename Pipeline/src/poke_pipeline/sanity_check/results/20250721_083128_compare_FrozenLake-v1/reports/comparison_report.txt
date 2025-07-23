@@ -1,0 +1,58 @@
+Multi-Agent Benchmark Results
+=============================
+
+Generated: 2025-07-21 08:58:33
+
+ENVIRONMENT: FrozenLake-v1
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+ppo                  0.70            0.46            0.70           
+lstm                 0.15            0.36            0.15           
+ld                   0.25            0.43            0.25           
+
+Comparison Summary:
+Best Agent: ppo (0.90)
+Worst Agent: ld (0.45)
+Performance Gap: 0.45
+
+Agent Ranking:
+1. ppo: 0.90
+2. lstm: 0.50
+3. ld: 0.45
+
+Detailed Statistics:
+
+ppo:
+  Mean Reward: 0.7000 ± 0.4583
+  Mean Episode Length: 48.30 ± 29.31
+  Success Rate: 70.00%
+  Evaluation Time: 0.41s
+  Model Type: PPO
+  Model Size: 10821 parameters
+  Baseline Passed: True
+  Improvement over Random: 0.70
+
+lstm:
+  Mean Reward: 0.1500 ± 0.3571
+  Mean Episode Length: 36.20 ± 18.72
+  Success Rate: 15.00%
+  Evaluation Time: 0.78s
+  Model Type: RecurrentPPO
+  Model Size: 58949 parameters
+  Baseline Passed: False
+  Improvement over Random: 0.15
+
+ld:
+  Mean Reward: 0.2500 ± 0.4330
+  Mean Episode Length: 24.40 ± 14.94
+  Success Rate: 25.00%
+  Evaluation Time: 0.52s
+  Model Type: RecurrentPPOLD
+  Model Size: 63174 parameters
+  Baseline Passed: False
+  Improvement over Random: 0.25
+
+============================================================
+

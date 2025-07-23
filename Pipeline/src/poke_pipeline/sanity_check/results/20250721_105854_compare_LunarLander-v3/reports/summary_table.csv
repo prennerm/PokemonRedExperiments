@@ -1,0 +1,4 @@
+Environment,Agent,Mean_Reward,Std_Reward,Success_Rate,Baseline_Passed,Model_Type
+LunarLander-v3,ppo,-7.6431,149.2583,0.4000,False,PPO
+LunarLander-v3,lstm,-38.2799,27.7567,0.0500,False,RecurrentPPO
+LunarLander-v3,ld,208.7205,99.5761,0.9500,True,RecurrentPPOLD

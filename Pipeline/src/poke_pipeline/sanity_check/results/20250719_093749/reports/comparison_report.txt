@@ -1,0 +1,387 @@
+Multi-Agent Benchmark Results
+=============================
+
+Generated: 2025-07-19 14:35:23
+
+SUMMARY
+----------------------------------------
+Total environments tested: 4
+Total agents tested: 9
+Total training time: 17749.75 seconds
+Total evaluation episodes: 540
+
+ENVIRONMENT: CartPole-v1
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+standard_ppo         210.70          26.98           0.00           
+ppo                  63.55           18.21           0.00           
+baseline             232.65          52.24           0.00           
+lstm                 177.50          38.75           0.00           
+recurrent            179.65          85.58           0.00           
+memory               12.00           1.55            0.00           
+ld                   29.35           4.32            0.00           
+lambda_discrepancy   44.60           6.67            0.00           
+partial_obs          31.85           3.32            0.00           
+
+Comparison Summary:
+Best Agent: baseline (262.15)
+Worst Agent: memory (11.90)
+Performance Gap: 250.25
+
+Agent Ranking:
+1. baseline: 262.15
+2. standard_ppo: 217.75
+3. recurrent: 202.65
+4. lstm: 174.00
+5. ppo: 65.40
+6. lambda_discrepancy: 45.90
+7. partial_obs: 31.75
+8. ld: 28.80
+9. memory: 11.90
+
+Detailed Statistics:
+
+standard_ppo:
+  Mean Reward: 210.7000 ± 26.9835
+  Mean Episode Length: 210.70 ± 26.98
+  Success Rate: 0.00%
+  Evaluation Time: 1.82s
+  Model Type: PPO
+  Model Size: 9155 parameters
+  Baseline Passed: False
+  Improvement over Random: 210.70
+
+ppo:
+  Mean Reward: 63.5500 ± 18.2057
+  Mean Episode Length: 63.55 ± 18.21
+  Success Rate: 0.00%
+  Evaluation Time: 0.57s
+  Model Type: PPO
+  Model Size: 9155 parameters
+  Baseline Passed: False
+  Improvement over Random: 63.55
+
+baseline:
+  Mean Reward: 232.6500 ± 52.2449
+  Mean Episode Length: 232.65 ± 52.24
+  Success Rate: 0.00%
+  Evaluation Time: 2.10s
+  Model Type: PPO
+  Model Size: 9155 parameters
+  Baseline Passed: False
+  Improvement over Random: 232.65
+
+lstm:
+  Mean Reward: 177.5000 ± 38.7537
+  Mean Episode Length: 177.50 ± 38.75
+  Success Rate: 0.00%
+  Evaluation Time: 3.75s
+  Model Type: RecurrentPPO
+  Model Size: 52675 parameters
+  Baseline Passed: False
+  Improvement over Random: 177.50
+
+recurrent:
+  Mean Reward: 179.6500 ± 85.5759
+  Mean Episode Length: 179.65 ± 85.58
+  Success Rate: 0.00%
+  Evaluation Time: 3.75s
+  Model Type: RecurrentPPO
+  Model Size: 52675 parameters
+  Baseline Passed: False
+  Improvement over Random: 179.65
+
+memory:
+  Mean Reward: 12.0000 ± 1.5492
+  Mean Episode Length: 12.00 ± 1.55
+  Success Rate: 0.00%
+  Evaluation Time: 0.26s
+  Model Type: RecurrentPPO
+  Model Size: 52675 parameters
+  Baseline Passed: False
+  Improvement over Random: 12.00
+
+ld:
+  Mean Reward: 29.3500 ± 4.3160
+  Mean Episode Length: 29.35 ± 4.32
+  Success Rate: 0.00%
+  Evaluation Time: 0.63s
+  Model Type: RecurrentPPOLD
+  Model Size: 56900 parameters
+  Baseline Passed: False
+  Improvement over Random: 29.35
+
+lambda_discrepancy:
+  Mean Reward: 44.6000 ± 6.6738
+  Mean Episode Length: 44.60 ± 6.67
+  Success Rate: 0.00%
+  Evaluation Time: 0.94s
+  Model Type: RecurrentPPOLD
+  Model Size: 56900 parameters
+  Baseline Passed: False
+  Improvement over Random: 44.60
+
+partial_obs:
+  Mean Reward: 31.8500 ± 3.3208
+  Mean Episode Length: 31.85 ± 3.32
+  Success Rate: 0.00%
+  Evaluation Time: 0.68s
+  Model Type: RecurrentPPOLD
+  Model Size: 56900 parameters
+  Baseline Passed: False
+  Improvement over Random: 31.85
+
+============================================================
+
+ENVIRONMENT: MountainCar-v0
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+standard_ppo         -200.00         0.00            0.00           
+ppo                  -200.00         0.00            0.00           
+baseline             -200.00         0.00            0.00           
+lstm                 -200.00         0.00            0.00           
+recurrent            -200.00         0.00            0.00           
+memory               -200.00         0.00            0.00           
+ld                   -200.00         0.00            0.00           
+lambda_discrepancy   -200.00         0.00            0.00           
+partial_obs          -200.00         0.00            0.00           
+
+Comparison Summary:
+Best Agent: standard_ppo (-200.00)
+Worst Agent: standard_ppo (-200.00)
+Performance Gap: 0.00
+
+Agent Ranking:
+1. standard_ppo: -200.00
+2. ppo: -200.00
+3. baseline: -200.00
+4. lstm: -200.00
+5. recurrent: -200.00
+6. memory: -200.00
+7. ld: -200.00
+8. lambda_discrepancy: -200.00
+9. partial_obs: -200.00
+
+Detailed Statistics:
+
+standard_ppo:
+  Mean Reward: -200.0000 ± 0.0000
+  Mean Episode Length: 200.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 1.81s
+  Model Type: PPO
+  Model Size: 8964 parameters
+  Baseline Passed: False
+  Improvement over Random: -200.00
+
+ppo:
+  Mean Reward: -200.0000 ± 0.0000
+  Mean Episode Length: 200.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 1.82s
+  Model Type: PPO
+  Model Size: 8964 parameters
+  Baseline Passed: False
+  Improvement over Random: -200.00
+
+baseline:
+  Mean Reward: -200.0000 ± 0.0000
+  Mean Episode Length: 200.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 1.81s
+  Model Type: PPO
+  Model Size: 8964 parameters
+  Baseline Passed: False
+  Improvement over Random: -200.00
+
+lstm:
+  Mean Reward: -200.0000 ± 0.0000
+  Mean Episode Length: 200.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 4.18s
+  Model Type: RecurrentPPO
+  Model Size: 51716 parameters
+  Baseline Passed: False
+  Improvement over Random: -200.00
+
+recurrent:
+  Mean Reward: -200.0000 ± 0.0000
+  Mean Episode Length: 200.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 4.23s
+  Model Type: RecurrentPPO
+  Model Size: 51716 parameters
+  Baseline Passed: False
+  Improvement over Random: -200.00
+
+memory:
+  Mean Reward: -200.0000 ± 0.0000
+  Mean Episode Length: 200.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 4.19s
+  Model Type: RecurrentPPO
+  Model Size: 51716 parameters
+  Baseline Passed: False
+  Improvement over Random: -200.00
+
+ld:
+  Mean Reward: -200.0000 ± 0.0000
+  Mean Episode Length: 200.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 4.27s
+  Model Type: RecurrentPPOLD
+  Model Size: 55941 parameters
+  Baseline Passed: False
+  Improvement over Random: -200.00
+
+lambda_discrepancy:
+  Mean Reward: -200.0000 ± 0.0000
+  Mean Episode Length: 200.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 4.26s
+  Model Type: RecurrentPPOLD
+  Model Size: 55941 parameters
+  Baseline Passed: False
+  Improvement over Random: -200.00
+
+partial_obs:
+  Mean Reward: -200.0000 ± 0.0000
+  Mean Episode Length: 200.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 4.23s
+  Model Type: RecurrentPPOLD
+  Model Size: 55941 parameters
+  Baseline Passed: False
+  Improvement over Random: -200.00
+
+============================================================
+
+ENVIRONMENT: FrozenLake-v1
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+standard_ppo         0.35            0.48            0.35           
+ppo                  0.35            0.48            0.35           
+baseline             0.80            0.40            0.80           
+lstm                 0.05            0.22            0.05           
+recurrent            0.15            0.36            0.15           
+memory               0.10            0.30            0.10           
+ld                   0.60            0.49            0.60           
+lambda_discrepancy   0.35            0.48            0.35           
+partial_obs          0.15            0.36            0.15           
+
+Comparison Summary:
+Best Agent: baseline (0.70)
+Worst Agent: lstm (0.10)
+Performance Gap: 0.60
+
+Agent Ranking:
+1. baseline: 0.70
+2. standard_ppo: 0.60
+3. partial_obs: 0.45
+4. ppo: 0.35
+5. ld: 0.30
+6. lambda_discrepancy: 0.30
+7. lstm: 0.10
+8. recurrent: 0.10
+9. memory: 0.10
+
+Detailed Statistics:
+
+standard_ppo:
+  Mean Reward: 0.3500 ± 0.4770
+  Mean Episode Length: 31.25 ± 24.47
+  Success Rate: 35.00%
+  Evaluation Time: 0.29s
+  Model Type: PPO
+  Model Size: 10821 parameters
+  Baseline Passed: False
+  Improvement over Random: 0.35
+
+ppo:
+  Mean Reward: 0.3500 ± 0.4770
+  Mean Episode Length: 26.40 ± 17.83
+  Success Rate: 35.00%
+  Evaluation Time: 0.24s
+  Model Type: PPO
+  Model Size: 10821 parameters
+  Baseline Passed: False
+  Improvement over Random: 0.35
+
+baseline:
+  Mean Reward: 0.8000 ± 0.4000
+  Mean Episode Length: 48.10 ± 25.69
+  Success Rate: 80.00%
+  Evaluation Time: 0.44s
+  Model Type: PPO
+  Model Size: 10821 parameters
+  Baseline Passed: True
+  Improvement over Random: 0.80
+
+lstm:
+  Mean Reward: 0.0500 ± 0.2179
+  Mean Episode Length: 12.50 ± 7.17
+  Success Rate: 5.00%
+  Evaluation Time: 0.27s
+  Model Type: RecurrentPPO
+  Model Size: 58949 parameters
+  Baseline Passed: False
+  Improvement over Random: 0.05
+
+recurrent:
+  Mean Reward: 0.1500 ± 0.3571
+  Mean Episode Length: 10.50 ± 6.90
+  Success Rate: 15.00%
+  Evaluation Time: 0.23s
+  Model Type: RecurrentPPO
+  Model Size: 58949 parameters
+  Baseline Passed: False
+  Improvement over Random: 0.15
+
+memory:
+  Mean Reward: 0.1000 ± 0.3000
+  Mean Episode Length: 10.45 ± 5.71
+  Success Rate: 10.00%
+  Evaluation Time: 0.22s
+  Model Type: RecurrentPPO
+  Model Size: 58949 parameters
+  Baseline Passed: False
+  Improvement over Random: 0.10
+
+ld:
+  Mean Reward: 0.6000 ± 0.4899
+  Mean Episode Length: 29.00 ± 19.77
+  Success Rate: 60.00%
+  Evaluation Time: 0.62s
+  Model Type: RecurrentPPOLD
+  Model Size: 63174 parameters
+  Baseline Passed: False
+  Improvement over Random: 0.60
+
+lambda_discrepancy:
+  Mean Reward: 0.3500 ± 0.4770
+  Mean Episode Length: 33.70 ± 21.14
+  Success Rate: 35.00%
+  Evaluation Time: 0.72s
+  Model Type: RecurrentPPOLD
+  Model Size: 63174 parameters
+  Baseline Passed: False
+  Improvement over Random: 0.35
+
+partial_obs:
+  Mean Reward: 0.1500 ± 0.3571
+  Mean Episode Length: 20.50 ± 10.42
+  Success Rate: 15.00%
+  Evaluation Time: 0.44s
+  Model Type: RecurrentPPOLD
+  Model Size: 63174 parameters
+  Baseline Passed: False
+  Improvement over Random: 0.15
+
+============================================================
+

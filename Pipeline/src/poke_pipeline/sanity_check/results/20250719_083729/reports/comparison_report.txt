@@ -1,0 +1,34 @@
+Multi-Agent Benchmark Results
+=============================
+
+Generated: 2025-07-19 08:46:23
+
+ENVIRONMENT: CartPole-v1
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+lstm                 165.30          24.77           0.00           
+
+Comparison Summary:
+Best Agent: lstm (165.30)
+Worst Agent: lstm (165.30)
+Performance Gap: 0.00
+
+Agent Ranking:
+1. lstm: 165.30
+
+Detailed Statistics:
+
+lstm:
+  Mean Reward: 165.3000 ± 24.7732
+  Mean Episode Length: 165.30 ± 24.77
+  Success Rate: 0.00%
+  Evaluation Time: 3.43s
+  Model Type: RecurrentPPO
+  Model Size: 52675 parameters
+  Baseline Passed: False
+  Improvement over Random: 165.30
+
+============================================================
+

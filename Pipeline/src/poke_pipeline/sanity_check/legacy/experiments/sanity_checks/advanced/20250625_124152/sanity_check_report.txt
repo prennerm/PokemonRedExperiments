@@ -1,0 +1,27 @@
+Lambda-Discrepancy PPO Advanced Sanity Check Report
+==================================================
+
+Timestamp: 20250625_124152
+Tests passed: 0/2
+Overall success rate: 0.0%
+
+
+FrozenLake-v1:
+  Description: Tests sparse rewards + stochastic transitions
+  Random baseline: 0.00
+  Trained performance: 0.00 ± 0.00
+  Improvement: 0.00
+  Success threshold: 0.40
+  Success rate: 0.0%
+  Status: FAILED
+  Avg episode length: 5.3
+
+CartPole-v1:
+  Description: Tests continuous obs + dense rewards + control
+  Random baseline: 22.55
+  Trained performance: 106.45 ± 37.00
+  Improvement: 83.90
+  Success threshold: 400.00
+  Success rate: 0.0%
+  Status: FAILED
+  Avg episode length: 124.0

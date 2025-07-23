@@ -9,7 +9,7 @@ from typing import Dict, Any, Tuple, Optional
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 from stable_baselines3.common.monitor import Monitor
 
-from utils.wrappers import DictObsWrapper, MountainCarRewardShapingWrapper
+from utils.wrappers import DictObsWrapper, PartialObservabilityWrapper
 
 
 class EnvironmentFactory:
@@ -30,15 +30,6 @@ class EnvironmentFactory:
                 'timesteps': 100000,
                 'success_threshold': 195.0  # Gymnasium's solve threshold for CartPole-v1
             },
-            'MountainCar-v0': {
-                'env_id': 'MountainCar-v0', 
-                'env_kwargs': {},
-                'wrapper_type': 'continuous_dict',
-                'description': 'Sparse reward environment - car climbing mountain (with potential-based reward shaping)',
-                'timesteps': 300000,  
-                'success_threshold': -110.0,
-                'reward_shaping': True  # Uses MountainCarRewardShapingWrapper by default
-            },
             'LunarLander-v3': {
                 'env_id': 'LunarLander-v3',
                 'env_kwargs': {},
@@ -54,6 +45,22 @@ class EnvironmentFactory:
                 'description': 'Stochastic gridworld with sparse rewards',
                 'timesteps': 150000,
                 'success_threshold': 0.7
+            },
+            'Acrobot-v1': {
+                'env_id': 'Acrobot-v1',
+                'env_kwargs': {},
+                'wrapper_type': 'continuous_dict',
+                'description': 'Underactuated double-pendulum control',
+                'timesteps': 200000,
+                'success_threshold': -100.0  # Episodic reward (negative time to reach goal)
+            },
+            'Acrobot-v1-Partial': {
+                'env_id': 'Acrobot-v1',
+                'env_kwargs': {},
+                'wrapper_type': 'continuous_dict_partial',
+                'description': 'Acrobot with partial observability (no velocity info)',
+                'timesteps': 250000,
+                'success_threshold': -150.0  # Harder due to partial observability
             }
         }
     
@@ -73,19 +80,21 @@ class EnvironmentFactory:
             env.action_space.seed(seed)
             env.observation_space.seed(seed)
         
-        # Apply environment-specific reward shaping if enabled
-        if enable_reward_shaping and env_name == 'MountainCar-v0':
-            env = MountainCarRewardShapingWrapper(env, shaping_weight=1.0)
         
         # Add Monitor wrapper if path provided
         if monitor_path is not None:
             env = Monitor(env, str(monitor_path))
         
-        # Add DictObsWrapper based on wrapper_type
+        # Apply partial observability wrapper if needed
         wrapper_type = config.get('wrapper_type', 'continuous_dict')
+        if wrapper_type == 'continuous_dict_partial':
+            # Apply partial observability wrapper for Acrobot-v1-Partial
+            env = PartialObservabilityWrapper(env)
+        
+        # Add DictObsWrapper based on wrapper_type
         if wrapper_type == 'discrete_dict':
             env = DictObsWrapper(env, discrete=True)
-        elif wrapper_type == 'continuous_dict':
+        elif wrapper_type in ['continuous_dict', 'continuous_dict_partial']:
             env = DictObsWrapper(env, discrete=False)
         else:
             raise ValueError(f"Unknown wrapper_type: {wrapper_type}")

@@ -1,0 +1,93 @@
+{
+  "CartPole-v1": {
+    "individual_results": {
+      "standard_ppo": {
+        "mean_reward": 88.75,
+        "std_reward": 22.741756748325315,
+        "mean_length": 88.75,
+        "std_length": 22.741756748325315,
+        "episode_rewards": [
+          80.0,
+          135.0,
+          83.0,
+          80.0,
+          74.0,
+          135.0,
+          74.0,
+          77.0,
+          73.0,
+          75.0,
+          84.0,
+          81.0,
+          73.0,
+          78.0,
+          130.0,
+          79.0,
+          76.0,
+          73.0,
+          80.0,
+          135.0
+        ],
+        "episode_lengths": [
+          80,
+          135,
+          83,
+          80,
+          74,
+          135,
+          74,
+          77,
+          73,
+          75,
+          84,
+          81,
+          73,
+          78,
+          130,
+          79,
+          76,
+          73,
+          80,
+          135
+        ],
+        "success_rate": 0.0,
+        "n_episodes": 20,
+        "evaluation_time": 0.7594115734100342,
+        "deterministic": true,
+        "agent_name": "standard_ppo",
+        "env_name": "CartPole-v1",
+        "model_type": "PPO",
+        "policy_type": "MultiInputActorCriticPolicy",
+        "model_size": 9155,
+        "expected_random_reward": 0,
+        "success_threshold": 450.0,
+        "timesteps_trained": 100000,
+        "improvement_over_random": 88.75,
+        "baseline_passed": false,
+        "training_time": 151.61449551582336
+      }
+    },
+    "comparison_summary": {
+      "best_agent": "standard_ppo",
+      "best_reward": 88.75,
+      "worst_agent": "standard_ppo",
+      "worst_reward": 88.75,
+      "performance_gap": 0.0,
+      "agent_ranking": [
+        [
+          "standard_ppo",
+          88.75
+        ]
+      ],
+      "mean_rewards": {
+        "standard_ppo": 88.75
+      }
+    },
+    "env_name": "CartPole-v1",
+    "agent_names": [
+      "standard_ppo"
+    ],
+    "n_episodes": 20,
+    "tensorboard_data": {}
+  }
+}

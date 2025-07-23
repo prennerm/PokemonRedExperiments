@@ -1,0 +1,4 @@
+Environment,Agent,Mean_Reward,Std_Reward,Success_Rate,Baseline_Passed,Model_Type
+CartPole-v1,ppo,109.4500,24.3341,0.0000,False,PPO
+CartPole-v1,lstm,44.0500,8.6630,0.0000,False,RecurrentPPO
+CartPole-v1,ld,113.2500,42.5921,0.0000,False,RecurrentPPOLD

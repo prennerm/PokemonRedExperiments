@@ -469,20 +469,6 @@ class LDAgent(BaseAgent):
                 'enable_critic_lstm': True,
                 'ld_coef': 0.05  # Lower for simple environment
             },
-            'MountainCar-v0': {
-                'n_steps': 256,
-                'batch_size': 256,
-                'n_epochs': 4,
-                'learning_rate': 1e-4,
-                'gamma': 0.99,
-                'gae_lambda': 0.95,
-                'clip_range': 0.2,
-                'ent_coef': 0.1,
-                'lstm_hidden_size': 128,
-                'n_lstm_layers': 2,
-                'enable_critic_lstm': True,
-                'ld_coef': 0.15  # Higher for sparse reward environment
-            },
             'LunarLander-v3': {
                 'n_steps': 256,
                 'batch_size': 256,
@@ -511,6 +497,36 @@ class LDAgent(BaseAgent):
                 'n_lstm_layers': 1,
                 'enable_critic_lstm': True,
                 'ld_coef': 0.2  # Higher for stochastic environment
+            },
+            'Acrobot-v1': {
+                'n_steps': 256,
+                'batch_size': 256,
+                'n_epochs': 4,
+                'learning_rate': 2.5e-4,
+                'gamma': 0.99,
+                'gae_lambda': 0.95,
+                'clip_range': 0.2,
+                'ent_coef': 0.01,
+                'max_grad_norm': 0.5,
+                'lstm_hidden_size': 64,
+                'n_lstm_layers': 1,
+                'enable_critic_lstm': True,
+                'ld_coef': 0.1  # Standard for complex dynamics
+            },
+            'Acrobot-v1-Partial': {
+                'n_steps': 256,
+                'batch_size': 256,
+                'n_epochs': 4,
+                'learning_rate': 2.5e-4,
+                'gamma': 0.99,
+                'gae_lambda': 0.95,
+                'clip_range': 0.2,
+                'ent_coef': 0.01,
+                'max_grad_norm': 0.5,
+                'lstm_hidden_size': 128,  # Larger hidden size for partial observability
+                'n_lstm_layers': 2,       # More layers for memory requirements
+                'enable_critic_lstm': True,
+                'ld_coef': 0.3  # Higher coefficient for partial observability challenges
             }
         }
         

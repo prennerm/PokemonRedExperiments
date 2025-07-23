@@ -52,7 +52,7 @@ Examples:
   python main.py --comprehensive
   
   # Run with custom output directory
-  python main.py --agent lstm --env MountainCar-v0 --output ./results
+  python main.py --agent lstm --env CartPole-v1 --output ./results
   
   # List available agents and environments
   python main.py --list
@@ -86,7 +86,7 @@ Examples:
     parser.add_argument(
         '--env', 
         type=str,
-        help='Environment name (CartPole-v1, MountainCar-v0, LunarLander-v3, FrozenLake-v1)'
+        help='Environment name (CartPole-v1, LunarLander-v3, FrozenLake-v1, Acrobot-v1, Acrobot-v1-Partial)'
     )
     
     # Configuration and paths

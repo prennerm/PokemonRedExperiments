@@ -1,0 +1,58 @@
+Multi-Agent Benchmark Results
+=============================
+
+Generated: 2025-07-21 12:12:22
+
+ENVIRONMENT: LunarLander-v3
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+ppo                  -7.64           149.26          0.40           
+lstm                 -38.28          27.76           0.05           
+ld                   208.72          99.58           0.95           
+
+Comparison Summary:
+Best Agent: ld (220.16)
+Worst Agent: lstm (-41.20)
+Performance Gap: 261.36
+
+Agent Ranking:
+1. ld: 220.16
+2. ppo: 51.72
+3. lstm: -41.20
+
+Detailed Statistics:
+
+ppo:
+  Mean Reward: -7.6431 ± 149.2583
+  Mean Episode Length: 483.30 ± 146.63
+  Success Rate: 40.00%
+  Evaluation Time: 4.73s
+  Model Type: PPO
+  Model Size: 9797 parameters
+  Baseline Passed: False
+  Improvement over Random: -7.64
+
+lstm:
+  Mean Reward: -38.2799 ± 27.7567
+  Mean Episode Length: 866.30 ± 318.68
+  Success Rate: 5.00%
+  Evaluation Time: 18.73s
+  Model Type: RecurrentPPO
+  Model Size: 54853 parameters
+  Baseline Passed: False
+  Improvement over Random: -38.28
+
+ld:
+  Mean Reward: 208.7205 ± 99.5761
+  Mean Episode Length: 308.40 ± 57.00
+  Success Rate: 95.00%
+  Evaluation Time: 6.85s
+  Model Type: RecurrentPPOLD
+  Model Size: 59078 parameters
+  Baseline Passed: True
+  Improvement over Random: 208.72
+
+============================================================
+

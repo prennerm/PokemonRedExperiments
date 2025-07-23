@@ -1,0 +1,93 @@
+{
+  "CartPole-v1": {
+    "individual_results": {
+      "lstm": {
+        "mean_reward": 165.3,
+        "std_reward": 24.77317097183968,
+        "mean_length": 165.3,
+        "std_length": 24.77317097183968,
+        "episode_rewards": [
+          173.0,
+          177.0,
+          130.0,
+          179.0,
+          156.0,
+          150.0,
+          195.0,
+          171.0,
+          158.0,
+          153.0,
+          163.0,
+          229.0,
+          175.0,
+          127.0,
+          144.0,
+          174.0,
+          170.0,
+          122.0,
+          161.0,
+          199.0
+        ],
+        "episode_lengths": [
+          173,
+          177,
+          130,
+          179,
+          156,
+          150,
+          195,
+          171,
+          158,
+          153,
+          163,
+          229,
+          175,
+          127,
+          144,
+          174,
+          170,
+          122,
+          161,
+          199
+        ],
+        "success_rate": 0.0,
+        "n_episodes": 20,
+        "evaluation_time": 3.4298477172851562,
+        "deterministic": true,
+        "agent_name": "lstm",
+        "env_name": "CartPole-v1",
+        "model_type": "RecurrentPPO",
+        "policy_type": "RecurrentMultiInputActorCriticPolicy",
+        "model_size": 52675,
+        "expected_random_reward": 0,
+        "success_threshold": 450.0,
+        "timesteps_trained": 100000,
+        "improvement_over_random": 165.3,
+        "baseline_passed": false,
+        "training_time": 529.8074414730072
+      }
+    },
+    "comparison_summary": {
+      "best_agent": "lstm",
+      "best_reward": 165.3,
+      "worst_agent": "lstm",
+      "worst_reward": 165.3,
+      "performance_gap": 0.0,
+      "agent_ranking": [
+        [
+          "lstm",
+          165.3
+        ]
+      ],
+      "mean_rewards": {
+        "lstm": 165.3
+      }
+    },
+    "env_name": "CartPole-v1",
+    "agent_names": [
+      "lstm"
+    ],
+    "n_episodes": 20,
+    "tensorboard_data": {}
+  }
+}

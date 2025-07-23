@@ -1,0 +1,4 @@
+Environment,Agent,Mean_Reward,Std_Reward,Success_Rate,Baseline_Passed,Model_Type
+MountainCar-v0,ppo,-200.0000,0.0000,0.0000,False,PPO
+MountainCar-v0,lstm,-200.0000,0.0000,0.0000,False,RecurrentPPO
+MountainCar-v0,ld,-200.0000,0.0000,0.0000,False,RecurrentPPOLD

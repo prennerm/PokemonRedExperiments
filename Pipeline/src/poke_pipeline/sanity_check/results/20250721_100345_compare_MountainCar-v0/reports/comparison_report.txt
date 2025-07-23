@@ -1,0 +1,58 @@
+Multi-Agent Benchmark Results
+=============================
+
+Generated: 2025-07-21 10:52:20
+
+ENVIRONMENT: MountainCar-v0
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+ppo                  -200.00         0.00            0.00           
+lstm                 -200.00         0.00            0.00           
+ld                   -200.00         0.00            0.00           
+
+Comparison Summary:
+Best Agent: ppo (-200.00)
+Worst Agent: ppo (-200.00)
+Performance Gap: 0.00
+
+Agent Ranking:
+1. ppo: -200.00
+2. lstm: -200.00
+3. ld: -200.00
+
+Detailed Statistics:
+
+ppo:
+  Mean Reward: -200.0000 ± 0.0000
+  Mean Episode Length: 200.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 1.85s
+  Model Type: PPO
+  Model Size: 8964 parameters
+  Baseline Passed: False
+  Improvement over Random: -200.00
+
+lstm:
+  Mean Reward: -200.0000 ± 0.0000
+  Mean Episode Length: 200.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 4.27s
+  Model Type: RecurrentPPO
+  Model Size: 51716 parameters
+  Baseline Passed: False
+  Improvement over Random: -200.00
+
+ld:
+  Mean Reward: -200.0000 ± 0.0000
+  Mean Episode Length: 200.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 4.51s
+  Model Type: RecurrentPPOLD
+  Model Size: 55941 parameters
+  Baseline Passed: False
+  Improvement over Random: -200.00
+
+============================================================
+

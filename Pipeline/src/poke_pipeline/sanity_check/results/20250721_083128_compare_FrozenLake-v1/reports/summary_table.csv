@@ -1,0 +1,4 @@
+Environment,Agent,Mean_Reward,Std_Reward,Success_Rate,Baseline_Passed,Model_Type
+FrozenLake-v1,ppo,0.7000,0.4583,0.7000,True,PPO
+FrozenLake-v1,lstm,0.1500,0.3571,0.1500,False,RecurrentPPO
+FrozenLake-v1,ld,0.2500,0.4330,0.2500,False,RecurrentPPOLD
