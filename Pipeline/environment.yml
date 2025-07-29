@@ -14,6 +14,7 @@ dependencies:
   - pandas
   - protobuf
   - websockets
+  - swig
   #- pytorch
   #- cudatoolkit=11.3
 
@@ -24,6 +25,6 @@ dependencies:
     - networks
     - einops
     - tensorboard
-    - gymnasium             
+    - gymnasium[box2d]              
     - mediapy
     - pyyaml
