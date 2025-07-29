@@ -192,6 +192,7 @@ class RedGymEnv(Env):
         self.max_map_progress = 0
         self.progress_reward = self.get_game_state_reward()
         self.total_reward = sum([val for _, val in self.progress_reward.items()])
+        self.last_total_reward = self.total_reward
         self.reset_count += 1
         return self._get_obs(), {}
 
@@ -285,6 +286,10 @@ class RedGymEnv(Env):
         levels = [
             self.read_m(a) for a in [0xD18C, 0xD1B8, 0xD1E4, 0xD210, 0xD23C, 0xD268]
         ]
+        
+        # Reward-Komponenten berechnen
+        current_rewards = self.get_game_state_reward()
+        
         self.agent_stats.append(
             {
                 "step": self.step_count,
@@ -303,6 +308,18 @@ class RedGymEnv(Env):
                 "badge": self.get_badges(),
                 "event": self.progress_reward["event"],
                 "healr": self.total_healing_rew,
+                
+                # Detaillierte Reward-Komponenten
+                "reward_total": self.total_reward,
+                "reward_step": self.total_reward - getattr(self, 'last_total_reward', 0),
+                "reward_components": current_rewards,
+                "reward_event": current_rewards.get("event", 0),
+                "reward_level": current_rewards.get("level", 0),
+                "reward_heal": current_rewards.get("heal", 0),
+                "reward_badge": current_rewards.get("badge", 0),
+                "reward_explore": current_rewards.get("explore", 0),
+                "reward_dead": current_rewards.get("dead", 0),
+                "reward_stuck": current_rewards.get("stuck", 0),
             }
         )
 
