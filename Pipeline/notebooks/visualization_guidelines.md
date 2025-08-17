@@ -72,7 +72,7 @@ numpy==2.0.2            # Numerical operations
 #### 3.1 Reward Plot (Streaming-optimiert)
 **Konzept**: Memory-effiziente Reward-Visualisierung mit repräsentativen Samples
 - **Datenquelle**: 10.000 Reservoir Samples über GESAMTEN Trainingszeitraum
-- **X-Achse**: Training Steps (vollständiger Bereich von 0 bis max_step)
+- **X-Achse**: Globale Training Steps (`total_steps` falls verfügbar, sonst `step`)
 - **Y-Achse**: Reward-Komponenten (total, event, level, heal, badge, explore, dead, stuck)
 - **Adaptive Glättung**: Window-Größe basierend auf tatsächlicher Sample-Anzahl
 - **Titel-Info**: Zeigt Sampling-Ratio für Transparenz
@@ -102,15 +102,15 @@ python visualize_training.py --variant v2 --smooth-window 50 --verbose
 
 ## Implementation Guidelines
 
-### 6. Code Structure Konzept
+### 6. Code Structure
 **Architektur**: Streaming-basiertes Design mit klarer Modularisierung
 - **Haupt-Skript**: StreamingProcessor Integration mit CLI
 - **StreamingProcessor**: Reservoir Sampling und inkrementelle Aggregation
 - **Pipeline-Funktion**: Orchestrierung der sequenziellen Datei-Verarbeitung
 - **Plotting-Funktionen**: Optimierte Visualisierung für Streaming-Daten
-- **Utils-Module**: Bestehende Hilfsfunktionen für File-Discovery und Styling
+- **Utils-Module**: Hilfsfunktionen für File-Discovery und Styling
 
-### 7. Main Function Konzept
+### 7. Main Function
 **CLI-Integration**: Standard Command-Line Interface mit Streaming-Unterstützung
 - **Argument-Parsing**: Variant, Output-Dir, Format, Smooth-Window, Verbose
 - **Streaming-Pipeline**: Aufruf der dataset-weiten Streaming-Verarbeitung
@@ -118,21 +118,21 @@ python visualize_training.py --variant v2 --smooth-window 50 --verbose
 - **Error-Handling**: Vollständige Traceback-Ausgabe für Debugging
 - **Success-Feedback**: Anzeige von verarbeiteten Einträgen und Step-Bereich
 
-### 7. Memory Management & Performance Konzepte
+### 8. Memory Management & Performance
 **Memory-Bounded Processing**: Konstante Memory-Nutzung unabhängig von Dataset-Größe
 - **Garbage Collection**: Explizite Speicherfreigabe nach jeder JSON-Datei
 - **Reservoir Sampling Limits**: Buffer nie größer als 10.000 Einträge
 - **File-Level Sampling**: Maximal 100 Samples pro Datei für gleichmäßige Verteilung
 - **Adaptive Glättung**: Window-Größe basierend auf verfügbaren Datenpunkten
 
-### 8. Expected Output Behavior Konzept
+### 9. Expected Output Behavior
 **Transparente Fortschritts-Anzeige**: Vollständige Übersicht über Verarbeitungsfortschritt
 - **File-Progress**: Anzeige aktueller Datei und Gesamtfortschritt
 - **Intermediate Updates**: Regelmäßige Status-Updates bei vielen Dateien
 - **Final Statistics**: Vollständige Übersicht über verarbeitete Daten und Sampling-Ratio
 - **Step-Range Validation**: Anzeige des tatsächlich abgedeckten Trainingszeitraums
 
-### 9. Validation & Quality Control Konzepte
+### 10. Validation & Quality Control
 **Qualitätssicherung**: Mehrschichtige Validierung der Streaming-Verarbeitung
 - **Step-Range Tracking**: Kontinuierliche Überwachung des abgedeckten Zeitraums
 - **Sampling-Ratio Monitoring**: Transparenz über Verhältnis Sample/Gesamt-Daten
@@ -158,10 +158,10 @@ experiments/v4/20250726_130714/
 - **Compatibility**: Work with both old and new JSON log formats
 
 ## Integration with Existing Tools
-- **Consistency**: Use the same data loading logic as debug_logs.py
-- **Compatibility**: Support both logging formats (old flat and new nested)
+- **Consistency**: Use the same data loading logic as existing utilities
+- **JSON Format**: Supports nested JSON structure with `total_steps` (global) and `step` (environment)
 - **Reusability**: Design functions to be importable by other scripts
-- **Configuration**: Follow the same command-line patterns as debug_logs.py
+- **Configuration**: Follow standard command-line patterns
 
 ## Future Extensions
 - **Interactive plots**: Option to generate interactive Plotly visualizations
@@ -173,7 +173,7 @@ experiments/v4/20250726_130714/
 ## Success Criteria
 1. Script successfully loads data from any variant (v1-v4)
 2. Generates publication-quality reward and heatmap visualizations
-3. Handles both old and new JSON log formats seamlessly
+3. Handles JSON log formats with proper step tracking (`total_steps` priority)
 4. Provides clear error messages for troubleshooting
 5. Completes analysis of typical training run within 30 seconds
 6. Outputs are consistent and reproducible across different runs

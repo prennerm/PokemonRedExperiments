@@ -154,8 +154,9 @@ class RedGymEnv(Env):
     def reset(self, seed=None, options={}):
         self.seed = seed
         # restart game, skipping credits
-        with open(self.init_state, "rb") as f:
-            self.pyboy.load_state(f)
+        if self.init_state and self.init_state.strip():  # Nur laden wenn init_state gesetzt ist
+            with open(self.init_state, "rb") as f:
+                self.pyboy.load_state(f)
 
         self.init_map_mem()
 

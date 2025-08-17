@@ -1,0 +1,93 @@
+{
+  "CartPole-v1": {
+    "individual_results": {
+      "standard_ppo": {
+        "mean_reward": 253.8,
+        "std_reward": 39.68450579256343,
+        "mean_length": 253.8,
+        "std_length": 39.68450579256343,
+        "episode_rewards": [
+          273.0,
+          253.0,
+          275.0,
+          284.0,
+          237.0,
+          261.0,
+          282.0,
+          235.0,
+          189.0,
+          277.0,
+          187.0,
+          233.0,
+          351.0,
+          290.0,
+          189.0,
+          306.0,
+          241.0,
+          238.0,
+          234.0,
+          241.0
+        ],
+        "episode_lengths": [
+          273,
+          253,
+          275,
+          284,
+          237,
+          261,
+          282,
+          235,
+          189,
+          277,
+          187,
+          233,
+          351,
+          290,
+          189,
+          306,
+          241,
+          238,
+          234,
+          241
+        ],
+        "success_rate": 0.0,
+        "n_episodes": 20,
+        "evaluation_time": 2.234994649887085,
+        "deterministic": true,
+        "agent_name": "standard_ppo",
+        "env_name": "CartPole-v1",
+        "model_type": "PPO",
+        "policy_type": "MultiInputActorCriticPolicy",
+        "model_size": 9155,
+        "expected_random_reward": 0,
+        "success_threshold": 450.0,
+        "timesteps_trained": 100000,
+        "improvement_over_random": 253.8,
+        "baseline_passed": false,
+        "training_time": 151.20972609519958
+      }
+    },
+    "comparison_summary": {
+      "best_agent": "standard_ppo",
+      "best_reward": 253.8,
+      "worst_agent": "standard_ppo",
+      "worst_reward": 253.8,
+      "performance_gap": 0.0,
+      "agent_ranking": [
+        [
+          "standard_ppo",
+          253.8
+        ]
+      ],
+      "mean_rewards": {
+        "standard_ppo": 253.8
+      }
+    },
+    "env_name": "CartPole-v1",
+    "agent_names": [
+      "standard_ppo"
+    ],
+    "n_episodes": 20,
+    "tensorboard_data": {}
+  }
+}

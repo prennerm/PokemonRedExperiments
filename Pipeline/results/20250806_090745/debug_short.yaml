@@ -1,0 +1,44 @@
+paths:
+  session_root: "results"
+
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+  init_state: "data/has_pokedex.state"
+  stream_wrapper: false
+  file_prefix: "session"
+  obs_type: "rgb"
+  action_freq: 24
+  session_path: "results"
+  init_state_str: "has_pokedex"
+  save_freq: 100000000
+  print_rewards: false
+  headless: true
+  num_actions: 8
+  max_actions: 2048  # Original value
+  log_frequency: 100
+  early_stop: false
+
+model:
+  type: "RecurrentPPOLD"
+  policy: "MultiInputLstmPolicyLD"
+  learning_rate: 2.5e-4
+  n_steps: 2048
+  batch_size: 512
+  n_epochs: 3
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.1
+  ent_coef: 0.01
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  ld_coef: 1.0
+  seed: 42
+  verbose: 1
+
+# KURZER TEST: nur etwa 20-30 Iterationen = ~1.3M Steps
+total_timesteps: 1500000
+num_cpu: 32
+
+save_freq: 1000000
+save_freq_stats: 10

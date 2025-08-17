@@ -79,14 +79,6 @@ Das Sanity Check Suite verwendet eine sorgfältig ausgewählte Sammlung von Stan
 - **Challenge:** Balancieren einer Stange auf einem Wagen
 - **Testet:** Kontinuierliche Observations, dichte Rewards, Kontrollaufgaben
 
-#### **Acrobot-v1**
-- **Typ:** Underactuated Double-Pendulum Control
-- **Observation Space:** Kontinuierlich (6D: cos(θ₁), sin(θ₁), cos(θ₂), sin(θ₂), θ̇₁, θ̇₂)
-- **Action Space:** Diskret (3 Aktionen: −1, 0, +1 Torque am unteren Gelenk)
-- **Reward:** −1 pro Zeitschritt bis zum Erreichen der Zielhöhe (State[0] > 1.0)
-- **Challenge:** Erfordert Momentum-Aufbau in unteraktuiertem System
-- **Testet:** Continuous Dynamics, Sparse Rewards, Momentum Control
-
 #### **LunarLander-v3**
 - **Typ:** Komplexe Dynamics mit Shaped Rewards
 - **Observation Space:** Kontinuierlich (8D: Position, Velocity, Angle, etc.)

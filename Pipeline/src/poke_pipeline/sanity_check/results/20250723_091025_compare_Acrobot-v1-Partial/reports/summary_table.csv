@@ -1,0 +1,4 @@
+Environment,Agent,Mean_Reward,Std_Reward,Success_Rate,Baseline_Passed,Model_Type
+Acrobot-v1-Partial,ppo,-332.1500,83.5741,0.0000,False,PPO
+Acrobot-v1-Partial,lstm,-500.0000,0.0000,0.0000,False,RecurrentPPO
+Acrobot-v1-Partial,ld,-88.4000,16.8208,1.0000,True,RecurrentPPOLD

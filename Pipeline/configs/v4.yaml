@@ -56,4 +56,4 @@ model:
 # -------------------------------------------------------------------
 total_timesteps:   1e8
 save_freq:         163840       # alle ep_length Schritte ein Checkpoint
-save_freq_stats:   100          # alle 100 agent‑Stats in JSON flushen
+save_freq_stats:   100          # alle 10 agent‑Stats in JSON flushen

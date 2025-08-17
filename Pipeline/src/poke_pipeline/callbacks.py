@@ -65,6 +65,7 @@ class StatsCallback(BaseCallback):
         
         structured = {
             "step": raw_stats.get("step", 0),
+            "total_steps": self.num_timesteps,  # Globaler Training-Step
             "position": {
                 "x": raw_stats.get("x", 0),
                 "y": raw_stats.get("y", 0),

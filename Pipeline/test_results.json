@@ -1,0 +1,34 @@
+[
+  {
+    "test_name": "baseline_fast_reset",
+    "duration": 521.8324635028839,
+    "return_code": null,
+    "iterations_completed": 0,
+    "deadlock_detected": false,
+    "success": false
+  },
+  {
+    "test_name": "single_worker",
+    "duration": 39.61687731742859,
+    "return_code": 1,
+    "iterations_completed": 0,
+    "deadlock_detected": false,
+    "success": false
+  },
+  {
+    "test_name": "staggered_resets",
+    "duration": 304.1471025943756,
+    "return_code": null,
+    "iterations_completed": 0,
+    "deadlock_detected": false,
+    "success": false
+  },
+  {
+    "test_name": "different_max_steps",
+    "duration": 348.87617015838623,
+    "return_code": null,
+    "iterations_completed": 2,
+    "deadlock_detected": false,
+    "success": false
+  }
+]

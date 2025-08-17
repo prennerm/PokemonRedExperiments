@@ -1,0 +1,16 @@
+Environment,Agent,Mean_Reward,Std_Reward,Success_Rate,Baseline_Passed,Model_Type
+CartPole-v1,ppo,57.3500,25.7862,0.0000,False,PPO
+CartPole-v1,lstm,71.8500,7.0518,0.0000,False,RecurrentPPO
+CartPole-v1,ld,20.0500,2.6168,0.0000,False,RecurrentPPOLD
+LunarLander-v3,ppo,101.6151,110.2755,0.0500,False,PPO
+LunarLander-v3,lstm,162.0342,96.9023,0.3500,False,RecurrentPPO
+LunarLander-v3,ld,124.9351,113.0320,0.4000,False,RecurrentPPOLD
+FrozenLake-v1,ppo,0.7500,0.4330,0.7500,True,PPO
+FrozenLake-v1,lstm,0.4500,0.4975,0.4500,False,RecurrentPPO
+FrozenLake-v1,ld,0.3500,0.4770,0.3500,False,RecurrentPPOLD
+Acrobot-v1,ppo,-81.8500,15.4767,0.9000,True,PPO
+Acrobot-v1,lstm,-79.7500,10.3096,0.9500,True,RecurrentPPO
+Acrobot-v1,ld,-500.0000,0.0000,0.0000,False,RecurrentPPOLD
+Acrobot-v1-Partial,ppo,-456.8000,54.5001,0.0000,False,PPO
+Acrobot-v1-Partial,lstm,-500.0000,0.0000,0.0000,False,RecurrentPPO
+Acrobot-v1-Partial,ld,-83.8500,17.9702,1.0000,True,RecurrentPPOLD

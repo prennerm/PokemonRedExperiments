@@ -1,0 +1,69 @@
+# configs/v4_production.yaml - PRODUCTION READY nach Iteration-80-Fix
+# Alle kritischen Fixes aktiv, reduzierte Worker-Anzahl nach Deadlock-Problem
+
+# -------------------------------------------------------------------
+# 1) Allgemeine Settings
+# -------------------------------------------------------------------
+seed: 42
+num_cpu: 16  # REDUCED: 16 Worker statt 32 für bessere Stabilität nach Deadlock
+
+# -------------------------------------------------------------------
+# 2) Pfade
+# -------------------------------------------------------------------
+paths:
+  session_root: "experiments/v4_production"
+  checkpoints:   "${paths.session_root}/checkpoints"
+  tb_log:        "${paths.session_root}/tensorboard"
+  json_logs:     "${paths.session_root}/json_logs"
+
+# -------------------------------------------------------------------
+# 3) Environment - PRODUCTION SETTINGS
+# -------------------------------------------------------------------
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+  headless:         true
+  save_final_state: false
+  early_stop:       false
+  action_freq:      24          # Standard-Wert für stabile Performance
+  init_state:       "data/init.state"
+  max_steps:        327680      # 327680/4096 = 80 → Reset bei Iteration 80 (ORIGINAL TARGET!)
+  print_rewards:    true
+  save_video:       false
+  fast_video:       true
+  gb_path:          "data/PokemonRed.gb"
+  debug:            false
+  reward_scale:     0.5
+  explore_weight:   0.25
+
+# -------------------------------------------------------------------
+# 4) Modell - STANDARD SETTINGS (wie v4.yaml)
+# -------------------------------------------------------------------
+model:
+  type:            "RecurrentPPOLD"
+  policy:          "MultiInputLstmPolicyLD"
+  n_steps:         4096         # Original Standard-Werte
+  batch_size:      1024         
+  n_epochs:        3
+  gamma:           0.997
+  ent_coef:        0.01
+  vf_coef:          0.5
+  ld_coef:          0.1
+  tensorboard_log: "${paths.tb_log}"
+  verbose:         1
+
+# -------------------------------------------------------------------
+# 5) Training - PRODUCTION
+# -------------------------------------------------------------------
+total_timesteps:   1e8      
+save_freq:         16000        
+save_freq_stats:   1000           
+
+# -------------------------------------------------------------------
+# PRODUCTION-MODUS nach Deadlock-Fix:
+# - Alle kritischen Fixes aktiv (String/Path, PyBoy-Tick, Staggered Reset, Jitter)
+# - SubprocVecEnv wieder aktiviert für echte Parallelisierung
+# - 16 Worker für stabile Performance (reduziert von 32 nach Deadlock bei Iteration 640)
+# - Reset EXAKT bei Iteration 80: 20480 steps / 4096 n_steps = 5.0 → Iteration 80
+# - Ziel: Fortsetzung des erfolgreichen Trainings von 88M+ Steps ohne weitere Deadlocks
+# -------------------------------------------------------------------

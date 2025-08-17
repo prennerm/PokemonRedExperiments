@@ -1,0 +1,277 @@
+Multi-Agent Benchmark Results
+=============================
+
+Generated: 2025-07-23 13:46:56
+
+SUMMARY
+----------------------------------------
+Total environments tested: 5
+Total agents tested: 3
+Total training time: 13180.45 seconds
+Total evaluation episodes: 300
+
+ENVIRONMENT: CartPole-v1
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+ppo                  57.35           25.79           0.00           
+lstm                 71.85           7.05            0.00           
+ld                   20.05           2.62            0.00           
+
+Comparison Summary:
+Best Agent: lstm (69.75)
+Worst Agent: ld (21.65)
+Performance Gap: 48.10
+
+Agent Ranking:
+1. lstm: 69.75
+2. ppo: 46.85
+3. ld: 21.65
+
+Detailed Statistics:
+
+ppo:
+  Mean Reward: 57.3500 ± 25.7862
+  Mean Episode Length: 57.35 ± 25.79
+  Success Rate: 0.00%
+  Evaluation Time: 0.47s
+  Model Type: PPO
+  Model Size: 9155 parameters
+  Baseline Passed: False
+  Improvement over Random: 57.35
+
+lstm:
+  Mean Reward: 71.8500 ± 7.0518
+  Mean Episode Length: 71.85 ± 7.05
+  Success Rate: 0.00%
+  Evaluation Time: 1.50s
+  Model Type: RecurrentPPO
+  Model Size: 52675 parameters
+  Baseline Passed: False
+  Improvement over Random: 71.85
+
+ld:
+  Mean Reward: 20.0500 ± 2.6168
+  Mean Episode Length: 20.05 ± 2.62
+  Success Rate: 0.00%
+  Evaluation Time: 0.44s
+  Model Type: RecurrentPPOLD
+  Model Size: 56900 parameters
+  Baseline Passed: False
+  Improvement over Random: 20.05
+
+============================================================
+
+ENVIRONMENT: LunarLander-v3
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+ppo                  101.62          110.28          0.05           
+lstm                 162.03          96.90           0.35           
+ld                   124.94          113.03          0.40           
+
+Comparison Summary:
+Best Agent: lstm (117.21)
+Worst Agent: ld (68.78)
+Performance Gap: 48.43
+
+Agent Ranking:
+1. lstm: 117.21
+2. ppo: 92.62
+3. ld: 68.78
+
+Detailed Statistics:
+
+ppo:
+  Mean Reward: 101.6151 ± 110.2755
+  Mean Episode Length: 636.65 ± 182.00
+  Success Rate: 5.00%
+  Evaluation Time: 6.19s
+  Model Type: PPO
+  Model Size: 9797 parameters
+  Baseline Passed: False
+  Improvement over Random: 101.62
+
+lstm:
+  Mean Reward: 162.0342 ± 96.9023
+  Mean Episode Length: 496.20 ± 169.20
+  Success Rate: 35.00%
+  Evaluation Time: 10.88s
+  Model Type: RecurrentPPO
+  Model Size: 54853 parameters
+  Baseline Passed: False
+  Improvement over Random: 162.03
+
+ld:
+  Mean Reward: 124.9351 ± 113.0320
+  Mean Episode Length: 361.75 ± 71.32
+  Success Rate: 40.00%
+  Evaluation Time: 8.04s
+  Model Type: RecurrentPPOLD
+  Model Size: 59078 parameters
+  Baseline Passed: False
+  Improvement over Random: 124.94
+
+============================================================
+
+ENVIRONMENT: FrozenLake-v1
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+ppo                  0.75            0.43            0.75           
+lstm                 0.45            0.50            0.45           
+ld                   0.35            0.48            0.35           
+
+Comparison Summary:
+Best Agent: ppo (0.70)
+Worst Agent: ld (0.30)
+Performance Gap: 0.40
+
+Agent Ranking:
+1. ppo: 0.70
+2. lstm: 0.55
+3. ld: 0.30
+
+Detailed Statistics:
+
+ppo:
+  Mean Reward: 0.7500 ± 0.4330
+  Mean Episode Length: 46.90 ± 29.44
+  Success Rate: 75.00%
+  Evaluation Time: 0.42s
+  Model Type: PPO
+  Model Size: 10821 parameters
+  Baseline Passed: True
+  Improvement over Random: 0.75
+
+lstm:
+  Mean Reward: 0.4500 ± 0.4975
+  Mean Episode Length: 31.45 ± 18.36
+  Success Rate: 45.00%
+  Evaluation Time: 0.66s
+  Model Type: RecurrentPPO
+  Model Size: 58949 parameters
+  Baseline Passed: False
+  Improvement over Random: 0.45
+
+ld:
+  Mean Reward: 0.3500 ± 0.4770
+  Mean Episode Length: 25.60 ± 24.45
+  Success Rate: 35.00%
+  Evaluation Time: 0.55s
+  Model Type: RecurrentPPOLD
+  Model Size: 63174 parameters
+  Baseline Passed: False
+  Improvement over Random: 0.35
+
+============================================================
+
+ENVIRONMENT: Acrobot-v1
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+ppo                  -81.85          15.48           0.90           
+lstm                 -79.75          10.31           0.95           
+ld                   -500.00         0.00            0.00           
+
+Comparison Summary:
+Best Agent: ppo (-83.95)
+Worst Agent: ld (-500.00)
+Performance Gap: 416.05
+
+Agent Ranking:
+1. ppo: -83.95
+2. lstm: -93.65
+3. ld: -500.00
+
+Detailed Statistics:
+
+ppo:
+  Mean Reward: -81.8500 ± 15.4767
+  Mean Episode Length: 82.85 ± 15.48
+  Success Rate: 90.00%
+  Evaluation Time: 0.89s
+  Model Type: PPO
+  Model Size: 9476 parameters
+  Baseline Passed: True
+  Improvement over Random: -81.85
+
+lstm:
+  Mean Reward: -79.7500 ± 10.3096
+  Mean Episode Length: 80.75 ± 10.31
+  Success Rate: 95.00%
+  Evaluation Time: 1.85s
+  Model Type: RecurrentPPO
+  Model Size: 53764 parameters
+  Baseline Passed: True
+  Improvement over Random: -79.75
+
+ld:
+  Mean Reward: -500.0000 ± 0.0000
+  Mean Episode Length: 500.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 11.54s
+  Model Type: RecurrentPPOLD
+  Model Size: 57989 parameters
+  Baseline Passed: False
+  Improvement over Random: -500.00
+
+============================================================
+
+ENVIRONMENT: Acrobot-v1-Partial
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+ppo                  -456.80         54.50           0.00           
+lstm                 -500.00         0.00            0.00           
+ld                   -83.85          17.97           1.00           
+
+Comparison Summary:
+Best Agent: ld (-85.25)
+Worst Agent: lstm (-500.00)
+Performance Gap: 414.75
+
+Agent Ranking:
+1. ld: -85.25
+2. ppo: -484.75
+3. lstm: -500.00
+
+Detailed Statistics:
+
+ppo:
+  Mean Reward: -456.8000 ± 54.5001
+  Mean Episode Length: 457.30 ± 54.10
+  Success Rate: 0.00%
+  Evaluation Time: 4.95s
+  Model Type: PPO
+  Model Size: 9220 parameters
+  Baseline Passed: False
+  Improvement over Random: -456.80
+
+lstm:
+  Mean Reward: -500.0000 ± 0.0000
+  Mean Episode Length: 500.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 11.34s
+  Model Type: RecurrentPPO
+  Model Size: 52740 parameters
+  Baseline Passed: False
+  Improvement over Random: -500.00
+
+ld:
+  Mean Reward: -83.8500 ± 17.9702
+  Mean Episode Length: 84.85 ± 17.97
+  Success Rate: 100.00%
+  Evaluation Time: 1.97s
+  Model Type: RecurrentPPOLD
+  Model Size: 56965 parameters
+  Baseline Passed: True
+  Improvement over Random: -83.85
+
+============================================================
+

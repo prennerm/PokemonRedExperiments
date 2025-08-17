@@ -80,12 +80,6 @@ class StreamingProcessor:
                 
             entries_count = len(data)
             
-            # Extrahiere globalen Timestamp aus Dateiname (z.B. stats_1753554387.json -> 1753554387)
-            # NICHT MEHR VERWENDET - verwende direkt die Steps aus JSON
-            import re
-            timestamp_match = re.search(r'stats_(\d+)\.json', json_file.name)
-            global_step = int(timestamp_match.group(1)) if timestamp_match else 0
-            
             # Intelligentes Sampling: Zeitlich gleichverteilt
             # Nimm jeden N-ten Eintrag für gleichmäßige zeitliche Verteilung
             if entries_count > 1000:
@@ -99,17 +93,13 @@ class StreamingProcessor:
                 if isinstance(entry, dict):
                     flat_entry = flatten_dict(entry)
                     
-                    # LÖSUNG: Verwende Dateiname-Timestamp als echten globalen Step
-                    flat_entry['global_step'] = global_step
-                    
                     # Debug: Zeige ersten Eintrag
                     if debug_first_entry and idx == sampled_indices[0]:
                         print(f"🔍 Debug - Erste 10 Keys des geflatteten Eintrags:")
                         for i, (key, value) in enumerate(list(flat_entry.items())[:10]):
                             print(f"   '{key}': {value}")
-                        print(f"🔍 Debug - Lokaler Step aus JSON: {flat_entry.get('step', 'N/A')}")
-                        print(f"🔍 Debug - Globaler Step aus Dateiname: {global_step:,}")
-                        print(f"🔍 Debug - Verwendet für X-Achse: {flat_entry.get('global_step', 'N/A'):,}")
+                        print(f"🔍 Debug - Environment Step: {flat_entry.get('step', 'N/A')}")
+                        print(f"🔍 Debug - Globaler Step: {flat_entry.get('total_steps', 'N/A')}")
                         print(f"🔍 Debug - Alle Keys die 'step' enthalten:")
                         step_keys = [k for k in flat_entry.keys() if 'step' in k.lower()]
                         for key in step_keys:
@@ -148,12 +138,12 @@ class StreamingProcessor:
     
     def _update_rolling_stats(self, entry: Dict):
         """Aktualisiert Rolling Statistics inkrementell"""
-        # Step-Bereich tracking - verwende globale Steps aus Dateiname
+        # Step-Bereich tracking - verwende globale Steps falls verfügbar
         step_val = None
         
-        # Priorisiere global_step (aus Dateiname) für echte Training-Steps
-        if 'global_step' in entry:
-            step_val = entry['global_step']
+        # Priorität: total_steps (globale Steps) > step (Environment-Steps)
+        if 'total_steps' in entry:
+            step_val = entry['total_steps']
         elif 'step' in entry:
             step_val = entry['step']
         else:
@@ -206,14 +196,17 @@ class StreamingProcessor:
         
         df = pd.DataFrame(self.reservoir_samples)
         
-        # Sortiere nach Steps - verwende globale Steps aus Dateiname
-        step_cols = [col for col in df.columns if 'global_step' in col.lower()]
-        if not step_cols:
-            # Fallback auf normale Steps
+        # Sortiere nach Steps - bevorzuge total_steps (globale Steps)
+        step_col = None
+        if 'total_steps' in df.columns:
+            step_col = 'total_steps'
+        else:
+            # Fallback auf Environment Steps
             step_cols = [col for col in df.columns if 'step' in col.lower()]
+            if step_cols:
+                step_col = step_cols[0]
         
-        if step_cols:
-            step_col = step_cols[0]
+        if step_col:
             df = df.sort_values(step_col)
         else:
             raise ValueError("Keine Step-Spalte gefunden")
@@ -319,11 +312,18 @@ def plot_rewards_streaming(df: pd.DataFrame, variant: str, timestamp: str,
     if not reward_mapping:
         raise ValueError("Keine Reward-Spalten gefunden")
     
-    # Verwende originale Steps aus JSON (echte Training-Steps)
-    step_cols = [col for col in df.columns if 'step' in col.lower()]
-    if not step_cols:
+    # Bevorzuge total_steps (globale Steps) für Achsen-Beschriftung  
+    step_col = None
+    if 'total_steps' in df.columns:
+        step_col = 'total_steps'
+    else:
+        # Fallback auf Environment Steps
+        step_cols = [col for col in df.columns if 'step' in col.lower()]
+        if step_cols:
+            step_col = step_cols[0]
+    
+    if not step_col:
         raise ValueError("Keine Step-Spalte gefunden")
-    step_col = step_cols[0]
     
     # Erstelle Plot
     fig, ax = plt.subplots(figsize=PLOT_CONFIG['figsize'])

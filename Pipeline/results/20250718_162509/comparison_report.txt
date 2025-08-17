@@ -1,0 +1,34 @@
+Multi-Agent Benchmark Results
+=============================
+
+Generated: 2025-07-18 16:27:44
+
+ENVIRONMENT: CartPole-v1
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+standard_ppo         253.80          39.68           0.00           
+
+Comparison Summary:
+Best Agent: standard_ppo (253.80)
+Worst Agent: standard_ppo (253.80)
+Performance Gap: 0.00
+
+Agent Ranking:
+1. standard_ppo: 253.80
+
+Detailed Statistics:
+
+standard_ppo:
+  Mean Reward: 253.8000 ± 39.6845
+  Mean Episode Length: 253.80 ± 39.68
+  Success Rate: 0.00%
+  Evaluation Time: 2.23s
+  Model Type: PPO
+  Model Size: 9155 parameters
+  Baseline Passed: False
+  Improvement over Random: 253.80
+
+============================================================
+

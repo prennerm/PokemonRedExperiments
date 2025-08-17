@@ -1,0 +1,69 @@
+# configs/v4_no_state.yaml
+# TEST 1B: PyBoy State-Loading deaktiviert
+
+# -------------------------------------------------------------------
+# 1) Allgemeine Settings
+# -------------------------------------------------------------------
+seed: 42
+num_cpu: 8  # Reduziert von 32 auf 8 fuer Stabilitaet
+
+# -------------------------------------------------------------------
+# 2) Pfade (werden in train.py relativ zum Projekt-Root aufgeloest)
+# -------------------------------------------------------------------
+paths:
+  session_root: "experiments/v4"
+  checkpoints:   "${paths.session_root}/checkpoints"
+  tb_log:        "${paths.session_root}/tensorboard"
+  json_logs:     "${paths.session_root}/json_logs"
+
+# -------------------------------------------------------------------
+# 3) Environment-Konfiguration
+# -------------------------------------------------------------------
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+  headless:         true
+  save_final_state: false
+  early_stop:       false
+  action_freq:      24
+  init_state:       ""          # KEIN STATE-LOADING! Das ist der Test!
+  max_steps:        163840
+  print_rewards:    true
+  save_video:       false
+  fast_video:       true
+  gb_path:          "data/PokemonRed.gb"
+  debug:            false
+  reward_scale:     0.5
+  explore_weight:   0.25
+
+# -------------------------------------------------------------------
+# 4) Modell-Hyperparameter
+# -------------------------------------------------------------------
+model:
+  type:            "RecurrentPPOLD"
+  policy:          "MultiInputLstmPolicyLD"
+  n_steps:         2048        # rollout-Laenge
+  batch_size:      512
+  n_epochs:        1
+  gamma:           0.997
+  ent_coef:        0.01
+  vf_coef:          0.5 # noch pruefen
+  ld_coef:          0.1 # auch noch pruefen, gewichtung lambda discrepancy
+  gae_lambda:      0.95
+  learning_rate:   0.0003
+  clip_range:      0.2
+  max_grad_norm:   0.5
+
+# -------------------------------------------------------------------
+# 5) Training
+# -------------------------------------------------------------------
+total_timesteps: "1e8"  # 100 Millionen Schritte
+
+# Callback-Frequencies
+save_freq: 50000        # Checkpoint alle 50k steps  
+save_freq_stats: 100    # Stats normal aktiviert
+
+# -------------------------------------------------------------------
+# 6) Logging
+# -------------------------------------------------------------------
+verbose: 1

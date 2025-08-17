@@ -1,0 +1,38 @@
+# Test-Konfiguration für globale Step-Validierung
+seed: 42
+num_cpu: 1  # Einfacheres Setup für Test
+
+paths:
+  session_root: "experiments/test_global_steps"
+
+env:
+  module: "red_gym_env_v2"
+  class: "RedGymEnv"
+  init_state: "data/has_pokedex.state"
+  action_freq: 24
+  init_knn: 5
+  similar_reward_scale: 1.0
+  output_full: false
+  print_rewards: false
+
+model:
+  type: "RecurrentPPO"
+  policy: "MultiInputLstmPolicy"
+  learning_rate: 0.0001
+  n_steps: 512
+  batch_size: 256
+  n_epochs: 4
+  gamma: 0.998
+  gae_lambda: 0.95
+  clip_range: 0.075
+  ent_coef: 0.01
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  device: "cuda"
+
+# Kurzes Training für Test
+total_timesteps: 5000  # Nur 5K Steps für schnellen Test
+
+# Häufigeres Logging für Validierung
+save_freq: 1000        # Checkpoints alle 1K Steps  
+save_freq_stats: 50    # JSON-Logs alle 50 Rollouts

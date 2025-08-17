@@ -1,0 +1,58 @@
+Multi-Agent Benchmark Results
+=============================
+
+Generated: 2025-07-23 09:58:39
+
+ENVIRONMENT: Acrobot-v1-Partial
+------------------------------------------------------------
+Performance Results:
+Agent                Mean Reward     Std Reward      Success Rate   
+-----------------------------------------------------------------
+ppo                  -332.15         83.57           0.00           
+lstm                 -500.00         0.00            0.00           
+ld                   -88.40          16.82           1.00           
+
+Comparison Summary:
+Best Agent: ld (-91.00)
+Worst Agent: lstm (-500.00)
+Performance Gap: 409.00
+
+Agent Ranking:
+1. ld: -91.00
+2. ppo: -341.10
+3. lstm: -500.00
+
+Detailed Statistics:
+
+ppo:
+  Mean Reward: -332.1500 ± 83.5741
+  Mean Episode Length: 333.05 ± 83.37
+  Success Rate: 0.00%
+  Evaluation Time: 3.51s
+  Model Type: PPO
+  Model Size: 9220 parameters
+  Baseline Passed: False
+  Improvement over Random: -332.15
+
+lstm:
+  Mean Reward: -500.0000 ± 0.0000
+  Mean Episode Length: 500.00 ± 0.00
+  Success Rate: 0.00%
+  Evaluation Time: 11.56s
+  Model Type: RecurrentPPO
+  Model Size: 52740 parameters
+  Baseline Passed: False
+  Improvement over Random: -500.00
+
+ld:
+  Mean Reward: -88.4000 ± 16.8208
+  Mean Episode Length: 89.40 ± 16.82
+  Success Rate: 100.00%
+  Evaluation Time: 2.07s
+  Model Type: RecurrentPPOLD
+  Model Size: 56965 parameters
+  Baseline Passed: True
+  Improvement over Random: -88.40
+
+============================================================
+
