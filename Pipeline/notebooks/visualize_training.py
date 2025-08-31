@@ -225,7 +225,7 @@ class StreamingProcessor:
         }
 
 
-def process_dataset_streaming(variant: str, max_files: Optional[int], verbose: bool) -> Tuple[pd.DataFrame, Path, str, Dict]:
+def process_dataset_streaming(variant: str, max_files: Optional[int], verbose: bool, experiment_name: Optional[str] = None) -> Tuple[pd.DataFrame, Path, str, Dict]:
     """
     Streaming-basierte Verarbeitung des gesamten Datasets
     
@@ -233,10 +233,25 @@ def process_dataset_streaming(variant: str, max_files: Optional[int], verbose: b
         (dataframe, experiment_dir, timestamp, statistics)
     """
     if verbose:
-        print(f"📁 Suche neuestes Experiment für {variant}...")
+        search_name = experiment_name or variant
+        print(f"📁 Suche neuestes Experiment für {search_name}...")
     
-    # Finde neuestes Experiment
-    experiment_dir = find_latest_experiment_dir(variant)
+    # Finde neuestes Experiment - verwende experiment_name falls angegeben
+    if experiment_name:
+        # Direkter Pfad zu spezifischem Experiment-Subdirectory
+        base_path = Path("experiments") / experiment_name
+        if not base_path.exists():
+            raise FileNotFoundError(f"Experiment-Subdirectory nicht gefunden: {base_path}")
+        
+        # Finde neuestes Experiment in diesem Subdirectory
+        experiment_dirs = [d for d in base_path.iterdir() if d.is_dir()]
+        if not experiment_dirs:
+            raise FileNotFoundError(f"Keine Experiment-Ordner in {base_path} gefunden")
+        
+        experiment_dir = max(experiment_dirs, key=lambda x: x.name)
+    else:
+        experiment_dir = find_latest_experiment_dir(variant)
+    
     timestamp = experiment_dir.name
     
     if verbose:
@@ -475,6 +490,8 @@ def main():
         description="Streaming-basierte Visualisierung massiver Agent-Trainingsdaten (alle JSON-Dateien)"
     )
     parser.add_argument("--variant", choices=["v1", "v2", "v3", "v4"], required=True)
+    parser.add_argument("--experiment-name", type=str, default=None, 
+                       help="Name des Experiment-Subdirectories (z.B. 'v4_production' statt 'v4')")
     parser.add_argument("--output-dir", type=str, default=None)
     parser.add_argument("--format", choices=["png", "pdf", "svg"], default="png")
     parser.add_argument("--smooth-window", type=int, default=100)
@@ -486,7 +503,7 @@ def main():
     try:
         # Streaming-basierte Datenverarbeitung
         df, experiment_dir, timestamp, stats = process_dataset_streaming(
-            args.variant, args.max_files, args.verbose
+            args.variant, args.max_files, args.verbose, args.experiment_name
         )
         
         # Ausgabe-Verzeichnis

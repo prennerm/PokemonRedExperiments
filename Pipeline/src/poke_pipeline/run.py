@@ -66,8 +66,8 @@ env_conf = {
     "headless": False,
     "save_final_state": True,
     "early_stop": False,
-    "action_freq": 24,
-    "init_state": "../has_pokedex_nballs.state",
+    "action_freq": 8,     # Mittelschnell für bessere Beobachtung
+    "init_state": "data/init.state",     # ← Grund-State statt has_pokedex_nballs
     "max_steps": 2**23,
     "print_rewards": True,
     "save_video": False,
@@ -87,13 +87,31 @@ model = AlgoCls.load(
 )
 
 # --- 6) Interaktive Wiedergabe ---
+print("[INFO] Starte Agent-Wiedergabe...")
 obs, _ = env.reset()
+print("[INFO] Environment resetted, starte Game Loop...")
+
+# Einfacher Agent-Loop
+print("[INFO] Agent startet...")
+lstm_states = None
 done = False
+step_count = 0
+
 while not done:
-    action, _ = model.predict(obs, deterministic=True)
-    obs, reward, term, trunc, _ = env.step(action)
-    env.render()
-    done = term or trunc
+    try:
+        action, lstm_states = model.predict(obs, state=lstm_states, deterministic=True)
+        obs, reward, term, trunc, _ = env.step(action)
+        env.render()
+        done = term or trunc
+        step_count += 1
+        
+        # Alle 1000 Steps Status ausgeben
+        if step_count % 1000 == 0:
+            print(f"[INFO] Step {step_count}: Agent läuft...")
+            
+    except Exception as e:
+        print(f"[ERROR] Exception during prediction: {e}")
+        break
 
 print("▶ Run beendet.")
 env.close()
