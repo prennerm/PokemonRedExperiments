@@ -1,4 +1,29 @@
-# 1) Pipeline „neu laden“  
+# 1) Environme# GPU-Support testen:
+python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); print(f'GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"CPU only\"}')"
+
+# Erweiterte GPU-Tests:
+python -c "import torch; device = torch.device('cuda'); x = torch.randn(1000, 1000).to(device); print(f'GPU tensor test successful: {x.device}')"
+
+
+# 2) Pipeline „neu laden" (bei Code-Änderungen)tup (nur beim ersten Mal oder bei Updates)
+
+# Neues Environment erstellen aus environment.yml:
+conda env create -f environment.yml
+
+# Oder bestehendes Environment updaten:
+conda env update -f environment.yml --prune
+
+# Environment aktivieren:
+conda activate poke_env
+
+# Pipeline als entwicklerfreundliches Package installieren:
+pip install -e .
+
+# GPU-Support testen:
+python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); print(f'GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU only"}')"
+
+
+# 2) Pipeline „neu laden" (bei Code-Änderungen)  
 # im Projekt-Root einfach:
 pip install -e .
 
@@ -16,6 +41,9 @@ python -m poke_pipeline.train --variant v2 --config configs/v2.yaml
 
 # Variante v3 (mit eigenem LSTM-Env)
 python -m poke_pipeline.train --variant v3 --config configs/v3.yaml
+
+# Variante v3 GPU-Test (schnelle Validierung der GPU-Funktionalität)
+python -m poke_pipeline.train --variant v3 --config configs/v3_gpu_test.yaml
 
 # Variante v4 (λ-Discrepancy PPO)
 python -m poke_pipeline.train --variant v4 --config configs/v4.yaml

@@ -9,19 +9,29 @@ setup(
     include_package_data=True,
     package_data={"poke_pipeline": ["data/*.json"]},
     install_requires=[
+        # Core RL Libraries
         "stable-baselines3",
         "sb3-contrib",
+        
+        # Environment and Game Engine
         "pyboy",
         "gymnasium",
+        
+        # Data Processing
         "numpy",
         "einops",
         "scikit-image",
         "mediapy",
-        "websockets",
-        "imageio",
         "pandas",
         "scipy",
+        
+        # Utilities
+        "websockets",
+        "imageio",
         "tensorboard",
         "pyyaml",
+        
+        # NOTE: PyTorch mit CUDA wird über conda/environment.yml installiert
+        # um Hardware-spezifische CUDA-Versionen korrekt zu handhaben
     ],
 )

@@ -1,5 +1,7 @@
 name: poke_env
 channels:
+  - pytorch
+  - nvidia
   - defaults
   - conda-forge
 
@@ -15,8 +17,11 @@ dependencies:
   - protobuf
   - websockets
   - swig
-  #- pytorch
-  #- cudatoolkit=11.3
+  # PyTorch mit CUDA-Support über conda
+  - pytorch
+  - pytorch-cuda=12.4
+  - torchvision
+  - torchaudio
 
   - pip:
     - stable-baselines3

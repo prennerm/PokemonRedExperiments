@@ -6,9 +6,9 @@ numpy
 einops
 scikit-image
 mediapy
-websockets
-imageio
 pandas
 scipy
+websockets
+imageio
 tensorboard
 pyyaml

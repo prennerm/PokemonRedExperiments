@@ -9,9 +9,9 @@ Requires-Dist: numpy
 Requires-Dist: einops
 Requires-Dist: scikit-image
 Requires-Dist: mediapy
-Requires-Dist: websockets
-Requires-Dist: imageio
 Requires-Dist: pandas
 Requires-Dist: scipy
+Requires-Dist: websockets
+Requires-Dist: imageio
 Requires-Dist: tensorboard
 Requires-Dist: pyyaml

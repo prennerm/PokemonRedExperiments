@@ -4,7 +4,7 @@
 # 1) Allgemeine Settings
 # -------------------------------------------------------------------
 seed: 42
-num_cpu: 32 # eventuell 8 oder 16 nötig
+num_cpu: 16 # GPU-OPTIMIERT: Reduziert von 32 auf 16 fuer bessere GPU-Auslastung
 
 # -------------------------------------------------------------------
 # 2) Pfade (werden in train.py relativ zum Projekt‑Root aufgelöst)
@@ -41,8 +41,9 @@ env:
 model:
   type:            "RecurrentPPO"
   policy:          "MultiInputLstmPolicy"
-  n_steps:         2048        # rollout-Länge
-  batch_size:      512
+  device:          "cuda"       # GPU-Acceleration aktiviert!
+  n_steps:         2048        # rollout-Laenge
+  batch_size:      1024        # GPU-OPTIMIERT: Erhoht von 512 auf 1024
   n_epochs:        1
   gamma:           0.997
   ent_coef:        0.01
@@ -54,4 +55,4 @@ model:
 # -------------------------------------------------------------------
 total_timesteps:   1e8
 save_freq:         163840       # alle ep_length Schritte ein Checkpoint
-save_freq_stats:   100          # alle 100 agent‑Stats in JSON flushen
+save_freq_stats:   100          # alle 100 agent-Stats in JSON flushen

@@ -1,5 +1,7 @@
 import uuid
 import json
+import io
+import time
 from pathlib import Path
 import pkg_resources
 
@@ -43,10 +45,27 @@ class RedGymEnv(Env):
         self.headless = config["headless"]
         self.init_state = config["init_state"]
         self.act_freq = config["action_freq"]
-        self.max_steps = config["max_steps"]
+        self.base_max_steps = config["max_steps"]  # Original max_steps
+        self.max_steps = self.base_max_steps  # Wird in reset() ggf. angepasst
         self.save_video = config["save_video"]
         self.fast_video = config["fast_video"]
         self.frame_stacks = 1
+        
+        # Worker-Info für Staggered Resets
+        self.worker_rank = config.get("worker_rank", 0)
+        self.num_cpu = config.get("num_cpu", 1)
+        
+        print(f"[EnvInit] Worker {self.worker_rank}/{self.num_cpu} initialized")
+        
+        # Init State in Memory laden für bessere Performance
+        self._init_state_bytes = None
+        if self.init_state and self.init_state.strip():
+            try:
+                with open(self.init_state, "rb") as f:
+                    self._init_state_bytes = f.read()
+                print(f"Worker {self.worker_rank}: Loaded init state into memory ({len(self._init_state_bytes)} bytes)")
+            except Exception as e:
+                print(f"Worker {self.worker_rank}: Could not load init state: {e}")
         """
         self.explore_weight = (
             1 if "explore_weight" not in config else config["explore_weight"]
@@ -64,6 +83,7 @@ class RedGymEnv(Env):
         self.reward_scale = config.get("reward_scale", 1)
         self.instance_id = config.get("instance_id", str(uuid.uuid4())[:8])
         
+        self.s_path = Path(config["session_path"])  # String zu Path konvertieren
         self.s_path.mkdir(exist_ok=True)
         self.full_frame_writer = None
         self.model_frame_writer = None
@@ -153,8 +173,31 @@ class RedGymEnv(Env):
 
     def reset(self, seed=None, options={}):
         self.seed = seed
+        
+        # Erste Episode verkürzen (Staggered Reset)
+        if self.reset_count == 0:
+            # Erste Episode: verkürzte max_steps basierend auf worker_rank
+            offset_factor = self.worker_rank / max(1, self.num_cpu)
+            episode_offset = int(self.base_max_steps * 0.1 * offset_factor)
+            self.max_steps = max(1000, self.base_max_steps - episode_offset)
+            print(f"Worker {self.worker_rank}: First episode shortened to {self.max_steps} steps (offset: {episode_offset})")
+        else:
+            # Ab der zweiten Episode: normale max_steps
+            self.max_steps = self.base_max_steps
+        
         # restart game, skipping credits
-        if self.init_state and self.init_state.strip():  # Nur laden wenn init_state gesetzt ist
+        if self._init_state_bytes:  # In-Memory State Loading
+            # Gestaffelte Delays zur Vermeidung von I/O-Konflikten
+            base_delay = (self.worker_rank % 16) * 0.025  # 0-375ms gestaffelt
+            extra_delay = (self.reset_count % 4) * 0.01
+            total_delay = base_delay + extra_delay
+            print(f"Worker {self.worker_rank}: Delaying {total_delay:.3f}s before state load...")
+            time.sleep(total_delay)
+            print(f"Worker {self.worker_rank}: Loading state from memory...")
+            self.pyboy.load_state(io.BytesIO(self._init_state_bytes))
+            print(f"Worker {self.worker_rank}: State loaded successfully")
+        elif self.init_state and self.init_state.strip():
+            # Fallback zu File-Loading
             with open(self.init_state, "rb") as f:
                 self.pyboy.load_state(f)
 
@@ -274,10 +317,11 @@ class RedGymEnv(Env):
         self.pyboy.send_input(self.valid_actions[action])
         # disable rendering when we don't need it
         render_screen = self.save_video or not self.headless
-        press_step = 8
+        press_step = min(8, self.act_freq - 1)  # Sicherstellen dass press_step nicht zu groß wird
         self.pyboy.tick(press_step, render_screen)
         self.pyboy.send_input(self.release_actions[action])
-        self.pyboy.tick(self.act_freq - press_step - 1, render_screen)
+        remaining_ticks = max(1, self.act_freq - press_step - 1)  # Mindestens 1 Tick
+        self.pyboy.tick(remaining_ticks, render_screen)
         self.pyboy.tick(1, True)
         if self.save_video and self.fast_video:
             self.add_video_frame()
