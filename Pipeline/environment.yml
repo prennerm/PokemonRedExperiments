@@ -24,8 +24,8 @@ dependencies:
   - torchaudio
 
   - pip:
-    - stable-baselines3
-    - sb3-contrib            
+    - stable-baselines3==2.7.0
+    - sb3-contrib==2.6.0
     - pyboy
     - networks
     - einops

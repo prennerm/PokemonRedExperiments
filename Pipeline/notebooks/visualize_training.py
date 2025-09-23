@@ -225,32 +225,38 @@ class StreamingProcessor:
         }
 
 
-def process_dataset_streaming(variant: str, max_files: Optional[int], verbose: bool, experiment_name: Optional[str] = None) -> Tuple[pd.DataFrame, Path, str, Dict]:
+def process_dataset_streaming(experiment_dir_name: str, max_files: Optional[int], verbose: bool, timestamp: Optional[str] = None) -> Tuple[pd.DataFrame, Path, str, Dict]:
     """
     Streaming-basierte Verarbeitung des gesamten Datasets
+    
+    Args:
+        experiment_dir_name: Name des Experiment-Subdirectories (z.B. 'v4_ld_02')
+        timestamp: Spezifischer Zeitstempel-Ordner, falls None wird der neueste verwendet
     
     Returns:
         (dataframe, experiment_dir, timestamp, statistics)
     """
     if verbose:
-        search_name = experiment_name or variant
-        print(f"📁 Suche neuestes Experiment für {search_name}...")
+        print(f"📁 Suche Experiment in {experiment_dir_name}...")
     
-    # Finde neuestes Experiment - verwende experiment_name falls angegeben
-    if experiment_name:
-        # Direkter Pfad zu spezifischem Experiment-Subdirectory
-        base_path = Path("experiments") / experiment_name
-        if not base_path.exists():
-            raise FileNotFoundError(f"Experiment-Subdirectory nicht gefunden: {base_path}")
-        
+    # Direkter Pfad zu spezifischem Experiment-Subdirectory
+    base_path = Path("experiments") / experiment_dir_name
+    if not base_path.exists():
+        raise FileNotFoundError(f"Experiment-Subdirectory nicht gefunden: {base_path}")
+    
+    # Finde Experiment-Ordner in diesem Subdirectory
+    if timestamp:
+        # Spezifischer Zeitstempel wurde angegeben
+        experiment_dir = base_path / timestamp
+        if not experiment_dir.exists():
+            raise FileNotFoundError(f"Experiment-Ordner nicht gefunden: {experiment_dir}")
+    else:
         # Finde neuestes Experiment in diesem Subdirectory
         experiment_dirs = [d for d in base_path.iterdir() if d.is_dir()]
         if not experiment_dirs:
             raise FileNotFoundError(f"Keine Experiment-Ordner in {base_path} gefunden")
         
         experiment_dir = max(experiment_dirs, key=lambda x: x.name)
-    else:
-        experiment_dir = find_latest_experiment_dir(variant)
     
     timestamp = experiment_dir.name
     
@@ -313,7 +319,7 @@ def process_dataset_streaming(variant: str, max_files: Optional[int], verbose: b
     return df, experiment_dir, timestamp, stats
 
 
-def plot_rewards_streaming(df: pd.DataFrame, variant: str, timestamp: str, 
+def plot_rewards_streaming(df: pd.DataFrame, experiment_dir_name: str, timestamp: str, 
                           output_dir: Path, smooth_window: int, output_format: str, 
                           stats: Dict, verbose: bool):
     """Streaming-optimierte Reward-Visualisierung"""
@@ -378,7 +384,7 @@ def plot_rewards_streaming(df: pd.DataFrame, variant: str, timestamp: str,
             )
     
     # Title mit korrekten Statistiken
-    title = create_plot_title(variant, timestamp, 
+    title = create_plot_title(experiment_dir_name, timestamp, 
                             f"Rewards (Reservoir Sample: {stats['sample_size']:,}/{stats['total_entries']:,})")
     apply_plot_styling(ax, title, "Training Steps", "Reward")
     
@@ -402,7 +408,7 @@ def plot_rewards_streaming(df: pd.DataFrame, variant: str, timestamp: str,
         print(f"   X-Achse gesetzt: {actual_min:,} bis {actual_max:,}")
     
     # Speichere Plot
-    filename = f"{variant}_{timestamp}_rewards_streaming"
+    filename = f"{experiment_dir_name}_{timestamp}_rewards_streaming"
     save_plot(fig, output_dir, filename, [output_format])
     
     plt.close(fig)
@@ -411,7 +417,7 @@ def plot_rewards_streaming(df: pd.DataFrame, variant: str, timestamp: str,
         print(f"   Streaming Reward-Plot erstellt: {filename}.{output_format}")
 
 
-def plot_heatmap_streaming(stats: Dict, variant: str, timestamp: str, 
+def plot_heatmap_streaming(stats: Dict, experiment_dir_name: str, timestamp: str, 
                           output_dir: Path, output_format: str, verbose: bool):
     """Streaming-optimierte Position-Heatmap aus aggregierten Daten"""
     
@@ -457,7 +463,7 @@ def plot_heatmap_streaming(stats: Dict, variant: str, timestamp: str,
     # Title mit Statistiken
     total_visits = sum(counts)
     unique_positions = len(positions)
-    title = create_plot_title(variant, timestamp, 
+    title = create_plot_title(experiment_dir_name, timestamp, 
                             f"Position Heatmap ({unique_positions:,} unique positions, {total_visits:,} total visits)")
     
     apply_plot_styling(ax, title, "X Position", "Y Position")
@@ -467,7 +473,7 @@ def plot_heatmap_streaming(stats: Dict, variant: str, timestamp: str,
     ax.set_aspect('equal', adjustable='box')
     
     # Speichere Plot
-    filename = f"{variant}_{timestamp}_heatmap_streaming"
+    filename = f"{experiment_dir_name}_{timestamp}_heatmap_streaming"
     save_plot(fig, output_dir, filename, [output_format])
     
     plt.close(fig)
@@ -489,9 +495,10 @@ def main():
     parser = argparse.ArgumentParser(
         description="Streaming-basierte Visualisierung massiver Agent-Trainingsdaten (alle JSON-Dateien)"
     )
-    parser.add_argument("--variant", choices=["v1", "v2", "v3", "v4"], required=True)
-    parser.add_argument("--experiment-name", type=str, default=None, 
-                       help="Name des Experiment-Subdirectories (z.B. 'v4_production' statt 'v4')")
+    parser.add_argument("--experiment-dir", type=str, required=True,
+                       help="Name des Experiment-Subdirectories (z.B. 'v4_ld_02', 'v4_ld_005_and_v4_ld_015')")
+    parser.add_argument("--timestamp", type=str, default=None,
+                       help="Spezifischer Zeitstempel-Ordner (z.B. '20250907_221057')")
     parser.add_argument("--output-dir", type=str, default=None)
     parser.add_argument("--format", choices=["png", "pdf", "svg"], default="png")
     parser.add_argument("--smooth-window", type=int, default=100)
@@ -503,7 +510,7 @@ def main():
     try:
         # Streaming-basierte Datenverarbeitung
         df, experiment_dir, timestamp, stats = process_dataset_streaming(
-            args.variant, args.max_files, args.verbose, args.experiment_name
+            args.experiment_dir, args.max_files, args.verbose, args.timestamp
         )
         
         # Ausgabe-Verzeichnis
@@ -514,17 +521,17 @@ def main():
         
         # Erstelle Plots
         plot_rewards_streaming(
-            df, args.variant, timestamp, output_dir, 
+            df, args.experiment_dir, timestamp, output_dir, 
             args.smooth_window, args.format, stats, args.verbose
         )
         
         plot_heatmap_streaming(
-            stats, args.variant, timestamp, output_dir, 
+            stats, args.experiment_dir, timestamp, output_dir, 
             args.format, args.verbose
         )
         
         print(f"✅ Streaming-Visualisierung abgeschlossen!")
-        print(f"📊 Verarbeitet: {stats['total_entries']:,} Einträge aus {args.variant}")
+        print(f"📊 Verarbeitet: {stats['total_entries']:,} Einträge aus {args.experiment_dir}")
         print(f"🎯 Vollständiger Step-Bereich: {stats['step_range'][0]:,} bis {stats['step_range'][1]:,}")
         print(f"🗺️ Position-Daten: {stats['position_count']:,} eindeutige Positionen")
         print(f"📁 Plots gespeichert in: {output_dir}")
