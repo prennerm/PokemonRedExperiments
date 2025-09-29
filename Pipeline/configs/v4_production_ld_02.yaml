@@ -11,7 +11,7 @@ num_cpu: 16  # REDUCED: 16 Worker statt 32 für bessere Stabilität nach Deadloc
 # 2) Pfade
 # -------------------------------------------------------------------
 paths:
-  session_root: "experiments/v4_ld_025"
+  session_root: "experiments/v4_production_ld_02"
   checkpoints:   "${paths.session_root}/checkpoints"
   tb_log:        "${paths.session_root}/tensorboard"
   json_logs:     "${paths.session_root}/json_logs"
@@ -42,22 +42,21 @@ env:
 model:
   type:            "RecurrentPPOLD"
   policy:          "MultiInputLstmPolicyLD"
-  device:          "cuda"       # GPU-Acceleration aktiviert!
-  n_steps:         2048         # Original Standard-Werte
-  batch_size:      512         
-  n_epochs:        1
+  n_steps:         4096         # Original Standard-Werte
+  batch_size:      1024         
+  n_epochs:        3
   gamma:           0.997
   ent_coef:        0.01
   vf_coef:          0.5
-  ld_coef:          0.25
+  ld_coef:          0.2
   tensorboard_log: "${paths.tb_log}"
   verbose:         1
 
 # -------------------------------------------------------------------
 # 5) Training - PRODUCTION
 # -------------------------------------------------------------------
-total_timesteps:   1e8      
-save_freq:         160000        
+total_timesteps:   2e8      
+save_freq:         16000        
 save_freq_stats:   1000           
 
 # -------------------------------------------------------------------
@@ -68,4 +67,3 @@ save_freq_stats:   1000
 # - Reset EXAKT bei Iteration 80: 20480 steps / 4096 n_steps = 5.0 → Iteration 80
 # - Ziel: Fortsetzung des erfolgreichen Trainings von 88M+ Steps ohne weitere Deadlocks
 # -------------------------------------------------------------------
-python -m poke_pipeline.train --variant v4 --config configs/v4_ld_025.yaml
