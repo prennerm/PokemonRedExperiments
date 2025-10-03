@@ -9,7 +9,6 @@ Originally adapted from Peter Whidden's work and pokemonred_puffer.
 
 import uuid
 import json
-import io
 from pathlib import Path
 from abc import ABC, abstractmethod
 import pkg_resources
@@ -58,22 +57,6 @@ class BaseRedGymEnv(Env, ABC):
         self.max_steps = self.base_max_steps
         self.save_video = config["save_video"]
         self.fast_video = config["fast_video"]
-
-        # Worker info for staggered resets
-        self.worker_rank = config.get("worker_rank", 0)
-        self.num_cpu = config.get("num_cpu", 1)
-
-        print(f"[EnvInit] Worker {self.worker_rank}/{self.num_cpu} initialized")
-
-        # Load init state into memory for better performance
-        self._init_state_bytes = None
-        if self.init_state and self.init_state.strip():
-            try:
-                with open(self.init_state, "rb") as f:
-                    self._init_state_bytes = f.read()
-                print(f"Worker {self.worker_rank}: Loaded init state into memory ({len(self._init_state_bytes)} bytes)")
-            except Exception as e:
-                print(f"Worker {self.worker_rank}: Could not load init state: {e}")
 
         # Reward scaling
         self.explore_weight = config.get("explore_weight", 1.0)
@@ -177,29 +160,9 @@ class BaseRedGymEnv(Env, ABC):
         """Reset environment. Can be overridden for variant-specific reset logic."""
         self.seed = seed
 
-        # Staggered resets: first episode of each worker is shortened
-        if self.reset_count == 0 and self.num_cpu > 1:
-            offset_factor = self.worker_rank / max(1, self.num_cpu)
-            episode_offset = int(self.base_max_steps * 0.1 * offset_factor)
-            self.max_steps = max(1000, self.base_max_steps - episode_offset)
-            print(f"Worker {self.worker_rank}: First episode shortened to {self.max_steps} steps (offset: {episode_offset})")
-        else:
-            self.max_steps = self.base_max_steps
-
-        # Load game state
-        if self._init_state_bytes:
-            import time
-            base_delay = (self.worker_rank % 16) * 0.025
-            extra_delay = (self.reset_count % 4) * 0.01
-            total_delay = base_delay + extra_delay
-            print(f"Worker {self.worker_rank}: Delaying {total_delay:.3f}s before state load...")
-            time.sleep(total_delay)
-            print(f"Worker {self.worker_rank}: Loading state from memory...")
-            self.pyboy.load_state(io.BytesIO(self._init_state_bytes))
-            print(f"Worker {self.worker_rank}: State loaded successfully")
-        elif self.init_state and self.init_state.strip():
-            with open(self.init_state, "rb") as f:
-                self.pyboy.load_state(f)
+        # Load game state (directly from file, matching original stable pattern)
+        with open(self.init_state, "rb") as f:
+            self.pyboy.load_state(f)
 
         # Initialize environment state
         self.init_map_mem()
