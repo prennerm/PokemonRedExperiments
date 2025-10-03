@@ -1,0 +1,26 @@
+Lambda Discrepancy Effect Analysis - Summary
+==================================================
+
+Research Question: Does LSTM + Lambda Discrepancy lead to more stable and effective policies?
+
+v3 (LSTM only):
+  Samples: 9000
+  Mean total reward: 0.888 ± 2.647
+  Max badges: 0
+  Max exploration: 260
+  Step range: 0 - 6143
+
+v4_production:
+  Samples: 9000
+  Mean total reward: 7.893 ± 7.679
+  Max badges: 0
+  Max exploration: 338
+  Step range: 0 - 12287
+
+v4_production_ld_02:
+  Samples: 9000
+  Mean total reward: 7.373 ± 7.878
+  Max badges: 0
+  Max exploration: 357
+  Step range: 0 - 12287
+

@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp:*)",
+      "Bash(conda activate:*)",
+      "Bash(python:*)",
+      "Bash(C:/Users/marwi/anaconda3/Scripts/activate.bat poke_viz_extended)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)",
+      "Bash(grep:*)",
+      "Bash(timeout:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Read(//c/Users/marwi/Documents/fhstp/masterarbeit/PokemonRedExperiments/v2/**)",
+      "Read(//c/Users/marwi/Documents/fhstp/masterarbeit/PokemonRedExperiments_pre_fork/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

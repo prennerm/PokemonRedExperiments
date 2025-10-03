@@ -1,0 +1,10 @@
+Requirement already satisfied: numpy in c:\users\marwi\anaconda3\envs\poke_viz_extended\lib\site-packages (1.26.4)
+Collecting numpy
+  Using cached numpy-2.2.6-cp310-cp310-win_amd64.whl.metadata (60 kB)
+Using cached numpy-2.2.6-cp310-cp310-win_amd64.whl (12.9 MB)
+Installing collected packages: numpy
+  Attempting uninstall: numpy
+    Found existing installation: numpy 1.26.4
+    Uninstalling numpy-1.26.4:
+      Successfully uninstalled numpy-1.26.4
+Successfully installed numpy-2.2.6

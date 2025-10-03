@@ -1,0 +1,54 @@
+name: poke_viz_extended
+channels:
+  - pytorch
+  - nvidia
+  - defaults
+  - conda-forge
+
+dependencies:
+  - python=3.10
+  - pip
+  - numpy
+  - matplotlib
+  - seaborn                       # Für bessere Plots
+  - scikit-image
+  - scipy
+  - imageio
+  - pandas
+  - protobuf
+  - websockets
+  - swig
+  - scikit-learn                  # Für t-SNE, UMAP
+  - jupyter                       # Für Notebooks
+  - jupyterlab                    # Moderne Jupyter UI
+  
+  # PyTorch mit CUDA-Support über conda
+  - pytorch
+  - pytorch-cuda=12.4
+  - torchvision
+  - torchaudio
+
+  - pip:
+    # Core RL Dependencies (aus poke_env)
+    - stable-baselines3==2.7.0
+    - sb3-contrib==2.6.0
+    - pyboy
+    - networks
+    - einops
+    - tensorboard
+    - gymnasium[box2d]              
+    - mediapy
+    - pyyaml
+    
+    # Zusätzliche Analyse-Tools für Memory Analysis
+    - umap-learn                  # Dimensionality reduction
+    - plotly                      # Interactive plots
+    - dash                        # Interactive dashboards
+    # - captum                    # PyTorch interpretability (Kompatibilitätsprobleme mit NumPy 2.x)
+    - shap                        # Feature importance
+    - tqdm                        # Progress bars
+    - ipywidgets                  # Jupyter widgets
+    
+    # Development Tools
+    - black                       # Code formatting
+    - flake8                      # Linting
