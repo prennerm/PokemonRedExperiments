@@ -1,0 +1,35 @@
+name: poke_env
+channels:
+  - pytorch
+  - nvidia
+  - defaults
+  - conda-forge
+
+dependencies:
+  - python=3.10
+  - pip
+  - numpy
+  - matplotlib
+  - scikit-image
+  - scipy
+  - imageio
+  - pandas
+  - protobuf
+  - websockets
+  - swig
+  # PyTorch mit CUDA-Support über conda
+  - pytorch
+  - pytorch-cuda=12.4
+  - torchvision
+  - torchaudio
+
+  - pip:
+    - stable-baselines3==2.7.0
+    - sb3-contrib==2.6.0
+    - pyboy
+    - networks
+    - einops
+    - tensorboard
+    - gymnasium[box2d]              
+    - mediapy
+    - pyyaml

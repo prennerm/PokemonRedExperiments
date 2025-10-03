@@ -1,0 +1,221 @@
+# Pokemon Red RL Pipeline V2 - .gitignore
+# Professional configuration for research/ML project
+
+# ============================================================================
+# CRITICAL: Training Artifacts (NEVER commit these!)
+# ============================================================================
+
+# Experiment outputs (models, checkpoints, logs)
+experiments/
+checkpoints/
+runs/
+outputs/
+
+# TensorBoard logs
+tensorboard/
+tb_logs/
+logs/
+
+# Model files (can be 100MB-1GB+ each)
+*.zip
+*.pt
+*.pth
+*.pkl
+*.h5
+*.ckpt
+*.safetensors
+
+# Training videos/recordings
+*.mp4
+*.avi
+*.gif
+session_*/
+video/
+
+# JSON logs (can grow to GB with long training runs)
+*.json
+!configs/*.json  # Keep config JSONs
+!**/data/*.json  # Keep data files (events.json, map_data.json)
+
+# CSV logs
+*.csv
+!**/data/*.csv  # Keep reference data
+
+# ============================================================================
+# Python
+# ============================================================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+poke_env/
+poke_viz_extended/
+
+# Conda
+.conda/
+*.egg-info/
+dist/
+build/
+
+# ============================================================================
+# Jupyter / Analysis
+# ============================================================================
+
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# Plots and visualizations (regenerable from data)
+plots/
+figures/
+*.png
+*.jpg
+*.jpeg
+!docs/**/*.png  # Keep documentation images
+!assets/**/*.png  # Keep asset images
+
+# ============================================================================
+# Game ROM & Save States (DO NOT commit copyrighted content!)
+# ============================================================================
+
+# ROMs
+*.gb
+*.gbc
+*.gba
+*.rom
+
+# Save states
+*.state
+*.sav
+*.ram
+*.srm
+
+# EXCEPTION: Keep init states needed for reproducibility
+!data/init.state
+!data/has_pokedex.state
+
+# ============================================================================
+# Development / IDE
+# ============================================================================
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# Claude Code
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# ============================================================================
+# Environment & Secrets
+# ============================================================================
+
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+credentials.json
+
+# VPN configs (if you have server access configs)
+*.ovpn
+ovpn_files/
+
+# ============================================================================
+# Testing & Debugging
+# ============================================================================
+
+test_output/
+debug_output/
+tmp/
+temp/
+
+# Coverage reports
+htmlcov/
+.coverage
+.pytest_cache/
+
+# ============================================================================
+# Documentation Build Artifacts
+# ============================================================================
+
+# Sphinx
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# ============================================================================
+# Backup & Archive Files
+# ============================================================================
+
+*.bak
+*.backup
+*~
+*.old
+*-old.*
+*-backup.*
+
+# Compressed archives (unless explicitly needed)
+*.tar.gz
+*.zip
+*.7z
+*.rar
+!environment.yml  # Keep conda environment specs
+
+# Directory backups
+*-Kopie/
+*-backup/
+backup/
+
+# ============================================================================
+# Project-Specific Excludes
+# ============================================================================
+
+# Large reference data (download separately)
+data/large_datasets/
+
+# Raw experiment data archives
+raw_data/
+archived_experiments/
+
+# Legacy code (keep in separate branches)
+legacy/
+old/
+deprecated/
+
+# ============================================================================
+# What SHOULD be committed?
+# ============================================================================
+# ✅ Source code (src/)
+# ✅ Configuration files (configs/*.yaml)
+# ✅ Documentation (docs/*.md)
+# ✅ Environment specs (environment.yml)
+# ✅ Small reference data files (events.json, map_data.json)
+# ✅ Init save states (data/init.state)
+# ✅ README, LICENSE, requirements.txt
+# ✅ Test scripts (test/*.py)
+# ✅ Analysis notebooks (*.ipynb) - but NOT their outputs
+"Pipeline_V2/" 
