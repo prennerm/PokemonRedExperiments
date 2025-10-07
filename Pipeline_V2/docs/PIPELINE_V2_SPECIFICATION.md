@@ -49,7 +49,7 @@ Systematic evaluation of Lambda Discrepancy (LD) as auxiliary loss in recurrent 
 ```
 Pipeline_V2/
 ├── src/
-│   ├── trainers/          # ✅ Base trainer + registry (variant hooks)
+│   ├── trainers/          # ✅ Base trainer implemented; default trainer covers v1–v4
 │   ├── environments/      # ✅ Environment implementations (refactored)
 │   ├── models/           # [TODO] Custom models (RecurrentPPOLD, policies)
 │   ├── callbacks/        # [TODO] Logging, checkpointing, monitoring
@@ -124,6 +124,10 @@ The current Pipeline contains three environment files (`red_gym_env_*.py`) deriv
 - **Review systematically**: Challenge every line of migrated code for necessity
 
 ### Trainer Architecture (Update 2025-10-06)
+### Quick Validation (2025-10-07)
+- Smoke tests for v1–v4 (reduced timesteps) succeed using the new trainer infrastructure.
+- v3/v4 run with RecurrentPPO/RecurrentPPOLD after minor env fixes.
+
 - `src/trainers/base_trainer.py` orchestrates config loading, run directory setup, VecEnv/model/callback creation, and training lifecycle.
 - `DefaultTrainer` handles all current variants; specialised trainers can be registered later.
 - CLI (`pipeline_v2.train`) now delegates to trainers while legacy modules remain for reference.

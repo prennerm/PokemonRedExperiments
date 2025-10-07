@@ -171,6 +171,9 @@ class BaseTrainer:
         ModelClass, default_policy = self._resolve_model_entry(model_type)
         policy_key = model_cfg.get("policy", default_policy)
 
+        if isinstance(policy_key, str) and default_policy is not None:
+            if policy_key == default_policy.__name__:
+                policy_key = default_policy
         base_kwargs = {
             "policy": policy_key,
             "env": self.vec_env,

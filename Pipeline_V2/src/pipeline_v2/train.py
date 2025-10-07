@@ -10,6 +10,7 @@ warnings.filterwarnings("ignore", message="Using SDL2 binaries from pysdl2-dll")
 logging.getLogger("pyboy.core.sound").setLevel(logging.ERROR)
 logging.getLogger("pyboy.core.mb").setLevel(logging.ERROR)
 
+from trainers import TRAINER_REGISTRY
 from trainers.base_trainer import BaseTrainer, TrainerArgs
 from trainers.default_trainer import DefaultTrainer
 
@@ -47,7 +48,8 @@ def main():
         resume_path=args.resume,
     )
 
-    trainer = DefaultTrainer(trainer_args, cfg)
+    trainer_cls = TRAINER_REGISTRY.get(args.variant, DefaultTrainer)
+    trainer = trainer_cls(trainer_args, cfg)
     trainer.run()
 
 

@@ -1,26 +1,27 @@
 # Refactoring Status (2025-10-06)
 
 ## Environments
-- ✅ Legacy `red_gym_env_*` analysiert und in `src/environments/` konsolidiert (`BaseRedGymEnv` + Varianten).
-- ✅ Beobachtungs- und Reset-Verhalten entspricht dem Original (inkl. Debug-Hooks hinter `debug_reset_timing`).
-- 🔄 Karte (map) aktuell wieder aktiv; Deadlock-Mitigations werden separat geplant (siehe `docs/RESET_DEADLOCK_ANALYSIS.md`).
+- ✅ Legacy `red_gym_env_*` analysiert und in `src/environments/` konsolidiert.
+- ✅ Beobachtungen/Reset-Verhalten entsprechen dem Original.
+- 🔄 Map-Übertragung: Deadlock auf Windows → optionale/komprimierte Lösung geplant (siehe RESET_DEADLOCK_ANALYSIS.md).
 
-## Trainer & Pipeline-Aufbau
-- ✅ Neues Trainer-Framework (`src/trainers/`):
-  - `BaseTrainer` kapselt Config-Handling, Run-Setup, VecEnv/Modell/Callback-Erstellung, Training (Resume/Neu).
-  - `DefaultTrainer` deckt derzeit alle Varianten ab.
-  - CLI (`pipeline_v2.train`) delegiert vollständig an Trainer.
-- 🔄 Nächste Schritte:
-  - Spezialtrainer für Varianten (z. B. LSTM/LD) registrieren.
-  - Callback-/Logging-Modul vereinheitlichen (`src/callbacks/`).
-  - Legacy-Code unter `src/pipeline_v2/` sukzessive auflösen, sobald neue Struktur stabil ist.
+## Trainers & Pipeline
+- ✅ `BaseTrainer` + `DefaultTrainer` in `src/trainers/` implementiert; CLI delegiert an Trainer.
+- ✅ Trainer-Registry (`TRAINER_REGISTRY`) vorhanden; Varianten v1–v4 aktuell auf DefaultTrainer gemappt.
+- 🔄 Spezialtrainer für v3 (LSTM) und v4 (Lambda Discrepancy) vorbereiten (z. B. Policy/Callback Overrides).
+- 🔄 Callback-/Logging-Modul vereinheitlichen (Stats, TensorBoard etc.).
+- 🔄 Legacy-Code unter `src/pipeline_v2/` sukzessive entfernen, sobald neue Struktur stabil ist.
 
 ## Konfigurationen
 - 🔄 Config-Hierarchie vereinheitlichen (`base.yaml` + Variant-Overrides).
-- 🔄 Neue Flags (z. B. `send_map`) einführen, sobald Payload-Lösung entschieden ist.
+- 🔄 Neue Flags (z. B. `send_map`) einführen, sobald Payload-Lösung feststeht.
 
-## Offene Aufgaben
-1. Map-Transport optional/komprimiert gestalten (Deadlock-Fix für Windows, optional auf Linux deaktivierbar).
-2. Trainer-Registry erweitern (Variante-spezifische Hooks, Modell-/Policy-Auswahl).
-3. Callback/Logging-Module refaktorieren und dokumentieren (JSON/CSV/Summary-Handling).
-4. Spezifikation & README fortlaufend aktualisieren, sobald Teilaufgaben abgeschlossen sind.
+## Offene Tasks
+1. Spezialtrainer (LSTM/Lambda) registrieren und – bei Bedarf – Varianten-spezifische Hooks implementieren.
+2. Kurze Validierungsläufe für v1–v4 mit neuem Trainer-Setup.
+3. Callback/Logging-Aufräumarbeiten planen (Dokumentation ergänzen).
+4. Map-Option finalisieren (Payload-Reduktion oder Shared-Memory-Lösung).
+
+## Validation (2025-10-07)
+- Quick smoke tests for v1–v4 (reduced timesteps) succeed with DefaultTrainer.
+- LSTMEnv fix (`_init_state_bytes = None`) applied; v3/v4 now instantiate correctly.
