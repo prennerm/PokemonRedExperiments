@@ -49,7 +49,7 @@ Systematic evaluation of Lambda Discrepancy (LD) as auxiliary loss in recurrent 
 ```
 Pipeline_V2/
 ├── src/
-│   ├── trainers/          # [TODO] Variant-specific training classes
+│   ├── trainers/          # ✅ Base trainer + registry (variant hooks)
 │   ├── environments/      # ✅ Environment implementations (refactored)
 │   ├── models/           # [TODO] Custom models (RecurrentPPOLD, policies)
 │   ├── callbacks/        # [TODO] Logging, checkpointing, monitoring
@@ -122,6 +122,11 @@ The current Pipeline contains three environment files (`red_gym_env_*.py`) deriv
 - **Preserve functionality**: Ensure behavioral compatibility during refactoring
 - **Test incrementally**: Validate each refactoring step independently
 - **Review systematically**: Challenge every line of migrated code for necessity
+
+### Trainer Architecture (Update 2025-10-06)
+- `src/trainers/base_trainer.py` orchestrates config loading, run directory setup, VecEnv/model/callback creation, and training lifecycle.
+- `DefaultTrainer` handles all current variants; specialised trainers can be registered later.
+- CLI (`pipeline_v2.train`) now delegates to trainers while legacy modules remain for reference.
 
 ## Core Implementation Principles
 
@@ -470,7 +475,7 @@ __pycache__/
 **What Was Done:**
 
 1. **Code Analysis & Architecture** ✅
-   - Compared all 3 original environment files ([ENVIRONMENT_ANALYSIS.md](ENVIRONMENT_ANALYSIS.md))
+   - Compared all 3 original environment files ([RESET_DEADLOCK_ANALYSIS.md](RESET_DEADLOCK_ANALYSIS.md))
    - Identified ~400 lines of duplicated common code
    - Documented key differences between variants
    - Designed abstract base class architecture
@@ -559,9 +564,41 @@ __pycache__/
 4. ~~Run initial v1 test~~ ✅ Done - all variants tested
 5. ~~Iterative refinement based on test results~~ ✅ Done - bugs fixed, all variants working
 6. ~~Environment stability fix~~ ✅ Done - reverted to original reset pattern
-7. **CURRENT: Validate stability with extended training runs (target: 50M+ steps without crashes)**
-8. **NEXT: Phase 2 - Training Logic Modularization**
+7. ~~PyBoy API update~~ ✅ Done (2025-01-03) - Changed deprecated "headless" → "null" window
+8. **CURRENT: Validate stability with extended training runs (target: 50M+ steps without crashes)**
+9. **NEXT: Phase 2 - Training Logic Modularization**
    - Delete legacy environment files in `src/pipeline_v2/red_gym_env_*.py`
    - Create `src/trainers/` module with variant-specific trainers
    - Modularize callbacks into `src/callbacks/`
-9. Production runs with stable foundation
+10. Production runs with stable foundation
+
+---
+
+## Known Issues & Technical Debt
+
+### 1. PyBoy Save State Version Mismatch ⚠️
+
+**Status:** Identified 2025-01-03, deferred
+
+**Issue:**
+```
+pyboy.core.mb WARNING Loading state from an older version of PyBoy.
+This might cause compatibility issues.
+```
+
+**Root Cause:** `data/init.state` was created with an older PyBoy version (likely pre-2.0), current environment uses PyBoy 2.x.
+
+**Impact:**
+- Warning spam: 64x per training start (2x per worker: startup + first reset)
+- **Unknown compatibility risk** - PyBoy warns about "might cause issues" but no concrete problems observed yet
+
+**Solution:**
+Regenerate `data/init.state` with current PyBoy version:
+1. Load Pokemon Red in PyBoy 2.x
+2. Play to same position (Pallet Town, after Oak intro)
+3. Save state to `data/init.state`
+4. Verify state loads without warnings
+
+**Priority:** Medium - should be addressed before production runs to eliminate unknown risk factor
+
+**Location in docs:** PIPELINE_V2_SPECIFICATION.md - Technical debt section (centralized specification document for all architectural decisions and known issues)
