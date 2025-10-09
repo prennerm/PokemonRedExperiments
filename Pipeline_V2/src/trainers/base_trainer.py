@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import importlib
 import json
@@ -15,7 +15,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 from sb3_contrib import RecurrentPPO
 from sb3_contrib.ppo_recurrent.policies import MultiInputLstmPolicy
 
-from pipeline_v2.callbacks import StatsCallback
+from callbacks import StatsCallback
 from pipeline_v2.ppo_lambda_discrepancy import MultiInputLstmPolicyLD, RecurrentPPOLD
 from pipeline_v2.tensorboard_callback import TensorboardCallback
 
@@ -42,6 +42,7 @@ class BaseTrainer:
 
         self.session_root = self._determine_session_root()
         self.dirs = self._make_run_dirs(self.session_root)
+        self.logging_cfg = self._resolve_logging_config()
         self._save_effective_config()
         self.env_conf = self._prepare_env_config()
 
@@ -94,7 +95,7 @@ class BaseTrainer:
             "root": base,
             "checkpoints": base / "checkpoints",
             "tensorboard": base / "tensorboard",
-            "json_logs": base / "json_logs",
+            "logs": base / "logs",
         }
         for d in dirs.values():
             d.mkdir(parents=True, exist_ok=True)
@@ -106,7 +107,8 @@ class BaseTrainer:
             "max_steps": self.cfg["env"]["max_steps"],
             "n_steps": self.cfg["model"]["n_steps"],
             "save_freq": self.cfg.get("save_freq", 10000),
-            "save_freq_stats": self.cfg.get("save_freq_stats", 100),
+            "logging_format": self.logging_cfg["format"],
+            "logging_save_freq": self.logging_cfg["save_freq"],
             "reset_interval": self.cfg["env"]["max_steps"] // self.cfg["model"]["n_steps"],
             "total_timesteps": self.cfg.get("total_timesteps", 1e6),
             "variant": self.args.variant,
@@ -126,6 +128,21 @@ class BaseTrainer:
             env_conf["init_state"] = str(Path(env_conf["init_state"]).resolve())
         env_conf["num_cpu"] = self.cfg.get("num_cpu", 1)
         return env_conf
+
+    def _resolve_logging_config(self) -> Dict[str, Any]:
+        defaults = {
+            "format": "json",
+            "save_freq": 100,
+            "structured": True,
+            "verbose": 0,
+        }
+        user_cfg = self.cfg.get("logging") or {}
+        resolved = {**defaults, **user_cfg}
+        resolved["format"] = str(resolved["format"]).lower()
+        resolved["save_freq"] = max(1, int(resolved.get("save_freq", defaults["save_freq"])))
+        resolved["structured"] = bool(resolved.get("structured", True))
+        resolved["verbose"] = int(resolved.get("verbose", 0))
+        return resolved
 
     def _make_env_fns(self) -> List[Any]:
         module_name = self.cfg["env"]["module"]
@@ -224,13 +241,16 @@ class BaseTrainer:
         )
         callbacks.append(TensorboardCallback(str(self.dirs["tensorboard"])))
 
-        stats_freq = int(self.cfg.get("save_freq_stats", 100))
+        logging_cfg = self.logging_cfg
+        stats_freq = logging_cfg["save_freq"]
         if stats_freq > 0:
             callbacks.append(
                 StatsCallback(
+                    save_path=self.dirs["logs"],
                     save_freq=stats_freq,
-                    save_path=str(self.dirs["json_logs"]),
-                    verbose=1,
+                    output_format=logging_cfg["format"],
+                    structured=logging_cfg["structured"],
+                    verbose=logging_cfg["verbose"],
                 )
             )
         return callbacks
@@ -261,5 +281,20 @@ class BaseTrainer:
     def load_config(path: Path) -> Dict[str, Any]:
         import yaml
 
+        def _deep_update(base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
+            result = base.copy()
+            for key, value in override.items():
+                if isinstance(value, dict) and isinstance(result.get(key), dict):
+                    result[key] = _deep_update(result[key], value)
+                else:
+                    result[key] = value
+            return result
+
         with path.open() as f:
-            return yaml.safe_load(f)
+            cfg = yaml.safe_load(f)
+        extends = cfg.pop('extends', None)
+        if extends:
+            base_path = path.parent / extends
+            base_cfg = BaseTrainer.load_config(base_path)
+            cfg = _deep_update(base_cfg, cfg)
+        return cfg

@@ -161,17 +161,17 @@ batch_size = 512                 # Hardcoded but adaptable
 
 ### 3. Logging Strategy
 **Multi-format Support:**
-- **JSON**: Structured logging (current standard) - nested format for analysis compatibility
-- **CSV**: Performance-optimized option for large-scale training
-- **Configuration**: YAML setting to choose logging format per experiment
+- **JSON**: Strukturierte Logs (Default) – kompatibel zur bestehenden Analyse-Infrastruktur
+- **CSV**: Performance-optimiertes Format (aktivierbar via `logging.format: "csv"`)
+- **Konfiguration**: YAML-Block `logging` mit Schlüsseln `format`, `save_freq`, `structured`
+- **Speicherort**: Statistik-Dateien je Run in `<session>/logs/` (ersetzt `json_logs/`).
 
 **Log Structure (maintain compatibility with analysis pipeline):**
 ```yaml
 logging:
-  format: "json"  # or "csv"
+  format: "json"   # oder "csv"
+  save_freq: 100   # Flush-Frequenz für Stats
   structured: true
-  include_global_steps: true
-  save_frequency: 1000
 ```
 
 ### 4. Parallelization Strategy
@@ -197,6 +197,9 @@ class V2Trainer(BaseTrainer)  # Single frame + PPO
 class V3Trainer(BaseTrainer)  # LSTM + RecurrentPPO
 class V4Trainer(BaseTrainer)  # LSTM + RecurrentPPOLD
 ```
+
+**Current registry:** `TRAINER_REGISTRY = {"v1": DefaultTrainer, "v2": DefaultTrainer, "v3": LSTMTrainer, "v4": LambdaTrainer}`
+- LambdaDiagnosticsCallback persistiert LD-Metriken unter `logs/lambda_metrics.jsonl` pro Run.
 
 ### Configuration Hierarchy
 ```yaml
@@ -285,9 +288,9 @@ python -m pipeline_v2.cleanup --experiments --temp-files
 - Preserve log format for cross-pipeline comparisons
 
 **Performance Standards:**
-- Streaming processing for memory efficiency
-- Reservoir sampling for uniform data distribution
-- CSV logging option for performance-critical training
+- Streaming processing für Speicher-Effizienz
+- Reservoir Sampling für uniforme Verteilung
+- Optionales CSV-Logging für performancekritische Runs
 
 ## Deployment & Server Integration
 

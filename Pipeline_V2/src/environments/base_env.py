@@ -9,8 +9,10 @@ Originally adapted from Peter Whidden's work and pokemonred_puffer.
 
 import uuid
 import json
+import time
 from pathlib import Path
 from abc import ABC, abstractmethod
+import logging
 import pkg_resources
 
 import numpy as np
@@ -29,6 +31,13 @@ from utils.map_utils import local_to_global, GLOBAL_MAP_SHAPE
 EVENT_FLAGS_START = 0xD747
 EVENT_FLAGS_END = 0xD87E  # expanded for SS Anne
 MUSEUM_TICKET = (0xD754, 0)
+
+
+class _SuppressOldStateWarning(logging.Filter):
+    MESSAGE = "Loading state from an older version of PyBoy."
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        return self.MESSAGE not in record.getMessage()
 
 
 class BaseRedGymEnv(Env, ABC):
@@ -57,6 +66,11 @@ class BaseRedGymEnv(Env, ABC):
         self.max_steps = self.base_max_steps
         self.save_video = config["save_video"]
         self.fast_video = config["fast_video"]
+        self._init_state_bytes = None
+        self.worker_rank = config.get("worker_rank", 0)
+        self.num_cpu = config.get("num_cpu", 1)
+        self.debug_reset_timing = config.get("debug_reset_timing", False)
+        self._episode_first_step_logged = True
 
         # Reward scaling
         self.explore_weight = config.get("explore_weight", 1.0)
@@ -65,6 +79,11 @@ class BaseRedGymEnv(Env, ABC):
 
         # Create session directory
         self.s_path.mkdir(exist_ok=True)
+
+        if self.debug_reset_timing:
+            self.reset_log_path = self.s_path / f"reset_timing_worker_{self.worker_rank}.log"
+            # Overwrite previous logs for clean runs
+            self.reset_log_path.write_text("", encoding="utf-8")
 
         # Video writers
         self.full_frame_writer = None
@@ -115,12 +134,22 @@ class BaseRedGymEnv(Env, ABC):
         self.observation_space = self._build_observation_space()
 
         # Initialize PyBoy
-        head = "headless" if self.headless else "SDL2"
+        head = "null" if self.headless else "SDL2"
         self.pyboy = PyBoy(
             config["gb_path"],
             window=head,
             sound_emulated=False,
         )
+
+        # Suppress legacy state-load warnings in spawned workers
+        for logger_name in ("pyboy.core.mb", "pyboy.core.sound"):
+            pyboy_logger = logging.getLogger(logger_name)
+            pyboy_logger.setLevel(logging.ERROR)
+            pyboy_logger.propagate = False
+            if not pyboy_logger.handlers:
+                pyboy_logger.addHandler(logging.NullHandler())
+            pyboy_logger.addFilter(_SuppressOldStateWarning())
+        logging.getLogger().addFilter(_SuppressOldStateWarning())
 
         # Set emulation speed if not headless
         if not self.headless:
@@ -161,8 +190,24 @@ class BaseRedGymEnv(Env, ABC):
         self.seed = seed
 
         # Load game state (directly from file, matching original stable pattern)
-        with open(self.init_state, "rb") as f:
-            self.pyboy.load_state(f)
+        start_ts = time.perf_counter() if self.debug_reset_timing else None
+        if self.debug_reset_timing:
+            self._log_reset_timing(f"start reset={self.reset_count} seed={seed}")
+
+        try:
+            with open(self.init_state, "rb") as f:
+                self.pyboy.load_state(f)
+            if self.debug_reset_timing and start_ts is not None:
+                duration = time.perf_counter() - start_ts
+                self._log_reset_timing(
+                    f"done reset={self.reset_count} duration={duration:.6f}"
+                )
+        except Exception as exc:
+            if self.debug_reset_timing and start_ts is not None:
+                self._log_reset_timing(
+                    f"error reset={self.reset_count} exception={type(exc).__name__}: {exc}"
+                )
+            raise
 
         # Initialize environment state
         self.init_map_mem()
@@ -203,7 +248,17 @@ class BaseRedGymEnv(Env, ABC):
         self.last_total_reward = self.total_reward
 
         self.reset_count += 1
+        self._episode_first_step_logged = False
         return self._get_obs(), {}
+
+    def _log_reset_timing(self, message: str):
+        """Write reset timing diagnostics to per-worker log."""
+        if not self.debug_reset_timing:
+            return
+        timestamp = time.time()
+        line = f"{timestamp:.6f} rank={self.worker_rank} {message}\n"
+        with self.reset_log_path.open("a", encoding="utf-8") as log_file:
+            log_file.write(line)
 
     def init_map_mem(self):
         """Initialize map memory."""
@@ -224,6 +279,12 @@ class BaseRedGymEnv(Env, ABC):
         # Update action history
         self._update_action_history(action)
 
+        if self.debug_reset_timing and not self._episode_first_step_logged:
+            self._log_reset_timing(
+                f"step_first reset={self.reset_count} step_count={self.step_count}"
+            )
+            self._episode_first_step_logged = True
+
         # Get screen and update frame stack
         self.update_recent_screens(self.render())
 
@@ -235,9 +296,27 @@ class BaseRedGymEnv(Env, ABC):
         step_limit_reached = self.step_count >= self.max_steps
         done = step_limit_reached or self.check_if_done()
 
+        if self.debug_reset_timing and done:
+            self._log_reset_timing(
+                f"step_done reset={self.reset_count} step_count={self.step_count}"
+            )
+        elif self.debug_reset_timing and self.step_count % 512 == 0:
+            self._log_reset_timing(
+                f"step_progress reset={self.reset_count} step_count={self.step_count}"
+            )
+
+        if self.debug_reset_timing and self.step_count <= 4:
+            self._log_reset_timing(
+                f"step_return reset={self.reset_count} step_count={self.step_count} done={int(done)}"
+            )
+
         # Get observation and info
         obs = self._get_obs()
-        info = {}
+        info = {
+            "debug_step_count": self.step_count,
+            "debug_reset": self.reset_count,
+            "debug_worker_rank": self.worker_rank,
+        }
 
         # Save stats if done
         if done:
@@ -255,6 +334,11 @@ class BaseRedGymEnv(Env, ABC):
 
     def run_action_on_emulator(self, action):
         """Execute action on emulator."""
+        log_action = self.debug_reset_timing and self.step_count < 4
+        if log_action:
+            self._log_reset_timing(
+                f"action_start reset={self.reset_count} step_count={self.step_count} action={action}"
+            )
         # Press button then release after some steps
         self.pyboy.send_input(self.valid_actions[action])
         render_screen = self.save_video or not self.headless
@@ -264,6 +348,10 @@ class BaseRedGymEnv(Env, ABC):
         self.pyboy.send_input(self.release_actions[action])
         self.pyboy.tick(self.act_freq - press_step - 1, render_screen)
         self.pyboy.tick(1, True)
+        if log_action:
+            self._log_reset_timing(
+                f"action_end reset={self.reset_count} step_count={self.step_count}"
+            )
 
     def append_agent_stats(self, action):
         """Append current stats to agent_stats list."""
