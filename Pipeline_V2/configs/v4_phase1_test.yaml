@@ -1,0 +1,20 @@
+extends: v4.yaml
+
+num_cpu: 4
+
+paths:
+  session_root: "experiments/v4_phase1_test"
+
+env:
+  max_steps: 4096
+  print_rewards: false
+
+model:
+  n_steps: 256
+  ld_coef: 0.25
+
+total_timesteps: 10000
+save_freq: 5000
+
+logging:
+  save_freq: 5000

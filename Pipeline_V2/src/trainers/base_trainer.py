@@ -15,9 +15,8 @@ from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 from sb3_contrib import RecurrentPPO
 from sb3_contrib.ppo_recurrent.policies import MultiInputLstmPolicy
 
-from callbacks import StatsCallback
-from pipeline_v2.ppo_lambda_discrepancy import MultiInputLstmPolicyLD, RecurrentPPOLD
-from pipeline_v2.tensorboard_callback import TensorboardCallback
+from callbacks import StatsCallback, TensorboardCallback
+from models import MultiInputLstmPolicyLD, RecurrentPPOLD
 
 
 @dataclass

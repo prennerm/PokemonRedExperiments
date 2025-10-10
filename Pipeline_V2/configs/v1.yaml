@@ -1,7 +1,5 @@
 extends: base.yaml
 
-num_cpu: 32
-
 paths:
   session_root: "experiments/v1"
 

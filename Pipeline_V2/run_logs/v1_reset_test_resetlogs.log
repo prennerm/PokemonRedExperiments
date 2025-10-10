@@ -1,0 +1,699 @@
+Starting new training session: experiments\v1_reset_test\20251006_085701
+Effective config: {'num_cpu': 32, 'max_steps': 4096, 'n_steps': 128, 'save_freq': 4096, 'save_freq_stats': 5000, 'reset_interval': 32, 'total_timesteps': '2e6', 'variant': 'v1', 'config_file': 'configs\\v1_reset_test.yaml'}
+Environment resets every 32 iterations
+Using SubprocVecEnv with 32 parallel workers
+Using cuda device
+Wrapping the env in a VecTransposeImage.
+Logging to experiments\v1_reset_test\20251006_085701\tensorboard\v1_0
+[StatsCallback] transfer=0.013s process=0.014s total=0.027s stats_total=4096 max_env=128
+-----------------------------
+| time/              |      |
+|    fps             | 1901 |
+|    iterations      | 1    |
+|    time_elapsed    | 2    |
+|    total_timesteps | 4096 |
+-----------------------------
+[StatsCallback] transfer=0.068s process=0.009s total=0.077s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733844.json
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1506          |
+|    iterations           | 2             |
+|    time_elapsed         | 5             |
+|    total_timesteps      | 8192          |
+| train/                  |               |
+|    approx_kl            | 0.00010902152 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.95         |
+|    explained_variance   | -0.114        |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0117        |
+|    n_updates            | 1             |
+|    policy_gradient_loss | -0.000219     |
+|    value_loss           | 0.192         |
+-------------------------------------------
+[StatsCallback] transfer=0.012s process=0.014s total=0.026s stats_total=4096 max_env=128
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1603         |
+|    iterations           | 3            |
+|    time_elapsed         | 7            |
+|    total_timesteps      | 12288        |
+| train/                  |              |
+|    approx_kl            | 9.751759e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.95        |
+|    explained_variance   | 0.0948       |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.0361       |
+|    n_updates            | 2            |
+|    policy_gradient_loss | -0.000296    |
+|    value_loss           | 0.231        |
+------------------------------------------
+[StatsCallback] transfer=0.115s process=0.014s total=0.129s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733849.json
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1460         |
+|    iterations           | 4            |
+|    time_elapsed         | 11           |
+|    total_timesteps      | 16384        |
+| train/                  |              |
+|    approx_kl            | 6.342074e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | -0.0256      |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.0173       |
+|    n_updates            | 3            |
+|    policy_gradient_loss | -6.41e-05    |
+|    value_loss           | 0.326        |
+------------------------------------------
+[StatsCallback] transfer=0.011s process=0.014s total=0.026s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1498          |
+|    iterations           | 5             |
+|    time_elapsed         | 13            |
+|    total_timesteps      | 20480         |
+| train/                  |               |
+|    approx_kl            | 0.00023116144 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | -0.0605       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.000371      |
+|    n_updates            | 4             |
+|    policy_gradient_loss | -0.000463     |
+|    value_loss           | 0.146         |
+-------------------------------------------
+[StatsCallback] transfer=0.111s process=0.015s total=0.126s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733855.json
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1437          |
+|    iterations           | 6             |
+|    time_elapsed         | 17            |
+|    total_timesteps      | 24576         |
+| train/                  |               |
+|    approx_kl            | 0.00031972272 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | -0.0455       |
+|    learning_rate        | 0.0003        |
+|    loss                 | -0.00413      |
+|    n_updates            | 5             |
+|    policy_gradient_loss | -0.000506     |
+|    value_loss           | 0.274         |
+-------------------------------------------
+[StatsCallback] transfer=0.010s process=0.014s total=0.024s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1468          |
+|    iterations           | 7             |
+|    time_elapsed         | 19            |
+|    total_timesteps      | 28672         |
+| train/                  |               |
+|    approx_kl            | 0.00019887404 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.93         |
+|    explained_variance   | -0.0224       |
+|    learning_rate        | 0.0003        |
+|    loss                 | -0.00339      |
+|    n_updates            | 6             |
+|    policy_gradient_loss | -0.000118     |
+|    value_loss           | 0.139         |
+-------------------------------------------
+[StatsCallback] transfer=0.111s process=0.009s total=0.119s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733861.json
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1439          |
+|    iterations           | 8             |
+|    time_elapsed         | 22            |
+|    total_timesteps      | 32768         |
+| train/                  |               |
+|    approx_kl            | 0.00011596295 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.93         |
+|    explained_variance   | -0.0122       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0268        |
+|    n_updates            | 7             |
+|    policy_gradient_loss | 2.14e-05      |
+|    value_loss           | 0.217         |
+-------------------------------------------
+[StatsCallback] transfer=0.011s process=0.013s total=0.024s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1455          |
+|    iterations           | 9             |
+|    time_elapsed         | 25            |
+|    total_timesteps      | 36864         |
+| train/                  |               |
+|    approx_kl            | 2.7947419e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.93         |
+|    explained_variance   | -0.00811      |
+|    learning_rate        | 0.0003        |
+|    loss                 | -0.0098       |
+|    n_updates            | 8             |
+|    policy_gradient_loss | -2.32e-05     |
+|    value_loss           | 0.139         |
+-------------------------------------------
+[StatsCallback] transfer=0.011s process=0.115s total=0.126s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733867.json
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1421         |
+|    iterations           | 10           |
+|    time_elapsed         | 28           |
+|    total_timesteps      | 40960        |
+| train/                  |              |
+|    approx_kl            | 0.0005974923 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | -0.00674     |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00684      |
+|    n_updates            | 9            |
+|    policy_gradient_loss | -0.000792    |
+|    value_loss           | 0.154        |
+------------------------------------------
+[StatsCallback] transfer=0.011s process=0.013s total=0.024s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1451          |
+|    iterations           | 11            |
+|    time_elapsed         | 31            |
+|    total_timesteps      | 45056         |
+| train/                  |               |
+|    approx_kl            | 0.00018549012 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.00216       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0102        |
+|    n_updates            | 10            |
+|    policy_gradient_loss | -0.000106     |
+|    value_loss           | 0.153         |
+-------------------------------------------
+[StatsCallback] transfer=0.011s process=0.106s total=0.116s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733873.json
+--------------------------------------------
+| time/                   |                |
+|    fps                  | 1421           |
+|    iterations           | 12             |
+|    time_elapsed         | 34             |
+|    total_timesteps      | 49152          |
+| train/                  |                |
+|    approx_kl            | 0.000106444524 |
+|    clip_fraction        | 0              |
+|    clip_range           | 0.2            |
+|    entropy_loss         | -1.94          |
+|    explained_variance   | -0.00283       |
+|    learning_rate        | 0.0003         |
+|    loss                 | 0.0116         |
+|    n_updates            | 11             |
+|    policy_gradient_loss | -6.25e-05      |
+|    value_loss           | 0.146          |
+--------------------------------------------
+[StatsCallback] transfer=0.011s process=0.013s total=0.024s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1438          |
+|    iterations           | 13            |
+|    time_elapsed         | 37            |
+|    total_timesteps      | 53248         |
+| train/                  |               |
+|    approx_kl            | 4.5850917e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.00466       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.011         |
+|    n_updates            | 12            |
+|    policy_gradient_loss | -1.07e-05     |
+|    value_loss           | 0.141         |
+-------------------------------------------
+[StatsCallback] transfer=0.011s process=0.116s total=0.127s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733878.json
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1422          |
+|    iterations           | 14            |
+|    time_elapsed         | 40            |
+|    total_timesteps      | 57344         |
+| train/                  |               |
+|    approx_kl            | 3.9683408e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.00229       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0135        |
+|    n_updates            | 13            |
+|    policy_gradient_loss | 0.000131      |
+|    value_loss           | 0.137         |
+-------------------------------------------
+[StatsCallback] transfer=0.011s process=0.012s total=0.023s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1434          |
+|    iterations           | 15            |
+|    time_elapsed         | 42            |
+|    total_timesteps      | 61440         |
+| train/                  |               |
+|    approx_kl            | 2.1820466e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | -0.00776      |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0133        |
+|    n_updates            | 14            |
+|    policy_gradient_loss | 8.78e-06      |
+|    value_loss           | 0.132         |
+-------------------------------------------
+[StatsCallback] transfer=0.012s process=0.014s total=0.026s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733884.json
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1413          |
+|    iterations           | 16            |
+|    time_elapsed         | 46            |
+|    total_timesteps      | 65536         |
+| train/                  |               |
+|    approx_kl            | 7.6868135e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | -0.00271      |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0135        |
+|    n_updates            | 15            |
+|    policy_gradient_loss | -8.87e-05     |
+|    value_loss           | 0.126         |
+-------------------------------------------
+[StatsCallback] transfer=0.113s process=0.013s total=0.126s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1420          |
+|    iterations           | 17            |
+|    time_elapsed         | 49            |
+|    total_timesteps      | 69632         |
+| train/                  |               |
+|    approx_kl            | 3.9829494e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.000974      |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0103        |
+|    n_updates            | 16            |
+|    policy_gradient_loss | -5.57e-05     |
+|    value_loss           | 0.121         |
+-------------------------------------------
+[StatsCallback] transfer=0.011s process=0.014s total=0.025s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733890.json
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1411          |
+|    iterations           | 18            |
+|    time_elapsed         | 52            |
+|    total_timesteps      | 73728         |
+| train/                  |               |
+|    approx_kl            | 2.3079847e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.00308       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0103        |
+|    n_updates            | 17            |
+|    policy_gradient_loss | 9.11e-05      |
+|    value_loss           | 0.115         |
+-------------------------------------------
+[StatsCallback] transfer=0.109s process=0.013s total=0.122s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1418          |
+|    iterations           | 19            |
+|    time_elapsed         | 54            |
+|    total_timesteps      | 77824         |
+| train/                  |               |
+|    approx_kl            | 4.0048777e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | -9.21e-05     |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0103        |
+|    n_updates            | 18            |
+|    policy_gradient_loss | -3.84e-05     |
+|    value_loss           | 0.11          |
+-------------------------------------------
+[StatsCallback] transfer=0.011s process=0.013s total=0.024s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733896.json
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1406         |
+|    iterations           | 20           |
+|    time_elapsed         | 58           |
+|    total_timesteps      | 81920        |
+| train/                  |              |
+|    approx_kl            | 5.083173e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | -0.000987    |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00939      |
+|    n_updates            | 19           |
+|    policy_gradient_loss | 0.000224     |
+|    value_loss           | 0.104        |
+------------------------------------------
+[StatsCallback] transfer=0.011s process=0.091s total=0.101s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1416          |
+|    iterations           | 21            |
+|    time_elapsed         | 60            |
+|    total_timesteps      | 86016         |
+| train/                  |               |
+|    approx_kl            | 2.6050286e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | -0.494        |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0125        |
+|    n_updates            | 20            |
+|    policy_gradient_loss | 5.14e-05      |
+|    value_loss           | 0.118         |
+-------------------------------------------
+[StatsCallback] transfer=0.011s process=0.013s total=0.024s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733902.json
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1403         |
+|    iterations           | 22           |
+|    time_elapsed         | 64           |
+|    total_timesteps      | 90112        |
+| train/                  |              |
+|    approx_kl            | 2.680943e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | -0.0012      |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.0132       |
+|    n_updates            | 21           |
+|    policy_gradient_loss | -5.78e-05    |
+|    value_loss           | 0.101        |
+------------------------------------------
+[StatsCallback] transfer=0.011s process=0.108s total=0.118s stats_total=4096 max_env=128
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1410         |
+|    iterations           | 23           |
+|    time_elapsed         | 66           |
+|    total_timesteps      | 94208        |
+| train/                  |              |
+|    approx_kl            | 4.725241e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.93        |
+|    explained_variance   | -0.000681    |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00821      |
+|    n_updates            | 22           |
+|    policy_gradient_loss | -8.74e-05    |
+|    value_loss           | 0.0956       |
+------------------------------------------
+[StatsCallback] transfer=0.011s process=0.014s total=0.025s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733908.json
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1404         |
+|    iterations           | 24           |
+|    time_elapsed         | 70           |
+|    total_timesteps      | 98304        |
+| train/                  |              |
+|    approx_kl            | 9.316654e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.93        |
+|    explained_variance   | -0.000277    |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00514      |
+|    n_updates            | 23           |
+|    policy_gradient_loss | -0.000149    |
+|    value_loss           | 0.0908       |
+------------------------------------------
+[StatsCallback] transfer=0.011s process=0.108s total=0.119s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1416          |
+|    iterations           | 25            |
+|    time_elapsed         | 72            |
+|    total_timesteps      | 102400        |
+| train/                  |               |
+|    approx_kl            | 6.9899324e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.93         |
+|    explained_variance   | -0.000462     |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00682       |
+|    n_updates            | 24            |
+|    policy_gradient_loss | 0.000204      |
+|    value_loss           | 0.086         |
+-------------------------------------------
+[StatsCallback] transfer=0.011s process=0.014s total=0.024s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733914.json
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1407          |
+|    iterations           | 26            |
+|    time_elapsed         | 75            |
+|    total_timesteps      | 106496        |
+| train/                  |               |
+|    approx_kl            | 6.2847685e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.93         |
+|    explained_variance   | -0.000439     |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00332       |
+|    n_updates            | 25            |
+|    policy_gradient_loss | -0.000126     |
+|    value_loss           | 0.0819        |
+-------------------------------------------
+[StatsCallback] transfer=0.011s process=0.011s total=0.022s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1414          |
+|    iterations           | 27            |
+|    time_elapsed         | 78            |
+|    total_timesteps      | 110592        |
+| train/                  |               |
+|    approx_kl            | 0.00018209998 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.92         |
+|    explained_variance   | -0.000464     |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0068        |
+|    n_updates            | 26            |
+|    policy_gradient_loss | -8.31e-05     |
+|    value_loss           | 0.0784        |
+-------------------------------------------
+[StatsCallback] transfer=0.112s process=0.014s total=0.126s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733920.json
+--------------------------------------------
+| time/                   |                |
+|    fps                  | 1407           |
+|    iterations           | 28             |
+|    time_elapsed         | 81             |
+|    total_timesteps      | 114688         |
+| train/                  |                |
+|    approx_kl            | 0.000111143265 |
+|    clip_fraction        | 0              |
+|    clip_range           | 0.2            |
+|    entropy_loss         | -1.92          |
+|    explained_variance   | -0.0002        |
+|    learning_rate        | 0.0003         |
+|    loss                 | 0.00233        |
+|    n_updates            | 27             |
+|    policy_gradient_loss | -0.000193      |
+|    value_loss           | 0.0745         |
+--------------------------------------------
+[StatsCallback] transfer=0.011s process=0.012s total=0.023s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1412          |
+|    iterations           | 29            |
+|    time_elapsed         | 84            |
+|    total_timesteps      | 118784        |
+| train/                  |               |
+|    approx_kl            | 0.00015871777 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.91         |
+|    explained_variance   | -0.000155     |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00293       |
+|    n_updates            | 28            |
+|    policy_gradient_loss | 8.47e-05      |
+|    value_loss           | 0.0704        |
+-------------------------------------------
+[StatsCallback] transfer=0.109s process=0.016s total=0.125s stats_total=4096 max_env=128
+Saved 8192 stats to experiments\v1_reset_test\20251006_085701\json_logs\stats_1759733926.json
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1401         |
+|    iterations           | 30           |
+|    time_elapsed         | 87           |
+|    total_timesteps      | 122880       |
+| train/                  |              |
+|    approx_kl            | 8.118368e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.91        |
+|    explained_variance   | -0.00023     |
+|    learning_rate        | 0.0003       |
+|    loss                 | -0.000271    |
+|    n_updates            | 29           |
+|    policy_gradient_loss | 0.000123     |
+|    value_loss           | 0.0667       |
+------------------------------------------
+[StatsCallback] transfer=0.011s process=0.012s total=0.022s stats_total=4096 max_env=128
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1407          |
+|    iterations           | 31            |
+|    time_elapsed         | 90            |
+|    total_timesteps      | 126976        |
+| train/                  |               |
+|    approx_kl            | 5.4739096e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.91         |
+|    explained_variance   | 5.01e-05      |
+|    learning_rate        | 0.0003        |
+|    loss                 | -0.00339      |
+|    n_updates            | 30            |
+|    policy_gradient_loss | 0.000323      |
+|    value_loss           | 0.0558        |
+-------------------------------------------
+[StatsCallback] transfer=0.001s process=0.000s total=0.001s stats_total=0 max_env=0
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1410         |
+|    iterations           | 32           |
+|    time_elapsed         | 92           |
+|    total_timesteps      | 131072       |
+| train/                  |              |
+|    approx_kl            | 0.0001052264 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.92        |
+|    explained_variance   | -0.000538    |
+|    learning_rate        | 0.0003       |
+|    loss                 | -0.00809     |
+|    n_updates            | 31           |
+|    policy_gradient_loss | -4.82e-05    |
+|    value_loss           | 0.0496       |
+------------------------------------------
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+Traceback (most recent call last):
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\runpy.py", line 196, in _run_module_as_main
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+    return _run_code(code, main_globals, None,
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "C:\Users\marwi\Documents\fhstp\masterarbeit\PokemonRedExperiments\Pipeline_V2\src\pipeline_v2\train.py", line 298, in <module>
+    main()
+  File "C:\Users\marwi\Documents\fhstp\masterarbeit\PokemonRedExperiments\Pipeline_V2\src\pipeline_v2\train.py", line 275, in main
+    model.learn(
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\ppo\ppo.py", line 311, in learn
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+    return super().learn(
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\common\on_policy_algorithm.py", line 324, in learn
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+    continue_training = self.collect_rollouts(self.env, callback, self.rollout_buffer, n_rollout_steps=self.n_steps)
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\common\on_policy_algorithm.py", line 218, in collect_rollouts
+    new_obs, rewards, dones, infos = env.step(clipped_actions)
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\common\vec_env\base_vec_env.py", line 222, in step
+    return self.step_wait()
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\common\vec_env\vec_transpose.py", line 97, in step_wait
+    observations, rewards, dones, infos = self.venv.step_wait()
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\common\vec_env\subproc_vec_env.py", line 137, in step_wait
+    results = [remote.recv() for remote in self.remotes]
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\common\vec_env\subproc_vec_env.py", line 137, in <listcomp>
+    results = [remote.recv() for remote in self.remotes]
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\multiprocessing\connection.py", line 250, in recv
+    buf = self._recv_bytes()
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\multiprocessing\connection.py", line 305, in _recv_bytes
+    waitres = _winapi.WaitForMultipleObjects(
+KeyboardInterrupt
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+ Training interrupted – finalisiere JSON-Logs …
+Emergency model saved to experiments\v1_reset_test\20251006_085701\checkpoints\v1_emergency_model.zip
+Final stats saved to experiments\v1_reset_test\20251006_085701\json_logs\stats_final_1759734410.json
+^C

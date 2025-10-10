@@ -1,0 +1,795 @@
+Starting new training session: experiments\v1_reset_test\20251006_084147
+Effective config: {'num_cpu': 32, 'max_steps': 4096, 'n_steps': 128, 'save_freq': 4096, 'save_freq_stats': 0, 'reset_interval': 32, 'total_timesteps': '2e6', 'variant': 'v1', 'config_file': 'configs\\v1_reset_test.yaml'}
+Environment resets every 32 iterations
+Using SubprocVecEnv with 32 parallel workers
+Using cuda device
+Wrapping the env in a VecTransposeImage.
+Logging to experiments\v1_reset_test\20251006_084147\tensorboard\v1_0
+-----------------------------
+| time/              |      |
+|    fps             | 2008 |
+|    iterations      | 1    |
+|    time_elapsed    | 2    |
+|    total_timesteps | 4096 |
+-----------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1864          |
+|    iterations           | 2             |
+|    time_elapsed         | 4             |
+|    total_timesteps      | 8192          |
+| train/                  |               |
+|    approx_kl            | 1.9823055e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.95         |
+|    explained_variance   | -0.246        |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00656       |
+|    n_updates            | 1             |
+|    policy_gradient_loss | -3.07e-05     |
+|    value_loss           | 0.14          |
+-------------------------------------------
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1883         |
+|    iterations           | 3            |
+|    time_elapsed         | 6            |
+|    total_timesteps      | 12288        |
+| train/                  |              |
+|    approx_kl            | 3.147147e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.95        |
+|    explained_variance   | -0.109       |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00118      |
+|    n_updates            | 2            |
+|    policy_gradient_loss | 2.14e-06     |
+|    value_loss           | 0.191        |
+------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1854          |
+|    iterations           | 4             |
+|    time_elapsed         | 8             |
+|    total_timesteps      | 16384         |
+| train/                  |               |
+|    approx_kl            | 2.1216692e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.95         |
+|    explained_variance   | -0.0938       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0248        |
+|    n_updates            | 3             |
+|    policy_gradient_loss | -0.000131     |
+|    value_loss           | 0.346         |
+-------------------------------------------
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1851         |
+|    iterations           | 5            |
+|    time_elapsed         | 11           |
+|    total_timesteps      | 20480        |
+| train/                  |              |
+|    approx_kl            | 9.015827e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | -0.0954      |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.0278       |
+|    n_updates            | 4            |
+|    policy_gradient_loss | -9.04e-05    |
+|    value_loss           | 0.167        |
+------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1847          |
+|    iterations           | 6             |
+|    time_elapsed         | 13            |
+|    total_timesteps      | 24576         |
+| train/                  |               |
+|    approx_kl            | 2.9099247e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | -0.0328       |
+|    learning_rate        | 0.0003        |
+|    loss                 | -0.00152      |
+|    n_updates            | 5             |
+|    policy_gradient_loss | 1.99e-05      |
+|    value_loss           | 0.307         |
+-------------------------------------------
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1817         |
+|    iterations           | 7            |
+|    time_elapsed         | 15           |
+|    total_timesteps      | 28672        |
+| train/                  |              |
+|    approx_kl            | 3.257791e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | -0.106       |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00641      |
+|    n_updates            | 6            |
+|    policy_gradient_loss | 0.000223     |
+|    value_loss           | 0.113        |
+------------------------------------------
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1818         |
+|    iterations           | 8            |
+|    time_elapsed         | 18           |
+|    total_timesteps      | 32768        |
+| train/                  |              |
+|    approx_kl            | 6.205424e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | -0.0251      |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.0274       |
+|    n_updates            | 7            |
+|    policy_gradient_loss | -3.64e-06    |
+|    value_loss           | 0.247        |
+------------------------------------------
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1828         |
+|    iterations           | 9            |
+|    time_elapsed         | 20           |
+|    total_timesteps      | 36864        |
+| train/                  |              |
+|    approx_kl            | 7.004151e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | -0.00607     |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00622      |
+|    n_updates            | 8            |
+|    policy_gradient_loss | 9.04e-06     |
+|    value_loss           | 0.175        |
+------------------------------------------
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1832         |
+|    iterations           | 10           |
+|    time_elapsed         | 22           |
+|    total_timesteps      | 40960        |
+| train/                  |              |
+|    approx_kl            | 4.779338e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | -0.00176     |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00387      |
+|    n_updates            | 9            |
+|    policy_gradient_loss | -0.000153    |
+|    value_loss           | 0.15         |
+------------------------------------------
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1817         |
+|    iterations           | 11           |
+|    time_elapsed         | 24           |
+|    total_timesteps      | 45056        |
+| train/                  |              |
+|    approx_kl            | 7.116205e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | -0.00045     |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00533      |
+|    n_updates            | 10           |
+|    policy_gradient_loss | -0.000116    |
+|    value_loss           | 0.147        |
+------------------------------------------
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1816         |
+|    iterations           | 12           |
+|    time_elapsed         | 27           |
+|    total_timesteps      | 49152        |
+| train/                  |              |
+|    approx_kl            | 4.678205e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | 0.00136      |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00955      |
+|    n_updates            | 11           |
+|    policy_gradient_loss | 0.0002       |
+|    value_loss           | 0.144        |
+------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1820          |
+|    iterations           | 13            |
+|    time_elapsed         | 29            |
+|    total_timesteps      | 53248         |
+| train/                  |               |
+|    approx_kl            | 8.4764324e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | -0.00282      |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0101        |
+|    n_updates            | 12            |
+|    policy_gradient_loss | -4.61e-06     |
+|    value_loss           | 0.137         |
+-------------------------------------------
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1806         |
+|    iterations           | 14           |
+|    time_elapsed         | 31           |
+|    total_timesteps      | 57344        |
+| train/                  |              |
+|    approx_kl            | 7.146326e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | 0.00384      |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00905      |
+|    n_updates            | 13           |
+|    policy_gradient_loss | 0.00011      |
+|    value_loss           | 0.132        |
+------------------------------------------
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1801         |
+|    iterations           | 15           |
+|    time_elapsed         | 34           |
+|    total_timesteps      | 61440        |
+| train/                  |              |
+|    approx_kl            | 5.149089e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | -0.00351     |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00914      |
+|    n_updates            | 14           |
+|    policy_gradient_loss | -0.000248    |
+|    value_loss           | 0.126        |
+------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1807          |
+|    iterations           | 16            |
+|    time_elapsed         | 36            |
+|    total_timesteps      | 65536         |
+| train/                  |               |
+|    approx_kl            | 0.00023052705 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.00274       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0123        |
+|    n_updates            | 15            |
+|    policy_gradient_loss | 0.000348      |
+|    value_loss           | 0.12          |
+-------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1806          |
+|    iterations           | 17            |
+|    time_elapsed         | 38            |
+|    total_timesteps      | 69632         |
+| train/                  |               |
+|    approx_kl            | 0.00014246344 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | -0.0011       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00866       |
+|    n_updates            | 16            |
+|    policy_gradient_loss | -0.000132     |
+|    value_loss           | 0.114         |
+-------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1795          |
+|    iterations           | 18            |
+|    time_elapsed         | 41            |
+|    total_timesteps      | 73728         |
+| train/                  |               |
+|    approx_kl            | 0.00014797834 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.00111       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00692       |
+|    n_updates            | 17            |
+|    policy_gradient_loss | 0.000298      |
+|    value_loss           | 0.108         |
+-------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1797          |
+|    iterations           | 19            |
+|    time_elapsed         | 43            |
+|    total_timesteps      | 77824         |
+| train/                  |               |
+|    approx_kl            | 5.9166676e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | -0.167        |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00784       |
+|    n_updates            | 18            |
+|    policy_gradient_loss | -2.44e-05     |
+|    value_loss           | 0.113         |
+-------------------------------------------
+------------------------------------------
+| time/                   |              |
+|    fps                  | 1800         |
+|    iterations           | 20           |
+|    time_elapsed         | 45           |
+|    total_timesteps      | 81920        |
+| train/                  |              |
+|    approx_kl            | 8.456857e-05 |
+|    clip_fraction        | 0            |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.94        |
+|    explained_variance   | -0.0023      |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.0115       |
+|    n_updates            | 19           |
+|    policy_gradient_loss | 0.000257     |
+|    value_loss           | 0.104        |
+------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1793          |
+|    iterations           | 21            |
+|    time_elapsed         | 47            |
+|    total_timesteps      | 86016         |
+| train/                  |               |
+|    approx_kl            | 1.1720578e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.000905      |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.0113        |
+|    n_updates            | 20            |
+|    policy_gradient_loss | 6.64e-05      |
+|    value_loss           | 0.0991        |
+-------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1790          |
+|    iterations           | 22            |
+|    time_elapsed         | 50            |
+|    total_timesteps      | 90112         |
+| train/                  |               |
+|    approx_kl            | 3.5920442e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.00101       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00875       |
+|    n_updates            | 21            |
+|    policy_gradient_loss | -0.000229     |
+|    value_loss           | 0.0934        |
+-------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1793          |
+|    iterations           | 23            |
+|    time_elapsed         | 52            |
+|    total_timesteps      | 94208         |
+| train/                  |               |
+|    approx_kl            | 0.00027803192 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | -9.11e-05     |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00963       |
+|    n_updates            | 22            |
+|    policy_gradient_loss | -0.000102     |
+|    value_loss           | 0.0896        |
+-------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1789          |
+|    iterations           | 24            |
+|    time_elapsed         | 54            |
+|    total_timesteps      | 98304         |
+| train/                  |               |
+|    approx_kl            | 0.00022005149 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.00224       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00334       |
+|    n_updates            | 23            |
+|    policy_gradient_loss | -0.000174     |
+|    value_loss           | 0.085         |
+-------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1787          |
+|    iterations           | 25            |
+|    time_elapsed         | 57            |
+|    total_timesteps      | 102400        |
+| train/                  |               |
+|    approx_kl            | 8.5397915e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.00294       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00382       |
+|    n_updates            | 24            |
+|    policy_gradient_loss | 0.000191      |
+|    value_loss           | 0.0814        |
+-------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1787          |
+|    iterations           | 26            |
+|    time_elapsed         | 59            |
+|    total_timesteps      | 106496        |
+| train/                  |               |
+|    approx_kl            | 4.7244655e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.0045        |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00531       |
+|    n_updates            | 25            |
+|    policy_gradient_loss | 0.000122      |
+|    value_loss           | 0.0772        |
+-------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1780          |
+|    iterations           | 27            |
+|    time_elapsed         | 62            |
+|    total_timesteps      | 110592        |
+| train/                  |               |
+|    approx_kl            | 3.1187505e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.00648       |
+|    learning_rate        | 0.0003        |
+|    loss                 | 0.00205       |
+|    n_updates            | 26            |
+|    policy_gradient_loss | 0.000147      |
+|    value_loss           | 0.0731        |
+-------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1777          |
+|    iterations           | 28            |
+|    time_elapsed         | 64            |
+|    total_timesteps      | 114688        |
+| train/                  |               |
+|    approx_kl            | 6.7705245e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.0051        |
+|    learning_rate        | 0.0003        |
+|    loss                 | -0.00155      |
+|    n_updates            | 27            |
+|    policy_gradient_loss | 5.6e-05       |
+|    value_loss           | 0.0666        |
+-------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1779          |
+|    iterations           | 29            |
+|    time_elapsed         | 66            |
+|    total_timesteps      | 118784        |
+| train/                  |               |
+|    approx_kl            | 0.00012988785 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.000767      |
+|    learning_rate        | 0.0003        |
+|    loss                 | -0.00706      |
+|    n_updates            | 28            |
+|    policy_gradient_loss | 9.63e-05      |
+|    value_loss           | 0.056         |
+-------------------------------------------
+-----------------------------------------
+| time/                   |             |
+|    fps                  | 1774        |
+|    iterations           | 30          |
+|    time_elapsed         | 69          |
+|    total_timesteps      | 122880      |
+| train/                  |             |
+|    approx_kl            | 7.37689e-05 |
+|    clip_fraction        | 0           |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -1.94       |
+|    explained_variance   | -0.0617     |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.000465    |
+|    n_updates            | 29          |
+|    policy_gradient_loss | 0.000364    |
+|    value_loss           | 0.0614      |
+-----------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1771          |
+|    iterations           | 31            |
+|    time_elapsed         | 71            |
+|    total_timesteps      | 126976        |
+| train/                  |               |
+|    approx_kl            | 1.7706174e-05 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.94         |
+|    explained_variance   | 0.00276       |
+|    learning_rate        | 0.0003        |
+|    loss                 | -0.00716      |
+|    n_updates            | 30            |
+|    policy_gradient_loss | -9.78e-05     |
+|    value_loss           | 0.0589        |
+-------------------------------------------
+-------------------------------------------
+| time/                   |               |
+|    fps                  | 1770          |
+|    iterations           | 32            |
+|    time_elapsed         | 74            |
+|    total_timesteps      | 131072        |
+| train/                  |               |
+|    approx_kl            | 0.00025083267 |
+|    clip_fraction        | 0             |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -1.93         |
+|    explained_variance   | 0.00268       |
+|    learning_rate        | 0.0003        |
+|    loss                 | -0.00211      |
+|    n_updates            | 31            |
+|    policy_gradient_loss | -0.000403     |
+|    value_loss           | 0.0564        |
+-------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\runpy.py", line 86, in _run_code
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+    exec(code, run_globals)
+  File "C:\Users\marwi\Documents\fhstp\masterarbeit\PokemonRedExperiments\Pipeline_V2\src\pipeline_v2\train.py", line 298, in <module>
+    main()
+  File "C:\Users\marwi\Documents\fhstp\masterarbeit\PokemonRedExperiments\Pipeline_V2\src\pipeline_v2\train.py", line 275, in main
+    model.learn(
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\ppo\ppo.py", line 311, in learn
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine   forrtl: error (200): program abo rting due to control-C event
+Image              PC                Rout        Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknownine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown        forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+       Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007Fforrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+FA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknforrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown     forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source             
+libifcoremd.dll    00007FF99748DF54  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFA3A9FA09D  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+          Unknown  Unknown
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+own
+KERNEL32.DLL       00007FFA3C64E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFA3D6E8D9C  Unknown               Unknown  Unknown
+    return super().learn(
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\common\on_policy_algorithm.py", line 324, in learn
+    continue_training = self.collect_rollouts(self.env, callback, self.rollout_buffer, n_rollout_steps=self.n_steps)
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\common\on_policy_algorithm.py", line 218, in collect_rollouts
+    new_obs, rewards, dones, infos = env.step(clipped_actions)
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\common\vec_env\base_vec_env.py", line 222, in step
+    return self.step_wait()
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\common\vec_env\vec_transpose.py", line 97, in step_wait
+    observations, rewards, dones, infos = self.venv.step_wait()
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\common\vec_env\subproc_vec_env.py", line 137, in step_wait
+    results = [remote.recv() for remote in self.remotes]
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\site-packages\stable_baselines3\common\vec_env\subproc_vec_env.py", line 137, in <listcomp>
+    results = [remote.recv() for remote in self.remotes]
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\multiprocessing\connection.py", line 250, in recv
+    buf = self._recv_bytes()
+  File "C:\Users\marwi\anaconda3\envs\poke_env\lib\multiprocessing\connection.py", line 305, in _recv_bytes
+    waitres = _winapi.WaitForMultipleObjects(
+KeyboardInterrupt
+ Training interrupted – finalisiere JSON-Logs …
+Emergency model saved to experiments\v1_reset_test\20251006_084147\checkpoints\v1_emergency_model.zip
+^C

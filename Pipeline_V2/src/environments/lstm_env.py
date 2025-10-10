@@ -4,13 +4,9 @@ LSTM Environment (v3/v4)
 This variant uses single frame with LSTM support:
 - Action history of 10 steps
 - Episode start flag for LSTM state reset
-- Aggressive staggered resets with jitter
 """
 
 import numpy as np
-import io
-import time
-import random
 from gymnasium import spaces
 
 from environments.base_env import BaseRedGymEnv, EVENT_FLAGS_START, EVENT_FLAGS_END
@@ -70,75 +66,13 @@ class LSTMEnv(BaseRedGymEnv):
             )
         })
 
-    def reset(self, seed=None, options={}):
-        """Reset with LSTM-specific initialization."""
-        self.seed = seed
-        self.episode_start = True  # Signal LSTM to reset hidden state
-        self.action_history = np.zeros((self.history_len,), dtype=np.int32)
-
-        # Staggered reset with aggressive jitter (LSTM-specific)
-        if self.reset_count == 0 and self.num_cpu > 1:
-            offset_factor = self.worker_rank / max(1, self.num_cpu)
-            episode_offset = int(self.base_max_steps * offset_factor * 0.5)  # Up to 50% offset
-            self.max_steps = max(1000, self.base_max_steps - episode_offset)
-            print(f"Worker {self.worker_rank}: First episode shortened to {self.max_steps} steps (offset: {episode_offset})")
-        else:
-            self.max_steps = self.base_max_steps
-
-        # Load game state with aggressive jitter against thundering herd
-        if self._init_state_bytes:
-            base_delay = (self.worker_rank % 16) * 0.025  # 0-375ms staggered
-            random_jitter = random.uniform(0, 0.1)  # +0-100ms random
-            total_delay = base_delay + random_jitter
-            print(f"Worker {self.worker_rank}: Delaying {total_delay:.3f}s before state load...")
-            time.sleep(total_delay)
-
-            print(f"Worker {self.worker_rank}: Loading state from memory...")
-            self.pyboy.load_state(io.BytesIO(self._init_state_bytes))
-            print(f"Worker {self.worker_rank}: State loaded successfully")
-
-        # Initialize environment state
-        self.init_map_mem()
-        self.agent_stats = []
-        self.explore_map_dim = (484, 476)  # GLOBAL_MAP_SHAPE
-        from utils.map_utils import GLOBAL_MAP_SHAPE
-        self.explore_map_dim = GLOBAL_MAP_SHAPE
-        self.explore_map = np.zeros(self.explore_map_dim, dtype=np.uint8)
-
-        # Initialize frame stack (single frame for LSTM)
-        self._init_frame_stack()
-
-        # Render first frame and update frame stack
-        first_frame = self.render()
-        self._update_frame_stack(first_frame)
-
-        # Game state tracking
-        self.levels_satisfied = False
-        self.base_explore = 0
-        self.max_opponent_level = 0
-        self.max_event_rew = 0
-        self.max_level_rew = 0
-        self.last_health = 1
-        self.total_healing_rew = 0
-        self.died_count = 0
-        self.party_size = 0
-        self.step_count = 0
-
-        # Event tracking
-        self.base_event_flags = sum([
-            self.bit_count(self.read_m(i))
-            for i in range(EVENT_FLAGS_START, EVENT_FLAGS_END)
-        ])
-        self.current_event_flags_set = {}
-
-        # Reward tracking
-        self.max_map_progress = 0
-        self.progress_reward = self.get_game_state_reward()
-        self.total_reward = sum([val for _, val in self.progress_reward.items()])
-        self.last_total_reward = self.total_reward
-
-        self.reset_count += 1
-        return self._get_obs(), {}
+    def reset(self, seed=None, options=None):
+        """Reset environment without staggered timing hacks."""
+        self.episode_start = True
+        self.max_steps = self.base_max_steps
+        options = options or {}
+        obs, info = super().reset(seed=seed, options=options)
+        return obs, info
 
     def _init_frame_stack(self):
         """Initialize single frame buffer and action history."""

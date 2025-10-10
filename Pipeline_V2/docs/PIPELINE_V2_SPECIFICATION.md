@@ -48,17 +48,16 @@ Systematic evaluation of Lambda Discrepancy (LD) as auxiliary loss in recurrent 
 ### Directory Structure
 ```
 Pipeline_V2/
+├── train.py              # ✅ Modern CLI entry point
 ├── src/
 │   ├── trainers/          # ✅ Base trainer implemented; default trainer covers v1–v4
-│   ├── environments/      # ✅ Environment implementations (refactored)
-│   ├── models/           # [TODO] Custom models (RecurrentPPOLD, policies)
-│   ├── callbacks/        # [TODO] Logging, checkpointing, monitoring
-│   ├── pipeline_v2/      # [LEGACY] Current training code (to be refactored)
+│   ├── environments/      # ✅ Environment implementations (refactored, 53% code reduction)
+│   ├── models/           # ✅ Custom models (RecurrentPPOLD, MultiInputLstmPolicyLD)
+│   ├── callbacks/        # ✅ Logging, checkpointing, monitoring (Stats, TensorBoard, Writers)
 │   └── utils/            # ✅ Shared utilities, data processing
-├── configs/              # ✅ YAML configurations (v1-v4)
+├── configs/              # ✅ YAML configurations (v1-v4) with base.yaml hierarchy
 ├── data/                 # ✅ Game ROMs, save states, map data
 ├── docs/                 # ✅ All documentation (specifications, findings, suggestions)
-├── test/                 # ✅ Temporary scripts, debugging tools (organic organization)
 ├── experiments/          # Training outputs (gitignored, v1/, v2/, v3/, v4/ subdirs)
 └── analysis/             # [TODO] Data processing, visualization tools
 ```
@@ -246,14 +245,17 @@ conda activate poke_viz_extended
 **Training Commands:**
 ```bash
 # Train specific variant with config
-python -m pipeline_v2.train --variant v1 --config configs/v1_production.yaml
-python -m pipeline_v2.train --variant v4 --config configs/v4_ld_025.yaml
+python train.py --variant v1 --config configs/v1.yaml
+python train.py --variant v4 --config configs/v4_ld_025.yaml
 
 # Resume training from checkpoint
-python -m pipeline_v2.train --variant v4 --config configs/v4_ld_025.yaml --resume experiments/v4/20241001_120000/checkpoints/model_latest.zip
+python train.py --variant v4 --config configs/v4_ld_025.yaml --resume experiments/v4/20241001_120000/checkpoints/model_latest.zip
 
-# Interactive agent execution (debugging)
-python -m pipeline_v2.run --variant v4 --model experiments/v4/20241001_120000/checkpoints/model_latest.zip
+# All variants tested and working:
+python train.py --variant v1 --config configs/v1.yaml  # PPO + Frame Stacking
+python train.py --variant v2 --config configs/v2.yaml  # PPO + Single Frame
+python train.py --variant v3 --config configs/v3.yaml  # RecurrentPPO + LSTM
+python train.py --variant v4 --config configs/v4.yaml  # RecurrentPPO + LSTM + Lambda Discrepancy
 ```
 
 **Analysis Commands:**
@@ -564,19 +566,82 @@ __pycache__/
 
 ---
 
+---
+
+### ✅ Completed: Architecture Cleanup (2025-10-10)
+
+**Objective:** Complete the modular architecture by creating dedicated `models/` and `callbacks/` modules, removing all legacy code from `pipeline_v2/`, and modernizing the CLI entry point.
+
+**What Was Done:**
+
+1. **Phase 1: Models Module Created** ✅
+   - Created `src/models/` with `recurrent_ppo_ld.py`
+   - Exported `RecurrentPPOLD` and `MultiInputLstmPolicyLD`
+   - ~10KB of model code properly organized
+
+2. **Phase 2: Callbacks Module Completed** ✅
+   - Moved `tensorboard_callback.py` → `src/callbacks/tensorboard.py`
+   - Unified exports: `StatsCallback`, `TensorboardCallback`, `CsvStatsWriter`, `JsonStatsWriter`, `StatsWriter`
+   - All logging functionality in one place
+
+3. **Phase 3: Trainer Imports Updated** ✅
+   - `base_trainer.py`: Updated to use `from models import ...` and `from callbacks import ...`
+   - `lambda_trainer.py`: Updated to use `from models import ...`
+   - Clean dependency graph: `trainers/` → `models/` + `callbacks/`
+
+4. **Phase 4: Legacy Code Removed** ✅
+   - Deleted 3 old environment files (~77KB): `red_gym_env_lstm.py`, `red_gym_env_v2.py`, `red_gym_env_v2_adapted.py`
+   - Deleted moved files: `ppo_lambda_discrepancy.py`, `tensorboard_callback.py`
+   - Removed entire `src/pipeline_v2/` directory
+   - **Total cleanup: ~94KB legacy code removed**
+
+5. **Phase 5: CLI Modernized** ✅
+   - Created `train.py` in root directory (cleaner entry point)
+   - Enhanced help text with examples and variant descriptions
+   - Old command: `python -m pipeline_v2.train --variant v4 --config configs/v4.yaml`
+   - New command: `python train.py --variant v4 --config configs/v4.yaml`
+
+6. **Bug Fix: UTF-8 BOM in Configs** ✅
+   - v3.yaml and v4.yaml had UTF-8 BOM preventing `extends:` recognition
+   - Removed BOM with `sed -i '1s/^\xEF\xBB\xBF//' configs/v3.yaml configs/v4.yaml`
+   - Config inheritance now works correctly (base.yaml provides `n_steps: 2048`)
+
+**Testing & Validation:** ✅
+All 4 variants tested and working with new architecture:
+- v1: PPO + Frame Stacking ✅
+- v2: PPO + Single Frame ✅
+- v3: RecurrentPPO + LSTM ✅
+- v4: RecurrentPPO + LSTM + Lambda Discrepancy ✅
+
+**Final Architecture:**
+```
+Pipeline_V2/
+├── train.py                 # Modern CLI entry point
+├── src/
+│   ├── models/              # RecurrentPPOLD, MultiInputLstmPolicyLD
+│   ├── callbacks/           # Stats, TensorBoard, Writers
+│   ├── trainers/            # Base, Default, LSTM, Lambda
+│   ├── environments/        # Refactored (53% code reduction)
+│   └── utils/               # Shared utilities
+├── configs/                 # YAML with base.yaml hierarchy
+└── experiments/             # Training outputs
+```
+
+---
+
 **Next Steps:**
 1. ~~Validate this specification with detailed requirements~~ ✅ Done
-2. ~~Create new branch: `pipeline-v2`~~ (Using `restructure` branch)
+2. ~~Create new branch: `pipeline-v2`~~ ✅ Done (Using `pipeline-v2` branch)
 3. ~~Execute Phase 1 bootstrapping (copy minimal files)~~ ✅ Done
 4. ~~Run initial v1 test~~ ✅ Done - all variants tested
 5. ~~Iterative refinement based on test results~~ ✅ Done - bugs fixed, all variants working
 6. ~~Environment stability fix~~ ✅ Done - reverted to original reset pattern
 7. ~~PyBoy API update~~ ✅ Done (2025-01-03) - Changed deprecated "headless" → "null" window
-8. **CURRENT: Validate stability with extended training runs (target: 50M+ steps without crashes)**
-9. **NEXT: Phase 2 - Training Logic Modularization**
-   - Delete legacy environment files in `src/pipeline_v2/red_gym_env_*.py`
-   - Create `src/trainers/` module with variant-specific trainers
-   - Modularize callbacks into `src/callbacks/`
+8. ~~Architecture cleanup~~ ✅ Done (2025-10-10) - Models, Callbacks, CLI modernized
+9. **NEXT: Analysis Module**
+   - Create `analysis/` directory structure
+   - Migrate existing analysis tools from notebooks/
+   - Build visualization pipeline
 10. Production runs with stable foundation
 
 ---
