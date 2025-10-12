@@ -6,6 +6,7 @@ This directory contains all documentation for the Pokemon Red RL Pipeline V2 pro
 
 ### Specifications
 - **[PIPELINE_V2_SPECIFICATION.md](PIPELINE_V2_SPECIFICATION.md)** - Complete project specification including architecture requirements, implementation principles, and deployment strategy
+- **[HYPERPARAMETER_NOTES.md](HYPERPARAMETER_NOTES.md)** - Hyperparameter configuration rationale, deviations from baseline, scientific transparency notes
 
 ### Status & Analysis
 - **[REFACTORING_STATUS.md](REFACTORING_STATUS.md)** - Current refactoring status and completed milestones:
@@ -49,7 +50,26 @@ python train.py --variant v3 --config configs/v3.yaml  # RecurrentPPO + LSTM
 python train.py --variant v4 --config configs/v4.yaml  # RecurrentPPO + LSTM + LD
 ```
 
+## Hyperparameter Configuration
+
+All variants inherit from [configs/base.yaml](../configs/base.yaml) with Peter Whidden's formulas:
+
+**Dynamic n_steps Calculation:**
+- Formula: `n_steps = max_steps // num_cpu`
+- Implementation: `BaseTrainer._apply_n_steps_formula()` calculates at runtime
+- Purpose: Ensures exactly 1 environment reset per rollout buffer
+- Example: `163840 // 16 = 10240` steps per worker
+
+**Training Duration:**
+- `save_freq: 81920` - Checkpoint every half-episode (crash recovery)
+- `total_timesteps: 1e8` - Scaled from Whidden's original (163840 × 64 × 10000)
+
+**PPO Hyperparameters:**
+- `n_epochs: 1` - Whidden's baseline (can increase to 3 for better sample efficiency with limited compute)
+- `gamma: 0.997`, `ent_coef: 0.01` - Preserved from original
+
 ## Next Steps
 
 - **Analysis Module**: Create `analysis/` directory and migrate visualization tools
 - **Production Runs**: Execute long training runs with stable architecture
+- **Technical Debt**: Regenerate `data/init.state` with PyBoy 2.x (eliminate version warnings)

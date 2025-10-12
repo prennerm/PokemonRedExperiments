@@ -29,9 +29,12 @@ env:
 model:
   type: null
   policy: null
-  n_steps: 2048
+  # n_steps: Overridden at runtime by BaseTrainer._apply_n_steps_formula()
+  # Formula: max_steps // num_cpu (Peter Whidden's approach)
+  # Example: 163840 // 16 = 10240 (ensures 1 reset per rollout buffer)
+  n_steps: 2048  # Placeholder only - actual value calculated dynamically
   batch_size: 512
-  n_epochs: 1
+  n_epochs: 1  # Peter Whidden's baseline. Can increase to 3 for better sample efficiency.
   gamma: 0.997
   ent_coef: 0.01
   tensorboard_log: "${paths.tb_log}"
@@ -42,5 +45,11 @@ logging:
   save_freq: 100
   structured: true
 
-save_freq: 163840
-total_timesteps: 100000
+# Checkpoint frequency (Peter Whidden's formula: ep_length // 2)
+# Saves model every half episode for better recovery on crashes
+save_freq: 81920  # 163840 // 2
+
+# Total training duration (Peter Whidden's formula: ep_length * num_cpu * iterations)
+# Original: 163840 * 64 * 10000 = ~105 billion steps
+# Scaled for num_cpu=16: 163840 * 16 * ~38000 ≈ 100 million steps
+total_timesteps: 1e8
