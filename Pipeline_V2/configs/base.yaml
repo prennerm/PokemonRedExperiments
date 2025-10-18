@@ -34,14 +34,14 @@ model:
   # Example: 163840 // 16 = 10240 (ensures 1 reset per rollout buffer)
   n_steps: 2048  # Placeholder only - actual value calculated dynamically
   batch_size: 512
-  n_epochs: 1  # Peter Whidden's baseline. Can increase to 3 for better sample efficiency.
+  n_epochs: 3  # Peter Whidden's baseline. Can increase to 3 for better sample efficiency.
   gamma: 0.997
   ent_coef: 0.01
   tensorboard_log: "${paths.tb_log}"
   verbose: 1
 
 logging:
-  format: "json"
+  format: "csv"
   save_freq: 100
   structured: true
 

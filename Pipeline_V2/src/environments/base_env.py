@@ -288,8 +288,20 @@ class BaseRedGymEnv(Env, ABC):
         # Get screen and update frame stack
         self.update_recent_screens(self.render())
 
+        # Update seen coords and exploration
+        self.update_seen_coords()
+        self.update_explore_map()
+
+        # Update heal reward and death tracking
+        self.update_heal_reward()
+        self.party_size = self.read_m(0xD163)
+
         # Update rewards
         self.update_reward()
+
+        # Update last_health AFTER reward calculation
+        self.last_health = self.read_hp_fraction()
+
         self.step_count += 1
 
         # Check if episode is done
@@ -330,7 +342,8 @@ class BaseRedGymEnv(Env, ABC):
         if self.save_video and self.step_count % 50 == 0:
             self.add_video_frame()
 
-        return obs, reward * 0.1 * self.reward_scale, False, done, info
+        # BUG FIX #3: Removed "* 0.1 * self.reward_scale" - reward_scale already applied in get_game_state_reward()
+        return obs, reward, False, done, info
 
     def run_action_on_emulator(self, action):
         """Execute action on emulator."""
@@ -402,10 +415,10 @@ class BaseRedGymEnv(Env, ABC):
             "event": prog["event"],
             "level": prog["level"],
             "heal": prog["heal"],
-            "badge": prog.get("badge", 0),
+            "badge": prog["badge"],
             "explore": prog["explore"],
-            "dead": prog.get("died", 0),
-            "stuck": prog.get("stuck", 0)
+            "dead": prog["dead"],
+            "stuck": prog["stuck"]
         }
 
     def check_if_done(self):
@@ -454,24 +467,26 @@ class BaseRedGymEnv(Env, ABC):
         ]
 
     def get_levels_sum(self):
-        """Get sum of all party Pokemon levels."""
-        min_level = 2
-        max_level = 100
-        level_sum = 0
-        party = self.read_party()
-        for level in party:
-            if level >= min_level and level <= max_level:
-                level_sum += level
-        return level_sum
+        """Get sum of all party Pokemon levels (adjusted)."""
+        min_poke_level = 2
+        starter_additional_levels = 4
+        poke_levels = [
+            max(self.read_m(a) - min_poke_level, 0)
+            for a in [0xD18C, 0xD1B8, 0xD1E4, 0xD210, 0xD23C, 0xD268]
+        ]
+        return max(sum(poke_levels) - starter_additional_levels, 0)
 
     def get_levels_reward(self):
         """Calculate reward from Pokemon levels."""
+        explore_thresh = 22
+        scale_factor = 4
         level_sum = self.get_levels_sum()
-        if level_sum < 15:
-            return level_sum / 30
+        if level_sum < explore_thresh:
+            scaled = level_sum
         else:
-            self.levels_satisfied = True
-            return 0.5 + (level_sum - 15) / 240
+            scaled = (level_sum - explore_thresh) / scale_factor + explore_thresh
+        self.max_level_rew = max(self.max_level_rew, scaled)
+        return self.max_level_rew
 
     def get_badges(self):
         """Read number of badges."""
@@ -485,18 +500,25 @@ class BaseRedGymEnv(Env, ABC):
         return party_levels
 
     def read_party_types(self):
-        """Read party Pokemon types."""
+        """Read party Pokemon species/types."""
         party_size = self.read_m(0xD163)
-        party_types = [self.read_m(addr) for addr in range(0xD170, 0xD170 + party_size)]
+        # BUG FIX #1: Changed from 0xD170 (OT Names) to 0xD164 (Pokemon Species/Types)
+        party_types = [self.read_m(addr) for addr in range(0xD164, 0xD164 + party_size)]
         return party_types
 
     def get_all_events_reward(self):
-        """Calculate reward from events."""
+        """Calculate reward from events (excludes museum ticket)."""
         event_flags = sum([
             self.bit_count(self.read_m(i))
             for i in range(EVENT_FLAGS_START, EVENT_FLAGS_END)
         ])
-        return (event_flags - self.base_event_flags) * 0.1
+        # Exclude museum ticket from event count
+        return max(
+            event_flags
+            - self.base_event_flags
+            - int(self.read_bit(MUSEUM_TICKET[0], MUSEUM_TICKET[1])),
+            0
+        )
 
     def get_game_coords(self):
         """Get current player coordinates."""
@@ -511,19 +533,29 @@ class BaseRedGymEnv(Env, ABC):
         return local_to_global(y, x, map_n)
 
     def update_seen_coords(self):
-        """Track exploration."""
-        x, y, map_n = self.get_game_coords()
-        coord_string = f"x:{x} y:{y} map:{map_n}"
-        self.seen_coords[coord_string] = self.step_count
+        """Track exploration - only when not in battle."""
+        # Only track when not in battle (0xD057 == 0)
+        if self.read_m(0xD057) == 0:
+            x, y, map_n = self.get_game_coords()
+            coord_string = f"x:{x} y:{y} m:{map_n}"
+            if coord_string in self.seen_coords:
+                self.seen_coords[coord_string] += 1
+            else:
+                self.seen_coords[coord_string] = 1
 
     def get_current_coord_count_reward(self):
-        """Get reward for exploration."""
-        self.update_seen_coords()
-        return len(self.seen_coords) * 0.005
+        """Get penalty for being stuck at same coordinate."""
+        x, y, map_n = self.get_game_coords()
+        coord_string = f"x:{x} y:{y} m:{map_n}"
+        count = self.seen_coords.get(coord_string, 0)
+        return 0 if count < 300 else 1
 
     def update_explore_map(self):
         """Update exploration map."""
         gy, gx = self.get_global_coords()
+        # BUG FIX #4: Added bounds checking to prevent IndexError
+        if gy >= self.explore_map.shape[0] or gx >= self.explore_map.shape[1]:
+            return  # Skip update if coordinates out of bounds
         self.explore_map[gy, gx] = 1
         map_coverage = self.explore_map.sum()
         self.max_map_progress = max(self.max_map_progress, map_coverage)
@@ -544,41 +576,36 @@ class BaseRedGymEnv(Env, ABC):
 
     def get_game_state_reward(self):
         """Calculate total reward from game state."""
-        self.update_explore_map()
-
+        # Match original formula exactly (line 625-634 in red_gym_env_lstm.py)
         reward = {
-            "event": self.get_all_events_reward(),
-            "level": self.get_levels_reward(),
-            "heal": self.get_healing_reward(),
-            "badge": self.get_badge_reward(),
-            "explore": self.explore_weight * self.get_current_coord_count_reward(),
-            "died": self.get_died_reward(),
-            "stuck": self.get_stuck_reward()
+            "event": self.reward_scale * self.update_max_event_rew() * 4,
+            "level": self.reward_scale * self.get_levels_reward(),
+            "heal": self.reward_scale * self.total_healing_rew * 30,
+            "dead": self.reward_scale * self.died_count * -0.1,
+            "badge": self.reward_scale * self.get_badges() * 10,
+            "explore": self.reward_scale * self.explore_weight * len(self.seen_coords) * 0.1,
+            "stuck": self.reward_scale * self.get_current_coord_count_reward() * -0.05
         }
-
-        self.max_event_rew = max(self.max_event_rew, reward["event"])
-        self.max_level_rew = max(self.max_level_rew, reward["level"])
 
         return reward
 
-    def get_healing_reward(self):
-        """Calculate healing reward."""
-        cur_health = self.read_m(0xD16C) / 255.0
-        if cur_health > self.last_health:
-            heal_amount = cur_health - self.last_health
-            self.total_healing_rew += heal_amount
-        self.last_health = cur_health
-        return self.total_healing_rew * 0.05
+    def update_heal_reward(self):
+        """Update healing reward and detect deaths."""
+        cur_health = self.read_hp_fraction()
+        # if health increased and party size did not change
+        if cur_health > self.last_health and self.read_m(0xD163) == self.party_size:
+            if self.last_health > 0:
+                heal_amount = cur_health - self.last_health
+                self.total_healing_rew += heal_amount * heal_amount
+            else:
+                # Agent respawned from death (was at 0 HP, now has HP)
+                self.died_count += 1
 
-    def get_badge_reward(self):
-        """Calculate badge reward."""
-        return self.get_badges() * 5.0
-
-    def get_died_reward(self):
-        """Penalty for dying."""
-        if self.read_m(0xD057) == 0:
-            self.died_count += 1
-        return -1.0 * self.died_count
+    def update_max_event_rew(self):
+        """Update and return maximum event reward."""
+        cur_rew = self.get_all_events_reward()
+        self.max_event_rew = max(cur_rew, self.max_event_rew)
+        return self.max_event_rew
 
     def get_stuck_reward(self):
         """Penalty for getting stuck."""
@@ -639,6 +666,5 @@ class BaseRedGymEnv(Env, ABC):
         """Fourier encoding for positional information."""
         return np.sin(val * 2 ** np.arange(self.enc_freqs))
 
-    def get_badges(self):
-        """Get badge byte (0xD356)."""
-        return self.read_m(0xD356)
+    # BUG FIX #2: Removed duplicate get_badges() definition that returned byte value instead of bit count
+    # Correct definition at line 490 returns self.bit_count(self.read_m(0xD356))

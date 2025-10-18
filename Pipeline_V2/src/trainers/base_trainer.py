@@ -39,6 +39,10 @@ class BaseTrainer:
         self.args = args
         self.cfg = cfg
 
+        # Apply Peter Whidden's n_steps formula: n_steps = max_steps // num_cpu
+        # This ensures exactly 1 reset per rollout buffer
+        self._apply_n_steps_formula()
+
         self.session_root = self._determine_session_root()
         self.dirs = self._make_run_dirs(self.session_root)
         self.logging_cfg = self._resolve_logging_config()
@@ -78,6 +82,38 @@ class BaseTrainer:
     # ------------------------------------------------------------------
     # Setup helpers
     # ------------------------------------------------------------------
+    def _apply_n_steps_formula(self) -> None:
+        """
+        Apply Peter Whidden's n_steps formula: n_steps = max_steps // num_cpu
+
+        This ensures exactly 1 environment reset per rollout buffer, maintaining
+        the original training rhythm from baseline_fast_v2.py.
+
+        If n_steps is already specified in config, it will be overridden with a warning.
+        """
+        num_cpu = self.cfg.get("num_cpu", 1)
+        max_steps = self.cfg.get("env", {}).get("max_steps")
+
+        if max_steps is None:
+            raise ValueError("env.max_steps must be specified in config for n_steps calculation")
+
+        calculated_n_steps = max_steps // num_cpu
+        config_n_steps = self.cfg.get("model", {}).get("n_steps")
+
+        if config_n_steps is not None and config_n_steps != calculated_n_steps:
+            print(f"WARNING: Overriding config n_steps={config_n_steps} with calculated n_steps={calculated_n_steps}")
+            print(f"    Formula: max_steps ({max_steps}) // num_cpu ({num_cpu}) = {calculated_n_steps}")
+            print(f"    This ensures 1 reset per rollout (Peter Whidden's baseline_fast_v2.py)")
+
+        # Set the calculated value
+        if "model" not in self.cfg:
+            self.cfg["model"] = {}
+        self.cfg["model"]["n_steps"] = calculated_n_steps
+
+        if self.cfg.get("verbose", 0) > 0:
+            resets_per_rollout = (calculated_n_steps * num_cpu) / max_steps
+            print(f"n_steps set to {calculated_n_steps} (resets per rollout: {resets_per_rollout:.2f})")
+
     def _determine_session_root(self) -> Path:
         if self.args.resume_path:
             checkpoint_path = Path(self.args.resume_path)

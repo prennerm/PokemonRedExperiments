@@ -17,6 +17,7 @@ dependencies:
   - protobuf
   - websockets
   - swig
+  - libffi=3.4.4
   # PyTorch mit CUDA-Support über conda
   - pytorch
   - pytorch-cuda=12.4

@@ -13,6 +13,3 @@ model:
 
 logging:
   save_freq: 2000
-
-total_timesteps: 100000
-save_freq: 163840
