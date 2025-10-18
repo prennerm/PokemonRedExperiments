@@ -638,11 +638,41 @@ Pipeline_V2/
 6. ~~Environment stability fix~~ ✅ Done - reverted to original reset pattern
 7. ~~PyBoy API update~~ ✅ Done (2025-01-03) - Changed deprecated "headless" → "null" window
 8. ~~Architecture cleanup~~ ✅ Done (2025-10-10) - Models, Callbacks, CLI modernized
-9. **NEXT: Analysis Module**
-   - Create `analysis/` directory structure
-   - Migrate existing analysis tools from notebooks/
-   - Build visualization pipeline
-10. Production runs with stable foundation
+9. ~~Analysis Module - Phase 1~~ ✅ Done (2025-01-15) - `src/analysis/` infrastructure complete, streaming sampler validated
+10. **NEXT: Analysis Module - Phase 2**
+    - Extend `scripts/visualize_training.py` with optional heatmap export
+    - Add multi-variant comparison entry point (reward + spatial plots)
+    - Polish reward/heatmap visualizers for publication (styling, CLI flags)
+11. Production runs with stable foundation
+
+---
+
+## Environment Testing & Validation
+
+**Test Scripts:** Located in `test/` directory
+- `test/test_environments.py` - Validates both conda environments (poke_env, poke_viz_v2)
+- `test/test_phase1_analysis.py` - Validates Phase 1 analysis infrastructure (CSV loading, streaming sampler)
+
+**Running Tests:**
+```bash
+# Environment validation (from root directory)
+python test/test_environments.py
+
+# Phase 1 analysis validation (in visualization environment)
+conda activate poke_viz_v2
+python test/test_phase1_analysis.py
+```
+
+**Test Results (2025-01-15):**
+- ✅ **poke_env**: All training packages present (PyTorch, SB3, PyBoy), tqdm correctly absent
+- ✅ **poke_viz_v2**: All viz packages present (matplotlib, pandas, mediapy, einops), PyTorch/SB3 correctly absent
+- ✅ **Phase 1 Analysis**: CSV loading validated with 64.7M rows in ~4:11 minutes
+- ⚠️ **Known Issue**: `conda run` timeout on Windows (use `conda activate` instead)
+
+**Performance Benchmarks:**
+- **64.7M row CSV**: ~4:11 minutes processing time (25.71 chunks/sec)
+- **Streaming sampler**: O(target_samples) constant memory footprint
+- **Sample distribution**: 1,000 samples uniformly distributed across 68M timesteps
 
 ---
 
