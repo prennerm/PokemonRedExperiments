@@ -638,12 +638,13 @@ Pipeline_V2/
 6. ~~Environment stability fix~~ ✅ Done - reverted to original reset pattern
 7. ~~PyBoy API update~~ ✅ Done (2025-01-03) - Changed deprecated "headless" → "null" window
 8. ~~Architecture cleanup~~ ✅ Done (2025-10-10) - Models, Callbacks, CLI modernized
-9. ~~Analysis Module - Phase 1~~ ✅ Done (2025-01-15) - `src/analysis/` infrastructure complete, streaming sampler validated
-10. **NEXT: Analysis Module - Phase 2**
+9. ~~TensorBoard callback auf Rollout-Ende umgestellt~~ ✅ Done (2025-10-20) - Logging entkoppelt von `check_if_done()`, `_on_rollout_end` erzeugt nun `env_stats/*`-Metriken.
+10. ~~Analysis Module - Phase 1~~ ✅ Done (2025-01-15) - `src/analysis/` infrastructure complete, streaming sampler validated
+11. **NEXT: Analysis Module - Phase 2**
     - Extend `scripts/visualize_training.py` with optional heatmap export
     - Add multi-variant comparison entry point (reward + spatial plots)
     - Polish reward/heatmap visualizers for publication (styling, CLI flags)
-11. Production runs with stable foundation
+12. Production runs with stable foundation
 
 ---
 
