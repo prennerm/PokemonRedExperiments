@@ -69,6 +69,7 @@ class BaseRedGymEnv(Env, ABC):
         self._init_state_bytes = None
         self.worker_rank = config.get("worker_rank", 0)
         self.num_cpu = config.get("num_cpu", 1)
+        self.send_map_to_agent = bool(config.get("send_map_to_agent", True))
         self.debug_reset_timing = config.get("debug_reset_timing", False)
         self._episode_first_step_logged = True
 
@@ -115,8 +116,13 @@ class BaseRedGymEnv(Env, ABC):
 
         # Load event names
         data_dir = Path(pkg_resources.resource_filename(__name__, "data"))
-        with open(data_dir / "events.json") as f:
-            self.event_names = json.load(f)
+        events_path = data_dir / "events.json"
+        if events_path.exists():
+            with open(events_path) as f:
+                self.event_names = json.load(f)
+        else:
+            print(f"[BaseRedGymEnv] Warning: events.json not found at {events_path}. Event tracking disabled.")
+            self.event_names = {}
 
         # Subclass must define output_shape BEFORE calling super().__init__()
         # If not set by subclass, use a default (should not happen)
