@@ -15,6 +15,7 @@ env:
   headless: true
   save_final_state: false
   send_map_to_agent: true
+  pack_bits: true
   early_stop: false
   action_freq: 24
   init_state: "data/init.state"

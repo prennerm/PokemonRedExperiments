@@ -3,6 +3,7 @@
 import importlib
 import json
 import shutil
+import os
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -17,6 +18,7 @@ from sb3_contrib.ppo_recurrent.policies import MultiInputLstmPolicy
 
 from callbacks import StatsCallback, TensorboardCallback
 from models import MultiInputLstmPolicyLD, RecurrentPPOLD
+from utils.packed_vec_env import PackedSubprocVecEnv
 
 
 @dataclass
@@ -46,8 +48,8 @@ class BaseTrainer:
         self.session_root = self._determine_session_root()
         self.dirs = self._make_run_dirs(self.session_root)
         self.logging_cfg = self._resolve_logging_config()
-        self._save_effective_config()
         self.env_conf = self._prepare_env_config()
+        self._save_effective_config()
 
         self.vec_env = self._build_vec_env()
         self.model, self.completed_steps = self._build_model()
@@ -148,6 +150,8 @@ class BaseTrainer:
             "total_timesteps": self.cfg.get("total_timesteps", 1e6),
             "variant": self.args.variant,
             "config_file": str(self.args.config_path),
+            "send_map_to_agent": bool(self.env_conf.get("send_map_to_agent", True)),
+            "pack_bits": bool(self.env_conf.get("pack_bits", True)),
         }
         with open(self.dirs["root"] / "effective_config.json", "w") as f:
             json.dump(effective_config, f, indent=2)
@@ -184,11 +188,13 @@ class BaseTrainer:
         class_name = self.cfg["env"]["class"]
         num_cpu = self.cfg.get("num_cpu", 1)
         seed = self.cfg.get("seed", 0)
+        pack_bits = bool(self.env_conf.get("pack_bits", True)) and num_cpu > 1
 
         def make_env(rank: int):
             def _init():
                 worker_conf = self.env_conf.copy()
                 worker_conf["worker_rank"] = rank
+                worker_conf["pack_bits"] = pack_bits
                 module = importlib.import_module(f"environments.{module_name}")
                 EnvCls = getattr(module, class_name)
                 env = EnvCls(worker_conf)
@@ -199,16 +205,43 @@ class BaseTrainer:
         return [make_env(i) for i in range(num_cpu)]
 
     def _build_vec_env(self):
-        env_fns = self._make_env_fns()
         num_cpu = self.cfg.get("num_cpu", 1)
+        if num_cpu <= 1:
+            self.env_conf["pack_bits"] = False
+        env_fns = self._make_env_fns()
         if num_cpu > 1:
+            start_method = os.environ.get("PIPELINE_SUBPROC_START_METHOD")
+            start_method = start_method.strip() or None if start_method else None
             if self.env_conf.get("debug_reset_timing"):
                 from utils.debug_vec_env import DebugSubprocVecEnv
+                builder = DebugSubprocVecEnv
                 print(f"Using DebugSubprocVecEnv with {num_cpu} parallel workers")
-                return DebugSubprocVecEnv(env_fns)
             else:
-                print(f"Using SubprocVecEnv with {num_cpu} parallel workers")
-                return SubprocVecEnv(env_fns)
+                use_packed = bool(self.env_conf.get("pack_bits", True))
+                if use_packed:
+                    builder = PackedSubprocVecEnv
+                    print(f"Using PackedSubprocVecEnv with {num_cpu} parallel workers (bit-packed observations)")
+                else:
+                    builder = SubprocVecEnv
+                    print(f"Using SubprocVecEnv with {num_cpu} parallel workers")
+
+            attempts = []
+            if start_method:
+                attempts.append(start_method)
+            attempts.append(None)
+            if "spawn" not in attempts:
+                attempts.append("spawn")
+
+            last_error: Optional[Exception] = None
+            for method in attempts:
+                try:
+                    return builder(env_fns, start_method=method)
+                except (PermissionError, OSError) as exc:
+                    method_label = method or "default"
+                    print(f"[BaseTrainer] VecEnv init failed with start method '{method_label}': {exc}")
+                    last_error = exc
+            raise RuntimeError("Unable to initialize SubprocVecEnv with any start method") from last_error
+
         print("Using DummyVecEnv with 1 worker")
         return DummyVecEnv(env_fns)
 

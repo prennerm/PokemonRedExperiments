@@ -25,6 +25,7 @@ from einops import repeat
 from gymnasium import Env, spaces
 from pyboy.utils import WindowEvent
 
+from utils import pack_array_bits
 from utils.map_utils import local_to_global, GLOBAL_MAP_SHAPE
 
 # Event tracking addresses
@@ -70,6 +71,7 @@ class BaseRedGymEnv(Env, ABC):
         self.worker_rank = config.get("worker_rank", 0)
         self.num_cpu = config.get("num_cpu", 1)
         self.send_map_to_agent = bool(config.get("send_map_to_agent", True))
+        self.pack_bits = bool(config.get("pack_bits", True))
         self.debug_reset_timing = config.get("debug_reset_timing", False)
         self._episode_first_step_logged = True
 
@@ -191,6 +193,19 @@ class BaseRedGymEnv(Env, ABC):
         """Update action history."""
         pass
 
+    def _encode_observation(self, obs: dict) -> dict:
+        """Optionally bit-pack large observation fields for transport efficiency."""
+        if not self.pack_bits:
+            return obs
+        encoded = obs.copy()
+        if "events" in encoded:
+            events_arr = np.asarray(encoded["events"], dtype=np.uint8)
+            encoded["events"] = pack_array_bits(events_arr)
+        if self.send_map_to_agent and "map" in encoded:
+            map_arr = np.asarray(encoded["map"], dtype=np.uint8)
+            encoded["map"] = pack_array_bits(map_arr)
+        return encoded
+
     def reset(self, seed=None, options={}):
         """Reset environment. Can be overridden for variant-specific reset logic."""
         self.seed = seed
@@ -255,7 +270,7 @@ class BaseRedGymEnv(Env, ABC):
 
         self.reset_count += 1
         self._episode_first_step_logged = False
-        return self._get_obs(), {}
+        return self._encode_observation(self._get_obs()), {}
 
     def _log_reset_timing(self, message: str):
         """Write reset timing diagnostics to per-worker log."""
@@ -329,7 +344,7 @@ class BaseRedGymEnv(Env, ABC):
             )
 
         # Get observation and info
-        obs = self._get_obs()
+        obs = self._encode_observation(self._get_obs())
         info = {
             "debug_step_count": self.step_count,
             "debug_reset": self.reset_count,
