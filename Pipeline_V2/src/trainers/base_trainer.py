@@ -18,7 +18,7 @@ from sb3_contrib.ppo_recurrent.policies import MultiInputLstmPolicy
 
 from callbacks import StatsCallback, TensorboardCallback
 from models import MultiInputLstmPolicyLD, RecurrentPPOLD
-from utils.packed_vec_env import PackedSubprocVecEnv
+from utils import PackedSubprocVecEnv, SharedMemoryVecEnv
 
 
 @dataclass
@@ -80,6 +80,12 @@ class BaseTrainer:
                 if hasattr(cb, "_on_training_end"):
                     cb._on_training_end()
             raise
+        finally:
+            try:
+                self.vec_env.close()
+            except Exception as exc:
+                if self.cfg.get("verbose", 0) > 0:
+                    print(f"[BaseTrainer] VecEnv close raised {exc.__class__.__name__}: {exc}")
 
     # ------------------------------------------------------------------
     # Setup helpers
@@ -206,7 +212,13 @@ class BaseTrainer:
 
     def _build_vec_env(self):
         num_cpu = self.cfg.get("num_cpu", 1)
+        use_shared_memory = bool(self.env_conf.get("use_shared_memory", True))
         if num_cpu <= 1:
+            self.env_conf["pack_bits"] = False
+            self.env_conf["use_shared_memory"] = False
+            use_shared_memory = False
+        elif use_shared_memory:
+            # Shared memory transport does not need bit packing.
             self.env_conf["pack_bits"] = False
         env_fns = self._make_env_fns()
         if num_cpu > 1:
@@ -218,7 +230,10 @@ class BaseTrainer:
                 print(f"Using DebugSubprocVecEnv with {num_cpu} parallel workers")
             else:
                 use_packed = bool(self.env_conf.get("pack_bits", True))
-                if use_packed:
+                if use_shared_memory:
+                    builder = SharedMemoryVecEnv
+                    print(f"Using SharedMemoryVecEnv with {num_cpu} parallel workers (shared memory)")
+                elif use_packed:
                     builder = PackedSubprocVecEnv
                     print(f"Using PackedSubprocVecEnv with {num_cpu} parallel workers (bit-packed observations)")
                 else:
