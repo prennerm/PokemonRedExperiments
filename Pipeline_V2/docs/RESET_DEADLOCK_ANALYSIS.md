@@ -86,7 +86,8 @@ experiments/v1_reset_test/20251006_141016/
 - **Mechanik:** Statt `info["terminal_observation"]` direkt über die Pipe zu schicken, legt jeder Worker die finale Observation in einen separaten Shared-Memory-Puffer und sendet nur noch `terminal_obs_ref = {"version": <counter>}`. Der Parent baut `info["terminal_observation"]` anschließend lokal mit `_gather_terminal_observation()` wieder zusammen.  
 - **Vorteil:** Pipe-Bursts fallen weg (nur wenige Bytes pro Reset). Selbst wenn alle 16 Envs gleichzeitig fertig werden, bleibt die Pipe leer.  
 - **Cleanup:** `BaseTrainer.run()` schließt die VecEnv jetzt auch bei `KeyboardInterrupt`, damit Shared-Memory-Segmente nach manuellen Abbrüchen korrekt freigegeben werden.  
-- **Restproblem:** Trotz entlasteter Pipe frieren Stresstests weiter ein (z. B. `experiments/v4_vecenv_stress/20251024_092118/`). DebugSubprocVecEnv zeigt, dass einzelne Worker (`rank=11`) während `env.step()` blockieren, bevor die Reset-Antwort gesendet wird. Ursache liegt damit im Emulator/Reset-Prozess, nicht mehr im Transport.
+- **Restproblem:** Trotz entlasteter Pipe frierten Stresstests weiter ein (z. B. `experiments/v4_vecenv_stress/20251024_092118/`). DebugSubprocVecEnv zeigte, dass einzelne Worker (`rank=11`) während `env.step()` blockierten, bevor die Reset-Antwort gesendet wurde – Ursache im Emulator/Action-Handling.
+- **Fix (2025-10-24):** Der Deadlock tritt auf, wenn `run_action_on_emulator()` beim Release-Tick rendert. Läufe mit deaktiviertem Release-Render (`experiments/v4_tick_test/20251024_160148/`) bzw. mit angepasster Tick-Länge (`…/20251025_073630/`) laufen stabil bis 1 M Schritte. Produktion wird so angepasst, dass Release-Ticks ohne Render laufen (kein Trainings-Impact, verhindert Hang).
 
 ## 7. Archivierte Experimente
 

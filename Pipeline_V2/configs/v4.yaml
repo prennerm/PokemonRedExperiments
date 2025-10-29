@@ -13,4 +13,4 @@ model:
   ld_coef: 0.1
 
 logging:
-  save_freq: 500
+  save_freq: 10000

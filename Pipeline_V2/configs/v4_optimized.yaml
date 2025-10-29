@@ -1,0 +1,25 @@
+extends: v4.yaml
+
+paths:
+  session_root: "experiments/v4_optimized"
+
+num_cpu: 16
+
+env:
+  max_steps: 163840
+  send_map_to_agent: false
+  print_rewards: false
+  log_stats_to_file: false
+  stats_flush_freq: 500
+  debug_release_tick_render_off: true
+
+model:
+  ld_coef: 0.1
+  n_steps: 8192
+
+logging:
+  save_freq: 20000
+  verbose: 0
+  structured: true
+
+total_timesteps: 1e8

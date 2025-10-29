@@ -14,8 +14,11 @@ env:
   class: null
   headless: true
   save_final_state: false
-  send_map_to_agent: true
+  send_map_to_agent: false # v3 und v4 bekommen wenn true eine map mitgesandt!
   pack_bits: true
+  use_shared_memory: true
+  log_stats_to_file: true
+  stats_flush_freq: 200
   early_stop: false
   action_freq: 24
   init_state: "data/init.state"

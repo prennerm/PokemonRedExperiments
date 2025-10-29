@@ -31,6 +31,6 @@ dependencies:
     - networks
     - einops
     - tensorboard
-    - gymnasium[box2d]              
+    - gymnasium
     - mediapy
     - pyyaml

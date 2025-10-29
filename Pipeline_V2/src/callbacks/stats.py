@@ -37,6 +37,12 @@ class StatsCallback(BaseCallback):
         return True
 
     def _on_rollout_end(self) -> None:
+        log_to_file_flags = self.training_env.get_attr("log_stats_to_file")
+        if any(bool(flag) for flag in log_to_file_flags):
+            # Ensure worker buffers are flushed even if rollouts end mid-batch.
+            self.training_env.env_method("flush_stats_buffer")
+            return
+
         stats_lists = self.training_env.get_attr("agent_stats")
         per_env_counts = []
         for env_stats in stats_lists:
