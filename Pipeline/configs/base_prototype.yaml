@@ -1,0 +1,51 @@
+# Shared defaults for prototype configs
+
+seed: 42
+num_cpu: 16
+
+paths:
+  session_root: null
+  checkpoints: "/checkpoints"
+  tensorboard: "/tensorboard"
+  logs: "/logs"
+
+env:
+  module: null
+  class: null
+  headless: true
+  save_final_state: false
+  early_stop: false
+  action_freq: 24
+  init_state: "data/init.state"
+  max_steps: 163840
+  print_rewards: true
+  save_video: false
+  fast_video: true
+  gb_path: "data/PokemonRed.gb"
+  debug: false
+  reward_scale: 0.5
+  explore_weight: 0.25
+  send_map_to_agent: false
+
+model:
+  type: null
+  policy: null
+  n_steps: 2048  # placeholder; trainer sets max_steps // num_cpu
+  batch_size: 512
+  n_epochs: 3
+  gamma: 0.997
+  ent_coef: 0.01
+  vf_coef: 0.5
+  tensorboard_log: ""
+  device: "cuda"
+  verbose: 1
+
+logging:
+  format: "csv"
+  save_freq: 1000
+  structured: true
+  verbose: 1
+
+save_freq: 1638400
+save_freq_stats: 1000
+total_timesteps: 1e8

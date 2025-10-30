@@ -1,0 +1,17 @@
+extends: base_prototype.yaml
+
+paths:
+  session_root: "experiments/v3_prototype"
+
+num_cpu: 16
+
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+
+model:
+  type: "RecurrentPPO"
+  policy: "MultiInputLstmPolicy"
+
+
+

@@ -1,7 +1,6 @@
 import uuid
 import json
 import io
-import time
 from pathlib import Path
 import pkg_resources
 
@@ -50,6 +49,8 @@ class RedGymEnv(Env):
         self.save_video = config["save_video"]
         self.fast_video = config["fast_video"]
         self.frame_stacks = 1
+        self.send_map_to_agent = bool(config.get("send_map_to_agent", False))
+        self.disable_release_render = bool(config.get("disable_release_render", True))
         
         # Worker-Info für Staggered Resets
         self.worker_rank = config.get("worker_rank", 0)
@@ -128,6 +129,7 @@ class RedGymEnv(Env):
 
         self.output_shape = (72, 80, self.frame_stacks)
         self.coords_pad = 12
+        self._empty_map_obs = np.zeros((self.coords_pad * 4, self.coords_pad * 4, 1), dtype=np.uint8)
 
         # Set these in ALL subclasses
         self.action_space = spaces.Discrete(len(self.valid_actions))
@@ -173,26 +175,10 @@ class RedGymEnv(Env):
 
     def reset(self, seed=None, options={}):
         self.seed = seed
-        
-        # Erste Episode verkürzen (Staggered Reset)
-        if self.reset_count == 0:
-            # Erste Episode: verkürzte max_steps basierend auf worker_rank
-            offset_factor = self.worker_rank / max(1, self.num_cpu)
-            episode_offset = int(self.base_max_steps * 0.1 * offset_factor)
-            self.max_steps = max(1000, self.base_max_steps - episode_offset)
-            print(f"Worker {self.worker_rank}: First episode shortened to {self.max_steps} steps (offset: {episode_offset})")
-        else:
-            # Ab der zweiten Episode: normale max_steps
-            self.max_steps = self.base_max_steps
-        
+        self.max_steps = self.base_max_steps
+
         # restart game, skipping credits
         if self._init_state_bytes:  # In-Memory State Loading
-            # Gestaffelte Delays zur Vermeidung von I/O-Konflikten
-            base_delay = (self.worker_rank % 16) * 0.025  # 0-375ms gestaffelt
-            extra_delay = (self.reset_count % 4) * 0.01
-            total_delay = base_delay + extra_delay
-            print(f"Worker {self.worker_rank}: Delaying {total_delay:.3f}s before state load...")
-            time.sleep(total_delay)
             print(f"Worker {self.worker_rank}: Loading state from memory...")
             self.pyboy.load_state(io.BytesIO(self._init_state_bytes))
             print(f"Worker {self.worker_rank}: State loaded successfully")
@@ -268,7 +254,7 @@ class RedGymEnv(Env):
             "level": self.fourier_encode(level_sum),
             "badges": np.array([int(bit) for bit in f"{self.read_m(0xD356):08b}"], dtype=np.int8),
             "events": np.array(self.read_event_bits(), dtype=np.int8),
-            "map": self.get_explore_map()[:, :, None],
+            "map": self.get_explore_map()[:, :, None] if self.send_map_to_agent else self._empty_map_obs,
             "recent_action": self.last_action
         }
 
@@ -317,12 +303,15 @@ class RedGymEnv(Env):
         self.pyboy.send_input(self.valid_actions[action])
         # disable rendering when we don't need it
         render_screen = self.save_video or not self.headless
-        press_step = min(8, self.act_freq - 1)  # Sicherstellen dass press_step nicht zu groß wird
+        press_step = min(8, max(1, self.act_freq - 1))  # Sicherstellen dass press_step nicht zu groß wird
         self.pyboy.tick(press_step, render_screen)
         self.pyboy.send_input(self.release_actions[action])
-        remaining_ticks = max(1, self.act_freq - press_step - 1)  # Mindestens 1 Tick
-        self.pyboy.tick(remaining_ticks, render_screen)
-        self.pyboy.tick(1, True)
+        remaining_ticks = max(0, self.act_freq - press_step - 1)
+        release_render = render_screen and not self.disable_release_render
+        if remaining_ticks > 0:
+            self.pyboy.tick(remaining_ticks, release_render)
+        final_render = render_screen and not self.disable_release_render
+        self.pyboy.tick(1, final_render)
         if self.save_video and self.fast_video:
             self.add_video_frame()
         

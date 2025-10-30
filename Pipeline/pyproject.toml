@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "poke_pipeline"
+version = "0.1"
+description = "Pokemon Red RL training pipeline"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "stable-baselines3",
+  "sb3-contrib",
+  "pyboy",
+  "gymnasium",
+  "numpy",
+  "einops",
+  "scikit-image",
+  "mediapy",
+  "pandas",
+  "scipy",
+  "websockets",
+  "imageio",
+  "tensorboard",
+  "pyyaml",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"poke_pipeline" = ["data/*.json"]

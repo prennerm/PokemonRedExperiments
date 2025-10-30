@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 train.py
-Neu implementiertes Trainingsskript für alle Varianten (v1–v4) mit Stable Baselines3.
+Neu implementiertes Trainingsskript fÃ¼r alle Varianten (v1â€“v4) mit Stable Baselines3.
 """
 import argparse
 import yaml
@@ -27,7 +27,7 @@ from poke_pipeline.ppo_lambda_discrepancy import RecurrentPPOLD, MultiInputLstmP
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Train RL agent on Pokémon Red environments")
+    parser = argparse.ArgumentParser(description="Train RL agent on PokÃ©mon Red environments")
     parser.add_argument(
         "--variant",
         choices=["v1", "v2", "v3", "v4"],
@@ -49,19 +49,48 @@ def parse_args():
 
 
 def load_config(path: Path) -> dict:
-    with path.open() as f:
-        return yaml.safe_load(f)
+    import yaml
+
+    def _deep_update(base: dict, override: dict) -> dict:
+        for key, value in override.items():
+            if isinstance(value, dict) and isinstance(base.get(key), dict):
+                base[key] = _deep_update(base[key], value)
+            else:
+                base[key] = value
+        return base
+
+    def _load(current_path: Path) -> dict:
+        with current_path.open() as f:
+            data = yaml.safe_load(f) or {}
+        if not isinstance(data, dict):
+            raise ValueError(f"Config {current_path} must define a mapping")
+        extends = data.pop("extends", None)
+        if extends:
+            if isinstance(extends, str):
+                extends_list = [extends]
+            else:
+                extends_list = list(extends)
+            merged: dict = {}
+            for entry in extends_list:
+                base_path = (current_path.parent / entry).resolve()
+                merged = _deep_update(merged, _load(base_path))
+            return _deep_update(merged, data)
+        return data
+
+    return _load(path.resolve())
 
 
 def make_run_dirs(base: Path) -> dict:
+    logs_dir = base / "logs"
     dirs = {
         "root": base,
         "checkpoints": base / "checkpoints",
         "tensorboard": base / "tensorboard",
-        "json_logs": base / "json_logs",
+        "logs": logs_dir,
     }
     for d in dirs.values():
         d.mkdir(parents=True, exist_ok=True)
+    dirs["json_logs"] = logs_dir  # Backwards-compatible alias for legacy tooling
     return dirs
 
 
@@ -88,9 +117,28 @@ def make_env_fn(variant: str, module_name: str, class_name: str, env_conf: dict,
     return _init
 
 
+def apply_n_steps_rule(cfg: dict) -> None:
+    """Setzt model.n_steps auf max_steps // num_cpu (mindestens 1)."""
+    num_cpu = max(1, int(cfg.get("num_cpu", 1)))
+    max_steps = cfg.get("env", {}).get("max_steps")
+    if max_steps is None:
+        raise ValueError("env.max_steps muss gesetzt sein, um n_steps berechnen zu kÃ¶nnen")
+    calculated = max(1, max_steps // num_cpu)
+    model_cfg = cfg.setdefault("model", {})
+    configured = model_cfg.get("n_steps")
+    if configured is not None and configured != calculated:
+        print(
+            f"Override model.n_steps={configured} mit {calculated} "
+            f"(Formel: max_steps ({max_steps}) // num_cpu ({num_cpu}))"
+        )
+    model_cfg["n_steps"] = calculated
+
+
 def main():
     args = parse_args()
     cfg = load_config(args.config)
+    apply_n_steps_rule(cfg)
+    logging_cfg = cfg.get("logging", {})
 
     # 1) Run-Ordner anlegen
     if args.resume:
@@ -120,7 +168,7 @@ def main():
         dest = dirs["root"] / args.config.name
         shutil.copyfile(args.config, dest)
     
-    # Effective config für Debugging speichern
+    # Effective config fÃ¼r Debugging speichern
     effective_config = {
         "num_cpu": cfg.get("num_cpu", 1),
         "max_steps": cfg["env"]["max_steps"],
@@ -130,7 +178,8 @@ def main():
         "reset_interval": cfg["env"]["max_steps"] // cfg["model"]["n_steps"],
         "total_timesteps": cfg.get("total_timesteps", 1e6),
         "variant": args.variant,
-        "config_file": str(args.config)
+        "config_file": str(args.config),
+        "logging_format": logging_cfg.get("format", "json")
     }
     with open(dirs["root"] / "effective_config.json", "w") as f:
         json.dump(effective_config, f, indent=2)
@@ -142,14 +191,14 @@ def main():
     env_conf["session_path"] = dirs["root"]
     if "init_state" in env_conf and env_conf["init_state"].strip():  # Nur resolve wenn nicht leer
         env_conf["init_state"] = str(Path(env_conf["init_state"]).resolve())
-    # Falls init_state leer ist, bleibt es leer (für No-State-Loading Tests)
+    # Falls init_state leer ist, bleibt es leer (fÃ¼r No-State-Loading Tests)
 
     # 3) Vectorized environments
     num_cpu = cfg.get("num_cpu", 1)
     module_name = cfg["env"]["module"]
     class_name = cfg["env"]["class"]
     
-    # num_cpu zur env_conf hinzufügen
+    # num_cpu zur env_conf hinzufÃ¼gen
     env_conf["num_cpu"] = num_cpu
     
     env_fns = [make_env_fn(args.variant, module_name, class_name, env_conf, i, cfg.get("seed", 0))
@@ -170,11 +219,11 @@ def main():
         ModelClass = PPO
     elif model_type == "RecurrentPPO":
         ModelClass = RecurrentPPO
-        # für RecurrentPPO immer die sb3_contrib‐Policy‐Klasse
+        # fÃ¼r RecurrentPPO immer die sb3_contribâ€Policyâ€Klasse
         policy_key = MultiInputLstmPolicy  # :contentReference[oaicite:0]{index=0}
     elif model_type == "RecurrentPPOLD":
         ModelClass = RecurrentPPOLD
-        # für unsere LD‐Variante die selbstdefinierte Policy‐Klasse
+        # fÃ¼r unsere LDâ€Variante die selbstdefinierte Policyâ€Klasse
         policy_key = MultiInputLstmPolicyLD  # :contentReference[oaicite:1]{index=1}
     else:
         raise ValueError(f"Unbekannter model.type: {model_type}")
@@ -209,10 +258,10 @@ def main():
             "policy": policy_key,
             "env": vec_env,
             "tensorboard_log": str(dirs["tensorboard"]),
-            # seed und verbose können auch hier aufgenommen werden
+            # seed und verbose kÃ¶nnen auch hier aufgenommen werden
         }
 
-        # Erlaubte zusätzliche Hyperparameter
+        # Erlaubte zusÃ¤tzliche Hyperparameter
         for key in [
             "learning_rate", "n_steps", "batch_size", "n_epochs", "gamma",
             "gae_lambda", "clip_range", "clip_range_vf", "ent_coef", "vf_coef",
@@ -235,7 +284,7 @@ def main():
         name_prefix=args.variant
     )
     
-    # WICHTIG: n_calls korrekt setzen für Resume
+    # WICHTIG: n_calls korrekt setzen fÃ¼r Resume
     if args.resume:
         # Berechne wie viele Callback-Aufrufe bereits stattgefunden haben
         # Pro environment step wird die callback einmal aufgerufen
@@ -244,7 +293,7 @@ def main():
         next_checkpoint_at = ((expected_calls // save_freq) + 1) * save_freq
         calls_until_next = next_checkpoint_at - expected_calls
         
-        # Setze n_calls so, dass der nächste Checkpoint korrekt ausgelöst wird
+        # Setze n_calls so, dass der nÃ¤chste Checkpoint korrekt ausgelÃ¶st wird
         checkpoint_cb.n_calls = expected_calls
         
         print(f"Resume: Setting checkpoint callback n_calls to {expected_calls:,}")
@@ -254,17 +303,27 @@ def main():
     cb_list = [checkpoint_cb]
     cb_list.append(TensorboardCallback(str(dirs["tensorboard"])))
     
-    # StatsCallback nur hinzufügen wenn save_freq_stats > 0
+    # StatsCallback nur hinzufÃ¼gen wenn save_freq_stats > 0
     stats_freq = int(cfg.get("save_freq_stats", 100))
+    stats_format = logging_cfg.get("format", "json")
+    raw_structured = logging_cfg.get("structured", True)
+    if isinstance(raw_structured, str):
+        stats_structured = raw_structured.lower() not in ("0", "false", "no")
+    else:
+        stats_structured = bool(raw_structured)
+    stats_verbose = int(logging_cfg.get("verbose", 1))
     if stats_freq > 0:
         cb_list.append(
             StatsCallback(
                 save_freq=stats_freq,
-                save_path=str(dirs["json_logs"]),
-                verbose=1
+                save_path=str(dirs["logs"]),
+                output_format=stats_format,
+                structured=stats_structured,
+                verbose=stats_verbose
             )
         )
 
+    
     # 6) Training
     try:
         model.learn(
@@ -278,7 +337,7 @@ def main():
         model.save(str(final_checkpoint))
         print(f"Final model saved to {final_checkpoint}")
     except KeyboardInterrupt:
-        print(" Training interrupted – finalisiere JSON-Logs …")
+        print(" Training interrupted â€“ finalisiere JSON-Logs â€¦")
         # Emergency checkpoint bei Unterbrechung
         emergency_checkpoint = dirs["checkpoints"] / f"{args.variant}_emergency_model.zip"
         model.save(str(emergency_checkpoint))
@@ -291,3 +350,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

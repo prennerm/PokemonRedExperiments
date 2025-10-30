@@ -32,6 +32,8 @@ class RedGymEnv(Env):
         self.save_video = config["save_video"]
         self.fast_video = config["fast_video"]
         self.frame_stacks = 3
+        self.send_map_to_agent = bool(config.get("send_map_to_agent", False))
+        self.disable_release_render = bool(config.get("disable_release_render", True))
         self.explore_weight = (
             1 if "explore_weight" not in config else config["explore_weight"]
         )
@@ -88,6 +90,7 @@ class RedGymEnv(Env):
 
         self.output_shape = (72, 80, self.frame_stacks)
         self.coords_pad = 12
+        self._empty_map_obs = np.zeros((self.coords_pad * 4, self.coords_pad * 4, 1), dtype=np.uint8)
 
         # Set these in ALL subclasses
         self.action_space = spaces.Discrete(len(self.valid_actions))
@@ -197,7 +200,7 @@ class RedGymEnv(Env):
             "level": self.fourier_encode(level_sum),
             "badges": np.array([int(bit) for bit in f"{self.read_m(0xD356):08b}"], dtype=np.int8),
             "events": np.array(self.read_event_bits(), dtype=np.int8),
-            "map": self.get_explore_map()[:, :, None],
+            "map": self.get_explore_map()[:, :, None] if self.send_map_to_agent else self._empty_map_obs,
             "recent_actions": self.recent_actions
         }
 
@@ -254,13 +257,19 @@ class RedGymEnv(Env):
     def run_action_on_emulator(self, action):
         # press button then release after some steps
         self.pyboy.send_input(self.valid_actions[action])
-        # disable rendering when we don't need it
         render_screen = self.save_video or not self.headless
-        press_step = 8
-        self.pyboy.tick(press_step, render_screen)
+
+        press_ticks = min(8, max(1, self.act_freq - 1))
+        self.pyboy.tick(press_ticks, render_screen)
+
         self.pyboy.send_input(self.release_actions[action])
-        self.pyboy.tick(self.act_freq - press_step - 1, render_screen)
-        self.pyboy.tick(1, True)
+        release_ticks = max(0, self.act_freq - press_ticks - 1)
+        release_render = render_screen and not self.disable_release_render
+        if release_ticks > 0:
+            self.pyboy.tick(release_ticks, release_render)
+
+        final_render = render_screen and not self.disable_release_render
+        self.pyboy.tick(1, final_render)
         if self.save_video and self.fast_video:
             self.add_video_frame()
         
