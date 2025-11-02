@@ -73,7 +73,7 @@ def main(argv: List[str] | None = None) -> None:
         parser.error("--max-files and --max-data-points cannot be used together.")
 
     variant_configs = [(str(path), variant) for path, variant in runs]
-    data_frames, _ = load_variants_for_comparison(
+    data_frames, sampler = load_variants_for_comparison(
         variant_configs,
         max_steps=args.max_steps,
         target_samples=args.target_samples,
@@ -83,16 +83,22 @@ def main(argv: List[str] | None = None) -> None:
         verbose=not args.quiet,
     )
 
+    sampling_meta = getattr(sampler, "variant_sampling_meta", {})
+
     for (log_dir, variant), df in zip(runs, data_frames):
         run_dir = log_dir.parent
         experiment_name = run_dir.name  # typically timestamp
         if args.plot_rewards:
+            meta = sampling_meta.get(variant, {})
             plot_rewards_over_time(
                 df,
                 variant=variant,
                 experiment_name=experiment_name,
                 run_dir=run_dir,
                 normalize_steps=args.normalize_rewards,
+                samples=meta.get("samples"),
+                step_range=meta.get("step_range"),
+                sampling_ratio=meta.get("sampling_ratio"),
             )
         if args.plot_heatmaps:
             plot_all_maps(

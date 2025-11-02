@@ -45,6 +45,9 @@ class StreamingDataSampler:
         self.total_entries_seen = 0
         self.current_variant: Optional[str] = None
         self.step_range = [float("inf"), float("-inf")]
+        self.map_visit_counts: Dict[int, Dict[Tuple[int, int], int]] = self._make_heatmap_store()
+        self.latest_map_counts: Dict[int, Dict[Tuple[int, int], int]] = {}
+        self.latest_sampling_meta: Dict[str, object] = {}
 
     def _print(self, message: str) -> None:
         if self.verbose:
@@ -59,6 +62,13 @@ class StreamingDataSampler:
             j = random.randint(0, self.total_entries_seen - 1)
             if j < self.target_samples:
                 self.reservoir_samples[j] = entry
+
+    @staticmethod
+    def _make_heatmap_store() -> Dict[int, Dict[Tuple[int, int], int]]:
+        return defaultdict(lambda: defaultdict(int))
+
+    def _reset_heatmap_counts(self) -> None:
+        self.map_visit_counts = self._make_heatmap_store()
 
     def _count_entries_in_file(self, file_path: Path) -> int:
         suffix = file_path.suffix.lower()
@@ -198,6 +208,7 @@ class StreamingDataSampler:
                 normalized_entry = self._normalize_entry_format(flat_entry, self.current_variant or "unknown")
                 self._reservoir_sample(normalized_entry)
                 self._update_statistics(step_val)
+                self._update_heatmap_counts_from_entry(normalized_entry)
                 processed_entries += 1
                 if (
                     selected_positions is not None
@@ -237,6 +248,7 @@ class StreamingDataSampler:
                     normalized_entry = self._normalize_entry_format(entry, self.current_variant or "unknown")
                     self._reservoir_sample(normalized_entry)
                     self._update_statistics(step_val)
+                    self._update_heatmap_counts_from_entry(normalized_entry)
                     processed_entries += 1
                     entry_index += 1
                     if max_entries is not None and processed_entries >= max_entries:
@@ -268,6 +280,27 @@ class StreamingDataSampler:
     def _update_statistics(self, step_val: int) -> None:
         self.step_range[0] = min(self.step_range[0], step_val)
         self.step_range[1] = max(self.step_range[1], step_val)
+
+    def _update_heatmap_counts_from_entry(self, entry: Dict) -> None:
+        map_id = entry.get("map_id")
+        if map_id is None:
+            return
+        try:
+            map_id_int = int(float(map_id))
+        except (ValueError, TypeError):
+            return
+
+        x = entry.get("position_x")
+        y = entry.get("position_y")
+        if x is None or y is None:
+            return
+        try:
+            x_int = int(float(x))
+            y_int = int(float(y))
+        except (ValueError, TypeError):
+            return
+
+        self.map_visit_counts[map_id_int][(x_int, y_int)] += 1
 
     def _normalize_entry_format(self, entry: dict, variant_name: str) -> dict:
         if any("." in key for key in entry.keys()):
@@ -335,6 +368,9 @@ class StreamingDataSampler:
         self.total_entries_seen = 0
         self.current_variant = variant_name
         self.step_range = [float("inf"), float("-inf")]
+        self._reset_heatmap_counts()
+        self.latest_map_counts = {}
+        self.latest_sampling_meta = {}
 
         experiment_path = Path(experiment_path)
         self._print(f"Streaming load: {variant_name} from {experiment_path}")
@@ -403,7 +439,8 @@ class StreamingDataSampler:
         step_col = "total_steps" if "total_steps" in df.columns and df["total_steps"].notna().any() else "step"
         df = df.sort_values(step_col).reset_index(drop=True)
 
-        sampling_ratio = len(self.reservoir_samples) / max(1, self.total_entries_seen) * 100
+        raw_sampling_ratio = len(self.reservoir_samples) / max(1, self.total_entries_seen)
+        sampling_ratio = raw_sampling_ratio * 100
 
         self._print(f"Streaming complete for {variant_name}:")
         self._print(f"   Total entries in files: {total_entries:,}")
@@ -413,6 +450,17 @@ class StreamingDataSampler:
         self._print(f"   Step range: {df[step_col].min():,} - {df[step_col].max():,}")
         if "total_reward" in df.columns:
             self._print(f"   Reward range: {df['total_reward'].min():.3f} - {df['total_reward'].max():.3f}")
+
+        self.latest_sampling_meta = {
+            "samples": len(df),
+            "entries_seen": self.total_entries_seen,
+            "sampling_ratio": raw_sampling_ratio,
+            "step_range": (df[step_col].min(), df[step_col].max()),
+        }
+        self.latest_map_counts = {
+            map_id: dict(counts)
+            for map_id, counts in self.map_visit_counts.items()
+        }
 
         return df
 
@@ -481,6 +529,8 @@ def load_variants_for_comparison(
     verbose: bool = True,
 ) -> Tuple[List[pd.DataFrame], TrainingSampler]:
     sampler = TrainingSampler(max_steps=max_steps, target_samples=target_samples, verbose=verbose)
+    sampler.variant_heatmap_counts = {}
+    sampler.variant_sampling_meta = {}
 
     dataframes = []
     for experiment_path, variant_name in variant_configs:
@@ -491,6 +541,8 @@ def load_variants_for_comparison(
             max_data_points=max_data_points,
         )
         dataframes.append(df)
+        sampler.variant_heatmap_counts[variant_name] = sampler.latest_map_counts
+        sampler.variant_sampling_meta[variant_name] = sampler.latest_sampling_meta
 
     if normalize_steps and len(dataframes) > 1:
         if verbose:
