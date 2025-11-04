@@ -56,3 +56,25 @@ python -m poke_pipeline.run
 
 # Bestimmten checkpoint laden:
 python -m poke_pipeline.run --checkpoint Pfad/zum/checkpoint.zip
+
+
+# 4) Visualisierung (Sampling + Plots)
+
+# Grundstruktur:
+# conda run -n poke_viz python -m poke_pipeline.visualization.sampling_cli [Argumente...]
+
+# CLI-Bausteine:
+# --runs LOG:VARIANT      zwingend; z.B. experiments/v4_ld_01/.../logs:v4
+# --max-data-points N     gleichmäßig verteilte Stichprobe (empfohlen)
+# --max-files N           alternative: nur erste N Log-Dateien (nicht gleichzeitig mit max-data-points)
+# --target-samples N      Größe des Reservoirs (finale Stichprobe für Plots)
+# --max-steps N           optional; nur Schritte bis N berücksichtigen
+# --plot-rewards / --plot-heatmaps   einzelne Plots aktivieren (ohne Flags => beide)
+# --normalize-rewards / --normalize-heatmaps   Achsen/Intensitäten normalisieren
+# --heatmap-cmap NAME     Colormap wählen (Default: magma)
+# --quiet                 weniger Konsolenoutput
+
+# Beispiel (1000 gleichmäßig verteilte Punkte, beide Plots, Standardpfade):
+# conda run -n poke_viz python -m poke_pipeline.visualization.sampling_cli \
+#   --runs experiments/v4_ld_01/20251030_165359/logs:v4 \
+#   --max-data-points 1000

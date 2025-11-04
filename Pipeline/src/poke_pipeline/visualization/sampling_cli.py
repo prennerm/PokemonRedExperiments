@@ -12,24 +12,74 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from .data_sampling import load_variants_for_comparison
 from .heatmap_plots import plot_all_maps
 from .reward_plots import plot_rewards_over_time
 
 
+def _is_log_dir(path: Path) -> bool:
+    if not path.is_dir():
+        return False
+    for pattern in ("*.csv", "*.json", "*.jsonl"):
+        if any(path.glob(pattern)):
+            return True
+    return False
+
+
+def _resolve_log_dir(raw_path: Path, variant: str) -> Tuple[Path, Optional[str]]:
+    path = raw_path.expanduser().resolve()
+    if not path.exists():
+        raise argparse.ArgumentTypeError(f"Path does not exist: {raw_path}")
+
+    if _is_log_dir(path):
+        return path, None
+
+    logs_dir = path / "logs"
+    if logs_dir.is_dir() and _is_log_dir(logs_dir):
+        return logs_dir, None
+
+    candidates: List[Path] = []
+    if path.is_dir():
+        for child in path.iterdir():
+            if not child.is_dir():
+                continue
+            child_logs = child / "logs"
+            if child_logs.is_dir() and _is_log_dir(child_logs):
+                candidates.append(child_logs)
+            elif _is_log_dir(child):
+                candidates.append(child)
+
+    if candidates:
+        selected = max(candidates, key=lambda p: p.parent.stat().st_mtime)
+        message = f"[sampling_cli] Auto-selected latest run: {selected.parent}"
+        return selected, message
+
+    raise argparse.ArgumentTypeError(
+        f"Could not resolve a logs directory under {raw_path}"
+    )
+
+
 def parse_run(value: str) -> Tuple[Path, str]:
-    """Parse --runs entries of the form `<log_path>:<variant>`."""
-    parts = value.split(":", maxsplit=1)
-    if len(parts) != 2:
-        raise argparse.ArgumentTypeError("Expected format '<log_path>:<variant>'")
-    log_dir = Path(parts[0]).expanduser().resolve()
-    variant = parts[1].strip()
-    if not log_dir.exists():
-        raise argparse.ArgumentTypeError(f"Log directory does not exist: {log_dir}")
-    if not variant:
-        raise argparse.ArgumentTypeError("Variant must not be empty")
+    """Parse --runs entries allowing optional `<log_path>:<variant>`."""
+    variant = None
+
+    if ":" in value:
+        path_part, variant_part = value.split(":", maxsplit=1)
+        variant = variant_part.strip() or None
+        raw_path = Path(path_part)
+    else:
+        raw_path = Path(value)
+
+    log_dir, info = _resolve_log_dir(raw_path, variant or "auto")
+    if info:
+        print(info)
+    if variant is None:
+        try:
+            variant = log_dir.parent.parent.name or log_dir.parent.name
+        except Exception:
+            variant = raw_path.name or "run"
     return log_dir, variant
 
 
