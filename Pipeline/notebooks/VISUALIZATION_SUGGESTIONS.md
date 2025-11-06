@@ -139,6 +139,7 @@
 - **Style:** Clean, publication-ready matplotlib figures
 - **Statistics:** Include error bars, confidence intervals where appropriate
 - **Comparison:** Side-by-side or overlay plots for variant comparisons
+- **Farbschema:** Einheitliches, publikationsfaehiges Color Theme (z.B. v1-v4 konsistent zuweisen)
 
 ### Code Organization
 - Create modular plotting functions for each visualization type

@@ -90,3 +90,11 @@ python -m poke_pipeline.run --checkpoint Pfad/zum/checkpoint.zip
 #   --max-data-points 2000 \
 #   --frames 40 \
 #   --format gif
+
+# Total Reward Vergleich:
+# conda run -n poke_viz python -m poke_pipeline.visualization.compare_rewards \
+#   --runs experiments/v4_ld_test/20251105_101914/logs:v4_ld_01 \
+#          experiments/v4_ld_test/20251105_102530/logs:v4_ld_015 \
+#   --max-data-points 1000 \
+#   --smooth-window 200 \
+#   --normalize-steps
