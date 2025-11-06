@@ -78,3 +78,15 @@ python -m poke_pipeline.run --checkpoint Pfad/zum/checkpoint.zip
 # conda run -n poke_viz python -m poke_pipeline.visualization.sampling_cli \
 #   --runs experiments/v4_ld_01/20251030_165359/logs:v4 \
 #   --max-data-points 1000
+
+# Lambda-Discrepancy Metriken plotten:
+# conda run -n poke_viz python -m poke_pipeline.visualization.ld_metrics \
+#   --runs experiments/v4_ld_test/20251105_101914/logs:v4 \
+#   --max-data-points 1000
+
+# Animierte Heatmaps erzeugen (GIF):
+# conda run -n poke_viz python -m poke_pipeline.visualization.heatmap_animation \
+#   --runs experiments/v4_ld_test/20251105_101914/logs:v4 \
+#   --max-data-points 2000 \
+#   --frames 40 \
+#   --format gif

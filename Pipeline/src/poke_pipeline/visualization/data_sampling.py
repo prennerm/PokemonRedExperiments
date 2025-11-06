@@ -309,7 +309,7 @@ class StreamingDataSampler:
         step_val = self._extract_step_value(entry)
 
         if "rewards_total" in entry:
-            return {
+            normalised = {
                 "step": step_val,
                 "total_steps": entry.get("total_steps", step_val),
                 "total_reward": entry.get("rewards_total", 0),
@@ -333,7 +333,7 @@ class StreamingDataSampler:
                 "variant": variant_name,
             }
         else:
-            return {
+            normalised = {
                 "step": step_val,
                 "total_steps": step_val,
                 "total_reward": entry.get("event", 0) + entry.get("badge", 0),
@@ -356,6 +356,16 @@ class StreamingDataSampler:
                 "last_action": entry.get("last_action", 0),
                 "variant": variant_name,
             }
+
+        training_metrics = {
+            key: entry[key]
+            for key in entry.keys()
+            if key.startswith("training_")
+        }
+        if training_metrics:
+            normalised.update(training_metrics)
+
+        return normalised
 
     def load_variant_data(
         self,
