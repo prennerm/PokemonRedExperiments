@@ -1,0 +1,69 @@
+# configs/test_reset_sync.yaml - SCHNELLER TEST FÜR SYNCHRONE RESET-PROBLEME
+# Ziel: Provoziere schnell das Reset-Problem um die Lösung zu testen
+
+# -------------------------------------------------------------------
+# 1) Allgemeine Settings - TEST KONFIGURATION
+# -------------------------------------------------------------------
+seed: 42
+num_cpu: 32  # Viele Worker um das Problem zu provozieren
+
+# -------------------------------------------------------------------
+# 2) Pfade
+# -------------------------------------------------------------------
+paths:
+  session_root: "experiments/test_reset_sync"
+  checkpoints:   "${paths.session_root}/checkpoints"
+  tb_log:        "${paths.session_root}/tensorboard"
+  json_logs:     "${paths.session_root}/json_logs"
+
+# -------------------------------------------------------------------
+# 3) Environment‑Konfiguration - SCHNELLER RESET-ZYKLUS
+# -------------------------------------------------------------------
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+  headless:         true
+  save_final_state: false
+  early_stop:       false
+  action_freq:      24
+  init_state:       "data/init.state"
+  max_steps:        8192         # SEHR KURZ: Reset alle 2 Iterationen (8192/4096=2)
+  print_rewards:    true
+  save_video:       false
+  fast_video:       true
+  gb_path:          "data/PokemonRed.gb"
+  debug:            false
+  reward_scale:     0.5
+  explore_weight:   0.25
+
+# -------------------------------------------------------------------
+# 4) Modell‑Hyperparameter - MINIMAL FÜR SCHNELLEN TEST
+# -------------------------------------------------------------------
+model:
+  type:            "RecurrentPPOLD"
+  policy:          "MultiInputLstmPolicyLD"
+  n_steps:         4096         # Reset erfolgt alle 2 Iterationen
+  batch_size:      1024
+  n_epochs:        1
+  gamma:           0.997
+  ent_coef:        0.01
+  vf_coef:          0.5
+  ld_coef:          0.1
+  tensorboard_log: "${paths.tb_log}"
+  verbose:         1
+
+# -------------------------------------------------------------------
+# 5) Trainingslauf - NUR 10 RESETS ZUM TESTEN
+# -------------------------------------------------------------------
+total_timesteps:   327680        # 10 komplette Reset-Zyklen (10 * 32 * 1024)
+save_freq:         32768         # Weniger häufig speichern
+save_freq_stats:   500           # Häufiger Stats für bessere Beobachtung
+
+# -------------------------------------------------------------------
+# TEST-ZWECK:
+# - Reset alle 2 Iterationen → 10 Reset-Events in kurzer Zeit
+# - Mit 32 Workern → hohe Wahrscheinlichkeit für synchrone Resets
+# - Läuft nur ~5-10 Minuten statt Stunden
+# - Wenn Deadlock bei Iteration 2, 4, 6, etc. → Problem bestätigt
+# - Mit Staggered Reset → sollten Resets versetzt erfolgen
+# -------------------------------------------------------------------

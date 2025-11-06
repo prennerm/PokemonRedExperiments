@@ -1,0 +1,68 @@
+# configs/test_iteration_80.yaml - EXTREME FAST TEST für Iteration-80-Debugging
+# Ziel: Iteration 80 in unter 20 Minuten erreichen
+
+# -------------------------------------------------------------------
+# 1) Allgemeine Settings
+# -------------------------------------------------------------------
+seed: 42
+num_cpu: 4 # Reduziert für Debugging (war 32)
+
+# -------------------------------------------------------------------
+# 2) Pfade
+# -------------------------------------------------------------------
+paths:
+  session_root: "experiments/test_iteration_80"
+  checkpoints:   "${paths.session_root}/checkpoints"
+  tb_log:        "${paths.session_root}/tensorboard"
+  json_logs:     "${paths.session_root}/json_logs"
+
+# -------------------------------------------------------------------
+# 3) Environment - EXTREME FAST
+# -------------------------------------------------------------------
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+  headless:         true
+  save_final_state: false
+  early_stop:       false
+  action_freq:      12          # Sicher über press_step=8, aber trotzdem schnell (statt 24)
+  init_state:       "data/init.state"
+  max_steps:        5120        # 5120/256 = 20 → Reset bei Iteration 20 (schneller Test)
+  print_rewards:    true
+  save_video:       false
+  fast_video:       true
+  gb_path:          "data/PokemonRed.gb"
+  debug:            false
+  reward_scale:     0.5
+  explore_weight:   0.25
+
+# -------------------------------------------------------------------
+# 4) Modell - EXTREME FAST
+# -------------------------------------------------------------------
+model:
+  type:            "RecurrentPPOLD"
+  policy:          "MultiInputLstmPolicyLD"
+  n_steps:         256          # 16x kleiner als Standard
+  batch_size:      64           # 16x kleiner als Standard
+  n_epochs:        1
+  gamma:           0.997
+  ent_coef:        0.01
+  vf_coef:          0.5
+  ld_coef:          0.1
+  tensorboard_log: "${paths.tb_log}"
+  verbose:         1
+
+# -------------------------------------------------------------------
+# 5) Training - EXTREME FAST
+# -------------------------------------------------------------------
+total_timesteps:   25000        # 25000/1024 ≈ 24 Iterationen → Reset-Test bei Iteration 20
+save_freq:         5000         # Nicht zu häufig
+save_freq_stats:   1            # JEDE Iteration für Debugging
+
+# -------------------------------------------------------------------
+# EXTREME-FAST-MODUS:
+# - Reset EXAKT bei Iteration 80 (20480/256 = 80.0)
+# - 96x Beschleunigung (16x kleinere Steps × 6x schnellere Action)
+# - Erwartete Zeit: 10-15 Minuten
+# - Kritischer Test: Deadlock genau bei Iteration 80
+# -------------------------------------------------------------------

@@ -1,0 +1,23 @@
+extends: base.yaml
+
+paths:
+  session_root: "experiments/v4_ld_test"
+
+num_cpu: 4
+
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+  max_steps: 40960
+
+model:
+  type: "RecurrentPPOLD"
+  policy: "MultiInputLstmPolicyLD"
+  ld_coef: 0.1
+  n_steps: 1024
+  batch_size: 256
+  n_epochs: 2
+
+save_freq: 200000
+save_freq_stats: 500
+total_timesteps: 2000000

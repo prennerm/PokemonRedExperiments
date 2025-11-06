@@ -1,0 +1,57 @@
+# Test Config für v2 Performance-Anpassungen Validation
+
+# -------------------------------------------------------------------
+# 1) Allgemeine Settings (Kurzer Test)
+# -------------------------------------------------------------------
+seed: 42
+num_cpu: 4  # Reduziert für schnelleren Test, aber genug für Multi-Worker Features
+
+# -------------------------------------------------------------------
+# 2) Pfade
+# -------------------------------------------------------------------
+paths:
+  session_root: "experiments/test_v2_debug"
+  checkpoints:   "${paths.session_root}/checkpoints"
+  tb_log:        "${paths.session_root}/tensorboard"
+  json_logs:     "${paths.session_root}/json_logs"
+
+# -------------------------------------------------------------------
+# 3) Environment‑Konfiguration (Verkürzt für schnellen Test)
+# -------------------------------------------------------------------
+env:
+  module: "red_gym_env_v2_adapted"
+  class: "RedGymEnv"
+  headless:         true
+  save_final_state: false
+  early_stop:       false
+  action_freq:      24  # Bleibt bei 24
+  init_state:       "data/init.state"
+  max_steps:        8192  # STARK reduziert: ~5-10 Minuten pro Episode
+  print_rewards:    true
+  save_video:       false
+  fast_video:       true
+  gb_path:          "data/PokemonRed.gb"
+  debug:            true   # Debug aktiviert
+  reward_scale:     0.5
+  explore_weight:   0.25
+
+# -------------------------------------------------------------------
+# 4) Modell‑Hyperparameter (Schneller Test)
+# -------------------------------------------------------------------
+model:
+  type:            "PPO"
+  policy:          "MultiInputPolicy"
+  n_steps:         1024    # Reduziert für schnellere Rollouts
+  batch_size:      256     # Reduziert
+  n_epochs:        1
+  gamma:           0.997
+  ent_coef:        0.01
+  tensorboard_log: "${paths.tb_log}"
+  verbose:         1
+
+# -------------------------------------------------------------------
+# 5) Kurzer Trainingslauf (~30 Minuten)
+# -------------------------------------------------------------------
+total_timesteps:   50000   # Deutlich reduziert
+save_freq:         8192    # Entspricht max_steps
+save_freq_stats:   50      # Häufiger für Debugging

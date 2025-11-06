@@ -1,0 +1,58 @@
+# configs/v2.yaml
+
+# -------------------------------------------------------------------
+# 1) Allgemeine Settings
+# -------------------------------------------------------------------
+seed: 42
+num_cpu: 16 # GPU-OPTIMIERT: Reduziert von 32 auf 16 fuer bessere GPU-Auslastung
+
+# -------------------------------------------------------------------
+# 2) Pfade (werden in train.py relativ zum Projekt‑Root aufgelöst)
+# -------------------------------------------------------------------
+paths:
+  session_root: "experiments/v3_production"  # wird automatisch auf einen Zeitstempel ersetzt
+  checkpoints:   "${paths.session_root}/checkpoints"
+  tb_log:        "${paths.session_root}/tensorboard"
+  json_logs:     "${paths.session_root}/json_logs"
+
+# -------------------------------------------------------------------
+# 3) Environment‑Konfiguration
+# -------------------------------------------------------------------
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+  headless:         true
+  save_final_state: false
+  early_stop:       false
+  action_freq:      24
+  init_state:       "data/init.state"
+  max_steps:        327680
+  print_rewards:    true
+  save_video:       false
+  fast_video:       true
+  gb_path:          "data/PokemonRed.gb"
+  debug:            false
+  reward_scale:     0.5
+  explore_weight:   0.25
+
+# -------------------------------------------------------------------
+# 4) Modell‑Hyperparameter
+# -------------------------------------------------------------------
+model:
+  type:            "RecurrentPPO"
+  policy:          "MultiInputLstmPolicy"
+  device:          "cuda"       # GPU-Acceleration aktiviert!
+  n_steps:         4096        # rollout-Laenge
+  batch_size:      1024        # GPU-OPTIMIERT: Erhoht von 512 auf 1024
+  n_epochs:        3
+  gamma:           0.997
+  ent_coef:        0.01
+  tensorboard_log: "${paths.tb_log}"
+  verbose:         1
+
+# -------------------------------------------------------------------
+# 5) Trainingslauf
+# -------------------------------------------------------------------
+total_timesteps:   1e8
+save_freq:         327680       # alle ep_length Schritte ein Checkpoint
+save_freq_stats:   1000          # alle 100 agent-Stats in JSON flushen

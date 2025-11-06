@@ -1,0 +1,53 @@
+# configs/debug_short.yaml - MANUELLER SCHNELL-TEST
+# Für schnelle manuelle Verifikation ohne Automation
+
+seed: 42
+num_cpu: 8  # Weniger Worker, trotzdem parallelisiert
+
+paths:
+  session_root: "experiments/debug_short"
+  checkpoints:   "${paths.session_root}/checkpoints"
+  tb_log:        "${paths.session_root}/tensorboard"
+  json_logs:     "${paths.session_root}/json_logs"
+
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+  headless:         true
+  save_final_state: false
+  early_stop:       false
+  action_freq:      24
+  init_state:       "data/init.state"
+  max_steps:        8192         # Reset alle 2 Iterationen
+  print_rewards:    true
+  save_video:       false
+  fast_video:       true
+  gb_path:          "data/PokemonRed.gb"
+  debug:            false
+  reward_scale:     0.5
+  explore_weight:   0.25
+
+model:
+  type:            "RecurrentPPOLD"
+  policy:          "MultiInputLstmPolicyLD"
+  n_steps:         4096
+  batch_size:      512
+  n_epochs:        1
+  gamma:           0.997
+  ent_coef:        0.01
+  vf_coef:          0.5
+  ld_coef:          0.1
+  tensorboard_log: "${paths.tb_log}"
+  verbose:         1
+
+total_timesteps:   65536         # Nur 2 komplette Reset-Zyklen
+save_freq:         32768
+save_freq_stats:   500
+
+# ERWARTUNG:
+# - Reset nach Iteration 2 und 4
+# - Mit Staggered Reset: Worker starten versetzt
+# - Ohne Deadlock in ~2-3 Minuten fertig
+
+save_freq: 1000000
+save_freq_stats: 10

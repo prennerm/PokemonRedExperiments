@@ -1,0 +1,69 @@
+# configs/test_iteration_80_scaled.yaml - SCALED TEST vor Production
+# Zwischenschritt: 16 Worker, SubprocVecEnv, echte Iteration 80
+
+# -------------------------------------------------------------------
+# 1) Allgemeine Settings
+# -------------------------------------------------------------------
+seed: 42
+num_cpu: 16  # Hälfte von Production (32), aber echte Parallelisierung
+
+# -------------------------------------------------------------------
+# 2) Pfade
+# -------------------------------------------------------------------
+paths:
+  session_root: "experiments/test_iteration_80_scaled"
+  checkpoints:   "${paths.session_root}/checkpoints"
+  tb_log:        "${paths.session_root}/tensorboard"
+  json_logs:     "${paths.session_root}/json_logs"
+
+# -------------------------------------------------------------------
+# 3) Environment - BALANCED FAST
+# -------------------------------------------------------------------
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+  headless:         true
+  save_final_state: false
+  early_stop:       false
+  action_freq:      18          # Zwischen 12 (test) und 24 (production)
+  init_state:       "data/init.state"
+  max_steps:        20480       # ECHTER Iteration-80-Test: 20480/1024 = 20 Iterationen → Reset bei Iteration 80
+  print_rewards:    true
+  save_video:       false
+  fast_video:       true
+  gb_path:          "data/PokemonRed.gb"
+  debug:            false
+  reward_scale:     0.5
+  explore_weight:   0.25
+
+# -------------------------------------------------------------------
+# 4) Modell - INTERMEDIATE SETTINGS
+# -------------------------------------------------------------------
+model:
+  type:            "RecurrentPPOLD"
+  policy:          "MultiInputLstmPolicyLD"
+  n_steps:         1024         # Hälfte von Production (4096), aber größer als Test (256)
+  batch_size:      256          # Entsprechend angepasst
+  n_epochs:        2            # Zwischen Test (1) und Production (3)
+  gamma:           0.997
+  ent_coef:        0.01
+  vf_coef:          0.5
+  ld_coef:          0.1
+  tensorboard_log: "${paths.tb_log}"
+  verbose:         1
+
+# -------------------------------------------------------------------
+# 5) Training - SCALED TEST
+# -------------------------------------------------------------------
+total_timesteps:   100000       # 100k timesteps ≈ 100 Iterationen → deutlich über Iteration 80
+save_freq:         20000        
+save_freq_stats:   5            # Alle 5 Iterationen
+
+# -------------------------------------------------------------------
+# SCALED-TEST-MODUS:
+# - Reset bei Iteration 80: 20480 steps / 1024 n_steps = 20 → Reset bei Iteration 80
+# - SubprocVecEnv mit 16 Workern (echte Parallelisierung)
+# - Mittlere Geschwindigkeit: ~30-45 Minuten
+# - Kritischer Test: Thundering Herd mit 16 statt 32 Workern
+# - Validiert alle Fixes unter realistischen Bedingungen
+# -------------------------------------------------------------------

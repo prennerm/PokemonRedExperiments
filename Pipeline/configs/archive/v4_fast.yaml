@@ -1,0 +1,70 @@
+# configs/v4_fast.yaml - PERFORMANCE OPTIMIERT + ULTRA-FAST TEST MODE
+# Environment Reset-Frequenz dramatisch reduziert für bessere Performance
+
+# -------------------------------------------------------------------
+# 1) Allgemeine Settings
+# -------------------------------------------------------------------
+seed: 42
+num_cpu: 32 # Performance-optimiert mit 32 CPUs
+
+# -------------------------------------------------------------------
+# 2) Pfade (werden in train.py relativ zum Projekt‑Root aufgelöst)
+# -------------------------------------------------------------------
+paths:
+  session_root: "experiments/v4"
+  checkpoints:   "${paths.session_root}/checkpoints"
+  tb_log:        "${paths.session_root}/tensorboard"
+  json_logs:     "${paths.session_root}/json_logs"
+
+# -------------------------------------------------------------------
+# 3) Environment‑Konfiguration - ULTRA-FAST TEST MODE
+# -------------------------------------------------------------------
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+  headless:         true
+  save_final_state: false
+  early_stop:       false
+  action_freq:      8           # 3x schneller: 8 statt 24
+  init_state:       "data/init.state"
+  max_steps:        20736       # 20736/256 = 81 → Reset bei Iteration 81
+  print_rewards:    true
+  save_video:       false
+  fast_video:       true
+  gb_path:          "data/PokemonRed.gb"
+  debug:            false
+  reward_scale:     0.5
+  explore_weight:   0.25
+
+# -------------------------------------------------------------------
+# 4) Modell‑Hyperparameter - ULTRA-FAST TEST MODE
+# -------------------------------------------------------------------
+model:
+  type:            "RecurrentPPOLD"
+  policy:          "MultiInputLstmPolicyLD"
+  n_steps:         256          # 16x kleiner: 256 statt 4096
+  batch_size:      64           # 16x kleiner: 64 statt 1024
+  n_epochs:        1
+  gamma:           0.997
+  ent_coef:        0.01
+  vf_coef:          0.5
+  ld_coef:          0.1
+  tensorboard_log: "${paths.tb_log}"
+  verbose:         1
+
+# -------------------------------------------------------------------
+# 5) Trainingslauf - ULTRA-FAST TEST MODE
+# -------------------------------------------------------------------
+total_timesteps:   25000        # Nur für ~100 Iterationen
+save_freq:         5000         # Reduziert für kurzen Test
+save_freq_stats:   10           # Sehr häufig für Debug-Zwecke
+
+# -------------------------------------------------------------------
+# ULTRA-FAST-TEST-MODUS:
+# - Environment Reset bei Iteration 81 (entspricht original Iteration 80)
+# - 16x kleinere n_steps/batch_size für 16x schnellere Iterationen  
+# - 3x schnellere action_freq für 3x schnellere Steps
+# - Gesamt: ~48x Beschleunigung
+# - Erwartete Zeit: 20-30 Minuten statt 16+ Stunden
+# - Kritischer Test: Thundering Herd bei Iteration 81
+# -------------------------------------------------------------------

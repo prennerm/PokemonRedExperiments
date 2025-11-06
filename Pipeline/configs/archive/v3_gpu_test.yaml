@@ -1,0 +1,59 @@
+# configs/v3_gpu_test.yaml - GPU-Test-Variante fuer v3
+# Kurze, schnelle Test-Sessions um GPU-Funktionalitaet zu verifizieren
+
+# -------------------------------------------------------------------
+# 1) Allgemeine Settings
+# -------------------------------------------------------------------
+seed: 42
+num_cpu: 4  # REDUZIERT fuer schnelle Tests
+
+# -------------------------------------------------------------------
+# 2) Pfade
+# -------------------------------------------------------------------
+paths:
+  session_root: "experiments/v3_gpu_test"
+  checkpoints:   "${paths.session_root}/checkpoints"
+  tb_log:        "${paths.session_root}/tensorboard"
+  json_logs:     "${paths.session_root}/json_logs"
+
+# -------------------------------------------------------------------
+# 3) Environment-Konfiguration (REDUZIERT fuer Tests)
+# -------------------------------------------------------------------
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+  headless:         true
+  save_final_state: false
+  early_stop:       false
+  action_freq:      24
+  init_state:       "data/init.state"
+  max_steps:        8192  # REDUZIERT: Nur ~4 Resets fuer schnelle Tests
+  print_rewards:    true
+  save_video:       false
+  fast_video:       true
+  gb_path:          "data/PokemonRed.gb"
+  debug:            false
+  reward_scale:     0.5
+  explore_weight:   0.25
+
+# -------------------------------------------------------------------
+# 4) Modell-Hyperparameter (GPU-AKTIVIERT)
+# -------------------------------------------------------------------
+model:
+  type:            "RecurrentPPO"
+  policy:          "MultiInputLstmPolicy"
+  device:          "cuda"      # WICHTIG: GPU aktivieren!
+  n_steps:         2048        # Rollout-Laenge
+  batch_size:      128         # REDUZIERT fuer Tests
+  n_epochs:        1
+  gamma:           0.997
+  ent_coef:        0.01
+  tensorboard_log: "${paths.tb_log}"
+  verbose:         1
+
+# -------------------------------------------------------------------
+# 5) Training (KURZE Test-Session)
+# -------------------------------------------------------------------
+total_timesteps:   50000       # REDUZIERT: Nur fuer GPU-Funktionalitaets-Test
+save_freq:         2048        # Haeufige Checkpoints fuer Tests
+save_freq_stats:   500         # Haeufige Stats fuer Debugging
