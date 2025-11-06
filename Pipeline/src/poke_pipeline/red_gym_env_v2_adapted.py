@@ -1,6 +1,5 @@
 import uuid
 import json
-import io
 from pathlib import Path
 import pkg_resources
 
@@ -38,11 +37,12 @@ museum_ticket = (0xD754, 0)
 
 class RedGymEnv(Env):
     def __init__(self, config=None):
-        self.s_path = config["session_path"]
+        self.s_path = Path(config["session_path"])
         self.save_final_state = config["save_final_state"]
         self.print_rewards = config["print_rewards"]
         self.headless = config["headless"]
-        self.init_state = config["init_state"]
+        raw_init_state = str(config.get("init_state", "") or "").strip()
+        self.init_state = Path(raw_init_state) if raw_init_state else None
         self.act_freq = config["action_freq"]
         self.base_max_steps = config["max_steps"]  # Original max_steps
         self.max_steps = self.base_max_steps  # Wird in reset() ggf. angepasst
@@ -55,18 +55,13 @@ class RedGymEnv(Env):
         # Worker-Info für Staggered Resets
         self.worker_rank = config.get("worker_rank", 0)
         self.num_cpu = config.get("num_cpu", 1)
+        self.cache_init_state = bool(config.get("cache_init_state", True))
+        self._use_init_state = self.init_state is not None
+        self.state_cache_dir = self.s_path / "state_cache"
+        self.local_state_path = self.state_cache_dir / f"worker_{self.worker_rank}.state"
+        self._local_state_ready = self.local_state_path.exists()
         
         print(f"[EnvInit] Worker {self.worker_rank}/{self.num_cpu} initialized")
-        
-        # Init State in Memory laden für bessere Performance
-        self._init_state_bytes = None
-        if self.init_state and self.init_state.strip():
-            try:
-                with open(self.init_state, "rb") as f:
-                    self._init_state_bytes = f.read()
-                print(f"Worker {self.worker_rank}: Loaded init state into memory ({len(self._init_state_bytes)} bytes)")
-            except Exception as e:
-                print(f"Worker {self.worker_rank}: Could not load init state: {e}")
         """
         self.explore_weight = (
             1 if "explore_weight" not in config else config["explore_weight"]
@@ -84,7 +79,6 @@ class RedGymEnv(Env):
         self.reward_scale = config.get("reward_scale", 1)
         self.instance_id = config.get("instance_id", str(uuid.uuid4())[:8])
         
-        self.s_path = Path(config["session_path"])  # String zu Path konvertieren
         self.s_path.mkdir(exist_ok=True)
         self.full_frame_writer = None
         self.model_frame_writer = None
@@ -178,14 +172,7 @@ class RedGymEnv(Env):
         self.max_steps = self.base_max_steps
 
         # restart game, skipping credits
-        if self._init_state_bytes:  # In-Memory State Loading
-            print(f"Worker {self.worker_rank}: Loading state from memory...")
-            self.pyboy.load_state(io.BytesIO(self._init_state_bytes))
-            print(f"Worker {self.worker_rank}: State loaded successfully")
-        elif self.init_state and self.init_state.strip():
-            # Fallback zu File-Loading
-            with open(self.init_state, "rb") as f:
-                self.pyboy.load_state(f)
+        self._restore_initial_state()
 
         self.init_map_mem()
 
@@ -225,6 +212,49 @@ class RedGymEnv(Env):
         self.last_total_reward = self.total_reward
         self.reset_count += 1
         return self._get_obs(), {}
+
+    def _restore_initial_state(self):
+        if not self._use_init_state:
+            return
+
+        if self.cache_init_state and self._local_state_ready and self.local_state_path.exists():
+            if self._load_local_state():
+                return
+
+        if self._load_initial_state() and self.cache_init_state:
+            self._ensure_local_state()
+
+    def _load_initial_state(self):
+        try:
+            with open(self.init_state, "rb") as fh:
+                self.pyboy.load_state(fh)
+            print(f"Worker {self.worker_rank}: Loaded init state from '{self.init_state}'")
+            return True
+        except Exception as exc:
+            print(f"Worker {self.worker_rank}: Could not load init state '{self.init_state}': {exc}")
+            return False
+
+    def _load_local_state(self):
+        try:
+            with open(self.local_state_path, "rb") as fh:
+                self.pyboy.load_state(fh)
+            print(f"Worker {self.worker_rank}: Loaded cached init state from '{self.local_state_path}'")
+            return True
+        except Exception as exc:
+            print(f"Worker {self.worker_rank}: Failed to load cached state '{self.local_state_path}': {exc}")
+            self._local_state_ready = False
+            return False
+
+    def _ensure_local_state(self):
+        try:
+            self.state_cache_dir.mkdir(parents=True, exist_ok=True)
+            with open(self.local_state_path, "wb") as fh:
+                self.pyboy.save_state(fh)
+            self._local_state_ready = True
+            print(f"Worker {self.worker_rank}: Cached init state to '{self.local_state_path}'")
+        except Exception as exc:
+            print(f"Worker {self.worker_rank}: Could not cache init state to '{self.local_state_path}': {exc}")
+            self._local_state_ready = False
 
     def init_map_mem(self):
         self.seen_coords = {}

@@ -1,6 +1,9 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: poke_pipeline
 Version: 0.1
+Summary: Pokemon Red RL training pipeline
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
 Requires-Dist: stable-baselines3
 Requires-Dist: sb3-contrib
 Requires-Dist: pyboy

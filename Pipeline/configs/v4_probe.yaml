@@ -1,4 +1,4 @@
-extends: base_prototype.yaml
+extends: base.yaml
 
 paths:
   session_root: "experiments/v4_probe"

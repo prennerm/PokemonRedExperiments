@@ -107,6 +107,13 @@ class StatsCallback(BaseCallback):
     def _prepare_stat(self, raw_stats: Dict[str, Any]) -> Dict[str, Any]:
         normalised = _normalise_stat(raw_stats)
         normalised["total_steps"] = self.num_timesteps
+        training_metrics = None
+        metrics_source = getattr(self.model, "latest_train_metrics", None)
+        if isinstance(metrics_source, dict):
+            training_metrics = _normalise_stat(metrics_source)
+            if training_metrics:
+                normalised["training"] = training_metrics
+
         if not self.structured:
             return normalised
 
@@ -149,6 +156,8 @@ class StatsCallback(BaseCallback):
                 "event_progress": normalised.get("event", 0),
             },
         }
+        if training_metrics:
+            structured["training"] = training_metrics
         return structured
 
     def _flush(self, *, final: bool = False) -> None:

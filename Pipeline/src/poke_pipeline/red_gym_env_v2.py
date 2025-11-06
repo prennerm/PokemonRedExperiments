@@ -22,11 +22,12 @@ museum_ticket = (0xD754, 0)
 
 class RedGymEnv(Env):
     def __init__(self, config=None):
-        self.s_path = config["session_path"]
+        self.s_path = Path(config["session_path"])
         self.save_final_state = config["save_final_state"]
         self.print_rewards = config["print_rewards"]
         self.headless = config["headless"]
-        self.init_state = config["init_state"]
+        raw_init_state = str(config.get("init_state", "") or "").strip()
+        self.init_state = Path(raw_init_state) if raw_init_state else None
         self.act_freq = config["action_freq"]
         self.max_steps = config["max_steps"]
         self.save_video = config["save_video"]
@@ -45,6 +46,14 @@ class RedGymEnv(Env):
             if "instance_id" not in config
             else config["instance_id"]
         )
+        self.worker_rank = config.get("worker_rank", 0)
+        self.num_cpu = config.get("num_cpu", 1)
+        self.cache_init_state = bool(config.get("cache_init_state", True))
+        self._use_init_state = self.init_state is not None
+        self.state_cache_dir = self.s_path / "state_cache"
+        self.local_state_path = self.state_cache_dir / f"worker_{self.worker_rank}.state"
+        self._local_state_ready = self.local_state_path.exists()
+
         self.s_path.mkdir(exist_ok=True)
         self.full_frame_writer = None
         self.model_frame_writer = None
@@ -128,10 +137,7 @@ class RedGymEnv(Env):
 
     def reset(self, seed=None, options={}):
         self.seed = seed
-        # restart game, skipping credits
-        if self.init_state and self.init_state.strip():  # Nur laden wenn init_state gesetzt ist
-            with open(self.init_state, "rb") as f:
-                self.pyboy.load_state(f)
+        self._restore_initial_state()
 
         self.init_map_mem()
 
@@ -171,6 +177,48 @@ class RedGymEnv(Env):
         self.last_total_reward = self.total_reward
         self.reset_count += 1
         return self._get_obs(), {}
+
+    def _restore_initial_state(self):
+        if not self._use_init_state:
+            return
+
+        # Prefer cached state if available
+        if self.cache_init_state and self._local_state_ready and self.local_state_path.exists():
+            if self._load_local_state():
+                return
+
+        # Fall back to the original init.state and refresh the cache
+        if self._load_initial_state() and self.cache_init_state:
+            self._ensure_local_state()
+
+    def _load_initial_state(self):
+        try:
+            with open(self.init_state, "rb") as fh:
+                self.pyboy.load_state(fh)
+            return True
+        except Exception as exc:
+            print(f"Worker {self.worker_rank}: Could not load init state '{self.init_state}': {exc}")
+            return False
+
+    def _load_local_state(self):
+        try:
+            with open(self.local_state_path, "rb") as fh:
+                self.pyboy.load_state(fh)
+            return True
+        except Exception as exc:
+            print(f"Worker {self.worker_rank}: Failed to load cached state '{self.local_state_path}': {exc}")
+            self._local_state_ready = False
+            return False
+
+    def _ensure_local_state(self):
+        try:
+            self.state_cache_dir.mkdir(parents=True, exist_ok=True)
+            with open(self.local_state_path, "wb") as fh:
+                self.pyboy.save_state(fh)
+            self._local_state_ready = True
+        except Exception as exc:
+            print(f"Worker {self.worker_rank}: Could not cache init state to '{self.local_state_path}': {exc}")
+            self._local_state_ready = False
 
     def init_map_mem(self):
         self.seen_coords = {}

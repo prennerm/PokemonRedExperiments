@@ -91,6 +91,7 @@ class RecurrentPPOLD(RecurrentPPO):
     def __init__(self, *args, ld_coef=0.1, **kwargs):
         super().__init__(*args, **kwargs)
         self.ld_coef = ld_coef
+        self.latest_train_metrics = {}
 
     def train(self) -> None:
         # Set training mode and update learning rate
@@ -167,6 +168,21 @@ class RecurrentPPOLD(RecurrentPPO):
                     + self.vf_coef    * mc_loss
                     + self.ld_coef    * ld_loss
                 )
+
+                ld_term = ld_loss.item()
+                ld_component = self.ld_coef * ld_term
+                total_loss = loss.item()
+                ld_ratio = ld_component / (abs(total_loss) + 1e-8)
+                self.latest_train_metrics = {
+                    "ld": {
+                        "term": float(ld_term),
+                        "component": float(ld_component),
+                        "ratio": float(ld_ratio),
+                    },
+                    "loss": {
+                        "total": float(total_loss),
+                    },
+                }
 
                 # --- Optimierungsschritt ---
                 self.policy.optimizer.zero_grad()
