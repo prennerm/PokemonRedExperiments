@@ -1,0 +1,17 @@
+extends: base.yaml
+
+paths:
+  session_root: "experiments/v4_ld_02"
+
+num_cpu: 32
+
+env:
+  module: "red_gym_env_lstm"
+  class: "RedGymEnvLSTM"
+
+model:
+  type: "RecurrentPPOLD"
+  policy: "MultiInputLstmPolicyLD"
+  ld_coef: 0.2
+
+total_timesteps: 1e10

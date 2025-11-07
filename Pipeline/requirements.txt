@@ -1,0 +1,29 @@
+# PyTorch with CUDA support
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Core dependencies
+numpy
+matplotlib
+scikit-image
+scipy
+imageio
+pandas
+protobuf
+websockets
+
+# RL libraries
+stable-baselines3==2.7.0
+sb3-contrib==2.6.0
+gymnasium[box2d]
+
+# Game emulation
+pyboy
+
+# Utilities
+networks
+einops
+tensorboard
+mediapy
+pyyaml
