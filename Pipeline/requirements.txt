@@ -16,7 +16,7 @@ websockets
 # RL libraries
 stable-baselines3==2.7.0
 sb3-contrib==2.6.0
-gymnasium[box2d]
+gymnasium
 
 # Game emulation
 pyboy
