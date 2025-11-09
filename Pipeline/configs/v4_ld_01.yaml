@@ -1,7 +1,7 @@
 extends: base.yaml
 
 paths:
-  session_root: "experiments/v3"
+  session_root: "experiments/v4_ld_01"
 
 num_cpu: 32
 
@@ -10,10 +10,8 @@ env:
   class: "RedGymEnvLSTM"
 
 model:
-  type: "RecurrentPPO"
-  policy: "MultiInputLstmPolicy"
+  type: "RecurrentPPOLD"
+  policy: "MultiInputLstmPolicyLD"
+  ld_coef: 0.1
 
 total_timesteps: 2.5e8
-
-
-

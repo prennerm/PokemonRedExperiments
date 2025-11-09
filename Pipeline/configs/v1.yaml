@@ -3,6 +3,8 @@ extends: base.yaml
 paths:
   session_root: "experiments/v1"
 
+num_cpu: 32
+
 env:
   module: "red_gym_env_v2"
   class: "RedGymEnv"
@@ -10,4 +12,6 @@ env:
 model:
   type: "PPO"
   policy: "MultiInputPolicy"
+
+total_timesteps: 2.5e8
 
