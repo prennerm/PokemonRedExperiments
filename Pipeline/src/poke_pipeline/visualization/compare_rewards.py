@@ -30,6 +30,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-data-points", type=int, default=None, help="Evenly sampled datapoints per run")
     parser.add_argument("--max-files", type=int, default=None, help="Alternative: limit number of files")
     parser.add_argument("--target-samples", type=int, default=5000, help="Reservoir size per variant")
+    parser.add_argument("--max-steps", type=int, default=100_000_000, help="Maximum step value to consider")
     parser.add_argument("--smooth-window", type=int, default=0, help="Rolling mean window (0 disables smoothing)")
     parser.add_argument(
         "--normalize-steps",
@@ -91,6 +92,7 @@ def _load_reward_series(
     normalize_steps: bool,
     step_range: Optional[Tuple[int, int]],
     verbose: bool,
+    max_steps: int,
 ) -> List[Tuple[Path, str, str, pd.Series, pd.Series]]:
     data_frames, _sampler = load_variants_for_comparison(
         variant_configs,
@@ -99,6 +101,7 @@ def _load_reward_series(
         max_data_points=max_data_points,
         normalize_steps=normalize_steps,
         verbose=verbose,
+        max_steps=max_steps,
     )
 
     results: List[Tuple[Path, str, str, pd.Series, pd.Series]] = []
@@ -236,6 +239,7 @@ def run_cli(args: Optional[List[str]] = None) -> None:
         normalize_steps=parsed.normalize_steps,
         step_range=tuple(parsed.step_range) if parsed.step_range else None,
         verbose=not parsed.quiet,
+        max_steps=parsed.max_steps,
     )
 
     if len(runs_data) < 2:

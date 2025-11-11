@@ -31,6 +31,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-data-points", type=int, default=None, help="Evenly sampled datapoints over run")
     parser.add_argument("--max-files", type=int, default=None, help="Alternate: limit number of files (exclusive)")
     parser.add_argument("--target-samples", type=int, default=2000, help="Reservoir size per variant")
+    parser.add_argument("--max-steps", type=int, default=100_000_000, help="Maximum step value to consider")
     parser.add_argument("--frames", type=int, default=40, help="Number of frames per animation (cumulative)")
     parser.add_argument("--fps", type=int, default=10, help="Frames per second for exported animation")
     parser.add_argument("--map-ids", type=int, nargs="+", default=None, help="Specific map ids to animate")
@@ -205,8 +206,9 @@ def _animate_heatmap(
     map_label = MAP_DATA.get(map_id, {}).get("name", f"Map {map_id}")
     base_title = f"{variant.upper()} – {map_label}\n{experiment_name}"
     ax.set_title(base_title, fontsize=14, pad=16)
-    ax.set_xlabel("X coordinate")
-    ax.set_ylabel("Y coordinate")
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
 
     def update(frame_index: int):
         frame = frames[frame_index]
@@ -251,6 +253,7 @@ def _prepare_runs(
     max_files: Optional[int],
     max_data_points: Optional[int],
     verbose: bool,
+    max_steps: int,
 ) -> Tuple[List[Tuple[Path, str]], List[pd.DataFrame]]:
     variant_configs: List[Tuple[str, str]] = []
     resolved_runs: List[Tuple[Path, str]] = []
@@ -267,6 +270,7 @@ def _prepare_runs(
         max_data_points=max_data_points,
         normalize_steps=False,
         verbose=verbose,
+        max_steps=max_steps,
     )
     return resolved_runs, data_frames
 
@@ -287,6 +291,7 @@ def run_cli(args: Optional[List[str]] = None) -> None:
         max_files=parsed.max_files,
         max_data_points=parsed.max_data_points,
         verbose=not parsed.quiet,
+        max_steps=parsed.max_steps,
     )
 
     for (log_dir, variant), df in zip(runs, data_frames):

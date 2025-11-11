@@ -84,6 +84,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-data-points", type=int, default=None, help="Evenly sampled datapoints over run")
     parser.add_argument("--max-files", type=int, default=None, help="Alternative: limit number of files")
     parser.add_argument("--target-samples", type=int, default=5000, help="Reservoir size per variant")
+    parser.add_argument(
+        "--max-steps",
+        type=int,
+        default=100_000_000,
+        help="Maximum step value to consider when sampling",
+    )
     parser.add_argument("--output-subdir", type=str, default="ld_viz", help="Subdirectory under plots/")
     parser.add_argument(
         "--smooth-window",
@@ -296,6 +302,7 @@ def run_cli(args: Optional[List[str]] = None) -> None:
         max_data_points=parsed.max_data_points,
         normalize_steps=False,
         verbose=not parsed.quiet,
+        max_steps=parsed.max_steps,
     )
 
     for (log_dir, variant), df in zip(runs, data_frames):

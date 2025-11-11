@@ -79,22 +79,30 @@ python -m poke_pipeline.run --checkpoint Pfad/zum/checkpoint.zip
 #   --runs experiments/v4_ld_01/20251030_165359/logs:v4 \
 #   --max-data-points 1000
 
-# Lambda-Discrepancy Metriken plotten:
+# Lambda-Discrepancy Metriken plotten (voller Run):
 # conda run -n poke_viz python -m poke_pipeline.visualization.ld_metrics \
 #   --runs experiments/v4_ld_test/20251105_101914/logs:v4 \
-#   --max-data-points 1000
+#   --target-samples 20000 \
+#   --smooth-window 500 \
+#   --reward-band-window 500 \
+#   --ratio-log \
+#   --max-steps 300000000
 
 # Animierte Heatmaps erzeugen (GIF):
 # conda run -n poke_viz python -m poke_pipeline.visualization.heatmap_animation \
 #   --runs experiments/v4_ld_test/20251105_101914/logs:v4 \
-#   --max-data-points 2000 \
-#   --frames 40 \
+#   --target-samples 20000 \
+#   --frames 60 \
+#   --fps 12 \
+#   --normalize \
+#   --max-steps 300000000 \
 #   --format gif
 
 # Total Reward Vergleich:
 # conda run -n poke_viz python -m poke_pipeline.visualization.compare_rewards \
 #   --runs experiments/v4_ld_test/20251105_101914/logs:v4_ld_01 \
 #          experiments/v4_ld_test/20251105_102530/logs:v4_ld_015 \
-#   --max-data-points 1000 \
-#   --smooth-window 200 \
+#   --target-samples 20000 \
+#   --smooth-window 500 \
+#   --max-steps 300000000 \
 #   --normalize-steps
