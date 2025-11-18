@@ -14,4 +14,4 @@ model:
   policy: "MultiInputLstmPolicyLD"
   ld_coef: 0.1
 
-total_timesteps: 2.5e8
+total_timesteps: 1e10
