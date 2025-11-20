@@ -48,5 +48,5 @@ logging:
   verbose: 1
 
 save_freq: 1638400
-save_freq_stats: 1000
+save_freq_stats: 1_048_576
 total_timesteps: 1e8
